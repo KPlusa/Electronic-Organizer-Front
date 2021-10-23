@@ -10,17 +10,21 @@ import {Divider, Text, Input} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {emailValidator} from '../helpers/emailValidator';
 import {passwordValidator} from '../helpers/passwordValidator';
+import {confirmValidator} from '../helpers/confirmValidator';
 
 export default function LoginScene({navigation}) {
   const [email, setEmail] = useState({value: '', error: ''});
   const [password, setPassword] = useState({value: '', error: ''});
+  const [password2, setPassword2] = useState({value: '', error: ''});
 
-  const onLoginPressed = () => {
+  const onSignUpPressed = () => {
     const emailError = emailValidator(email.value);
-    const passwordError = passwordValidator(password.value);
-    if (emailError || passwordError) {
+    const passwordError = passwordValidator(password.value, password2.value);
+    const confirmError = confirmValidator(password.value, password2.value);
+    if (emailError || passwordError || confirmError) {
       setEmail({...email, error: emailError});
       setPassword({...password, error: passwordError});
+      setPassword2({...password2, error: confirmError});
       return;
     }
     navigation.reset({
@@ -32,11 +36,7 @@ export default function LoginScene({navigation}) {
   return (
     <Background>
       <BackButton goBack={navigation.goBack} />
-      <Logo />
-      <Text h3 style={[{color: theme.colors.mainColor}, {fontSize: 20}]}>
-        Welcome back!
-      </Text>
-      <Divider orientation="horizontal" height={30} />
+      <Logo /> 
       <Input
         style={[{height: 50}, {width: 300}]}
         inputContainerStyle={[
@@ -68,9 +68,24 @@ export default function LoginScene({navigation}) {
           {borderColor: theme.colors.mainColor},
         ]}
         placeholder="Password"
-        returnKeyType="done"
+        returnKeyType="next"
         value={password.value}
         onChangeText={text => setPassword({value: text, error: ''})}
+        secureTextEntry
+      />
+      <Input
+        style={[{height: 50}, {width: 300}]}
+        inputContainerStyle={[
+          {height: 50},
+          {width: 300},
+          {maxWidth: 800},
+          {alignSelf: 'center'},
+          {borderColor: theme.colors.mainColor},
+        ]}
+        placeholder="Confirm password"
+        returnKeyType="done"
+        value={password2.value}
+        onChangeText={text => setPassword2({value: text, error: ''})}
         error={!!password.error}
         errorMessage={password.error}
         secureTextEntry
@@ -83,13 +98,13 @@ export default function LoginScene({navigation}) {
           {width: 300},
           {backgroundColor: theme.colors.mainColor},
         ]}
-        title="LOGIN"
+        title="SIGN UP"
         color={theme.colors.mainColor}
-        onPress={onLoginPressed}></Button>
+        onPress={onSignUpPressed}></Button>
       <View style={styles.row}>
-        <Text>Don’t have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.replace('RegisterScene')}>
-          <Text style={styles.signUp}>Sign up</Text>
+        <Text>Already have an account? </Text>
+        <TouchableOpacity onPress={() => navigation.replace('LoginScene')}>
+          <Text style={styles.signUp}>Login</Text>
         </TouchableOpacity>
       </View>
     </Background>
