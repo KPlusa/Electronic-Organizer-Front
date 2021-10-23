@@ -9,7 +9,10 @@ import {theme} from '../themes/theme';
 import {Divider, Text, Input} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {emailValidator} from '../helpers/emailValidator';
-import {passwordValidator} from '../helpers/passwordValidator';
+import {
+  passwordValidator,
+  confirmValidator,
+} from '../helpers/passwordValidator';
 
 export default function LoginScene({navigation}) {
   const [email, setEmail] = useState({value: '', error: ''});
@@ -19,10 +22,11 @@ export default function LoginScene({navigation}) {
   const onSignUpPressed = () => {
     const emailError = emailValidator(email.value);
     const passwordError = passwordValidator(password.value, password2.value);
-    if (emailError || passwordError) {
+    const confirmError = confirmValidator(password.value, password2.value);
+    if (emailError || passwordError || confirmError) {
       setEmail({...email, error: emailError});
       setPassword({...password, error: passwordError});
-      setPassword2({...password2, error: passwordError});
+      setPassword2({...password2, error: confirmError});
       return;
     }
     navigation.reset({
@@ -34,7 +38,7 @@ export default function LoginScene({navigation}) {
   return (
     <Background>
       <BackButton goBack={navigation.goBack} />
-      <Logo /> 
+      <Logo />
       <Input
         style={[{height: 50}, {width: 300}]}
         inputContainerStyle={[
@@ -55,6 +59,7 @@ export default function LoginScene({navigation}) {
         autoCompleteType="email"
         textContentType="emailAddress"
         keyboardType="email-address"
+        errorStyle={{color: theme.colors.error}}
       />
       <Input
         style={[{height: 50}, {width: 300}]}
@@ -69,7 +74,10 @@ export default function LoginScene({navigation}) {
         returnKeyType="next"
         value={password.value}
         onChangeText={text => setPassword({value: text, error: ''})}
+        error={!!password.error}
+        errorMessage={password.error}
         secureTextEntry
+        errorStyle={{color: theme.colors.error}}
       />
       <Input
         style={[{height: 50}, {width: 300}]}
@@ -84,9 +92,10 @@ export default function LoginScene({navigation}) {
         returnKeyType="done"
         value={password2.value}
         onChangeText={text => setPassword2({value: text, error: ''})}
-        error={!!password.error}
-        errorMessage={password.error}
         secureTextEntry
+        error={!!password2.error}
+        errorMessage={password2.error}
+        errorStyle={{color: theme.colors.error}}
       />
       <Divider orientation="horizontal" height={10} />
       <Button

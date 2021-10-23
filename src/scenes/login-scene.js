@@ -25,7 +25,7 @@ export default function LoginScene({navigation}) {
     }
     navigation.reset({
       index: 0,
-      routes: [{name: 'StartScene'}],
+      routes: [{name: 'MainScene'}],
     });
   };
 
@@ -57,6 +57,7 @@ export default function LoginScene({navigation}) {
         autoCompleteType="email"
         textContentType="emailAddress"
         keyboardType="email-address"
+        errorStyle={{color: theme.colors.error}}
       />
       <Input
         style={[{height: 50}, {width: 300}]}
@@ -74,6 +75,7 @@ export default function LoginScene({navigation}) {
         error={!!password.error}
         errorMessage={password.error}
         secureTextEntry
+        errorStyle={{color: theme.colors.error}}
       />
       <Divider orientation="horizontal" height={10} />
       <Button

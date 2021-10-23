@@ -4,6 +4,6 @@ export const theme = {
     mainColor: '#3b6ea5',
     backgroundColor: 'white',
     secondary: '#414757',
-    error: '#f13a59',
+    error: '#cc1010',
   },
 }
