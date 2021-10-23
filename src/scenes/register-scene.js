@@ -10,7 +10,6 @@ import {Divider, Text, Input} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {emailValidator} from '../helpers/emailValidator';
 import {passwordValidator} from '../helpers/passwordValidator';
-import {confirmValidator} from '../helpers/confirmValidator';
 
 export default function LoginScene({navigation}) {
   const [email, setEmail] = useState({value: '', error: ''});
@@ -20,11 +19,10 @@ export default function LoginScene({navigation}) {
   const onSignUpPressed = () => {
     const emailError = emailValidator(email.value);
     const passwordError = passwordValidator(password.value, password2.value);
-    const confirmError = confirmValidator(password.value, password2.value);
-    if (emailError || passwordError || confirmError) {
+    if (emailError || passwordError) {
       setEmail({...email, error: emailError});
       setPassword({...password, error: passwordError});
-      setPassword2({...password2, error: confirmError});
+      setPassword2({...password2, error: passwordError});
       return;
     }
     navigation.reset({
