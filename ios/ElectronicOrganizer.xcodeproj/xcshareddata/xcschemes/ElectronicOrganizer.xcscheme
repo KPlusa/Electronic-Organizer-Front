@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "ElectronicPlanner.app"
-               BlueprintName = "ElectronicPlanner"
-               ReferencedContainer = "container:ElectronicPlanner.xcodeproj">
+               BuildableName = "ElectronicOrganizer.app"
+               BlueprintName = "ElectronicOrganizer"
+               ReferencedContainer = "container:ElectronicOrganizer.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "ElectronicPlannerTests.xctest"
-               BlueprintName = "ElectronicPlannerTests"
-               ReferencedContainer = "container:ElectronicPlanner.xcodeproj">
+               BuildableName = "ElectronicOrganizerTests.xctest"
+               BlueprintName = "ElectronicOrganizerTests"
+               ReferencedContainer = "container:ElectronicOrganizer.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "ElectronicPlanner.app"
-            BlueprintName = "ElectronicPlanner"
-            ReferencedContainer = "container:ElectronicPlanner.xcodeproj">
+            BuildableName = "ElectronicOrganizer.app"
+            BlueprintName = "ElectronicOrganizer"
+            ReferencedContainer = "container:ElectronicOrganizer.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "ElectronicPlanner.app"
-            BlueprintName = "ElectronicPlanner"
-            ReferencedContainer = "container:ElectronicPlanner.xcodeproj">
+            BuildableName = "ElectronicOrganizer.app"
+            BlueprintName = "ElectronicOrganizer"
+            ReferencedContainer = "container:ElectronicOrganizer.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

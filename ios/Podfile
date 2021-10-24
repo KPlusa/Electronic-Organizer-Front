@@ -3,7 +3,7 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 
 platform :ios, '11.0'
 
-target 'ElectronicPlanner' do
+target 'ElectronicOrganizer' do
   config = use_native_modules!
 
   use_react_native!(
@@ -12,12 +12,7 @@ target 'ElectronicPlanner' do
     :hermes_enabled => false
   )
 
-  pod 'RNPdfScanner', :path => '../node_modules/react-native-document-scanner'
-
-  pod 'react-native-document-scanner', :path => '../node_modules/react-native-document-scanner'
-
-
-  target 'ElectronicPlannerTests' do
+  target 'ElectronicOrganizerTests' do
     inherit! :complete
     # Pods for testing
   end
