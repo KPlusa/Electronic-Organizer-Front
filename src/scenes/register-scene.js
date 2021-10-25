@@ -4,9 +4,9 @@ import Background from '../components/background';
 import Logo from '../components/logo';
 import Button from '../components/button';
 import BackButton from '../components/back-button';
-import TxtInput from '../components/input-text';
+import Input from '../components/input-text';
 import {theme} from '../themes/theme';
-import {Divider, Text, Input} from 'react-native-elements';
+import {Divider, Text} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {emailValidator} from '../helpers/emailValidator';
 import {
@@ -39,16 +39,18 @@ export default function LoginScene({navigation}) {
     <Background>
       <BackButton goBack={navigation.goBack} />
       <Logo />
+      <Text h3 style={[{color: theme.colors.mainColor}, {fontSize: 20}]}>
+        Create an account!
+      </Text>
+      <Divider orientation="horizontal" height={20} />
       <Input
-        style={[{height: 50}, {width: 300}]}
-        inputContainerStyle={[
-          {height: 50},
-          {width: 300},
-          {maxWidth: 800},
-          {alignSelf: 'center'},
-          {borderColor: theme.colors.mainColor},
-          {border: 5},
-        ]}
+        style={{height: 50, width: 300}}
+        inputContainerStyle={{
+          height: 50,
+          width: 300,
+          alignSelf: 'center',
+          maxWidth: 800,
+        }}
         placeholder="Email"
         returnKeyType="next"
         value={email.value}
@@ -62,14 +64,13 @@ export default function LoginScene({navigation}) {
         errorStyle={{color: theme.colors.error}}
       />
       <Input
-        style={[{height: 50}, {width: 300}]}
-        inputContainerStyle={[
-          {height: 50},
-          {width: 300},
-          {maxWidth: 800},
-          {alignSelf: 'center'},
-          {borderColor: theme.colors.mainColor},
-        ]}
+        style={{height: 50, width: 300}}
+        inputContainerStyle={{
+          height: 50,
+          width: 300,
+          alignSelf: 'center',
+          maxWidth: 800,
+        }}
         placeholder="Password"
         returnKeyType="next"
         value={password.value}
@@ -80,16 +81,15 @@ export default function LoginScene({navigation}) {
         errorStyle={{color: theme.colors.error}}
       />
       <Input
-        style={[{height: 50}, {width: 300}]}
-        inputContainerStyle={[
-          {height: 50},
-          {width: 300},
-          {maxWidth: 800},
-          {alignSelf: 'center'},
-          {borderColor: theme.colors.mainColor},
-        ]}
+        style={{height: 50, width: 300}}
+        inputContainerStyle={{
+          height: 50,
+          width: 300,
+          alignSelf: 'center',
+          maxWidth: 800,
+        }}
         placeholder="Confirm password"
-        returnKeyType="done"
+        returnKeyType="next"
         value={password2.value}
         onChangeText={text => setPassword2({value: text, error: ''})}
         secureTextEntry

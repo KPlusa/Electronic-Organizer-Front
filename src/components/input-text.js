@@ -1,43 +1,72 @@
-import React, { Component } from 'react';
-import { StyleSheet, TextInput } from 'react-native';
+import React, {useState, useContext} from 'react';
+import {Input as RNEInput, ThemeContext} from 'react-native-elements';
+import {theme} from '../themes/theme';
 
-class TxtInput extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      style: {},
-    };
-  }
+const Inputt = props => {
+  const [focused, setFocused] = useState(false);
+  const mainColor = theme.colors.mainColor;
+  const onFocus = () => {
+    setFocused(true);
+    props.onFocus();
+  };
 
-  onFocus = () => {
-    const state = { ...this.state };
-    state.style = {
-      borderStyle: 'solid',
-      borderColor: '#e74712',
-    };
+  const onBlur = () => {
+    setFocused(false);
+    props.onBlur();
+  };
 
-    this.setState(state);
-  }
+  const inputContainerStyle = {
+    ...props.inputContainerStyle,
+    ...(focused ? {borderBottomWidth: 3} : {}),
+    borderColor: theme.colors.mainColor,
+  };
 
-  onBlur = () => {
-    console.log('on ONBLUR')
-    const state = { ...this.state };
-    state.style = {};
+  const placeholderTextColor = 
+    (focused ? mainColor : "gray")
+  ;
 
-    this.setState(state);
-  }
+  const style = {
+    ...props.style,
+  };
 
-  render = () => <TextInput style={[styles.input, this.state.style]} onFocus={() => this.onFocus()} onBlur={() => this.onBlur()} />;
-}
+  const labelStyle = {
+    ...props.labelStyle,
+    ...(focused ? {color: theme.colors.mainColor} : {}),
+  };
 
-const styles = StyleSheet.create({
-  input: {
-    fontSize: 22,
-    borderRadius: 34,
-    borderStyle: 'solid',
-    textAlign: 'center',
-    width: '25%',
- },
-});
+  const leftIcon = {
+    ...props.leftIcon,
+    ...(focused ? {color: theme.colors.mainColor} : {}),
+  };
 
-export default TxtInput;
+  let rightIcon = {
+    ...props.rightIcon,
+    ...(focused ? {color: theme.colors.mainColor} : {}),
+  };
+
+  return (
+    <RNEInput
+      {...props}
+      onFocus={onFocus}
+      onBlur={onBlur}
+      style={style}
+      inputContainerStyle={inputContainerStyle}
+      labelStyle={labelStyle}
+      placeholderTextColor={placeholderTextColor}
+      
+      
+    />
+  );
+};
+
+Inputt.defaultProps = {
+  onFocus: () => null,
+  onBlur: () => null,
+  inputContainerStyle: {},
+  style: {},
+  leftIcon: {},
+  rightIcon: {},
+  labelStyle: {},
+};
+
+export default Inputt;

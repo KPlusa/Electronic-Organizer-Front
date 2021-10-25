@@ -4,9 +4,9 @@ import Background from '../components/background';
 import Logo from '../components/logo';
 import Button from '../components/button';
 import BackButton from '../components/back-button';
-import TxtInput from '../components/input-text';
+import Input from '../components/input-text';
 import {theme} from '../themes/theme';
-import {Divider, Text, Input} from 'react-native-elements';
+import {Divider, Text} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {emailValidator} from '../helpers/emailValidator';
 import {passwordValidator} from '../helpers/passwordValidator';
@@ -38,15 +38,13 @@ export default function LoginScene({navigation}) {
       </Text>
       <Divider orientation="horizontal" height={30} />
       <Input
-        style={[{height: 50}, {width: 300}]}
-        inputContainerStyle={[
-          {height: 50},
-          {width: 300},
-          {maxWidth: 800},
-          {alignSelf: 'center'},
-          {borderColor: theme.colors.mainColor},
-          {border: 5},
-        ]}
+        style={{height: 50, width: 300}}
+        inputContainerStyle={{
+          height: 50,
+          width: 300,
+          alignSelf: 'center',
+          maxWidth: 800,
+        }}
         placeholder="Email"
         returnKeyType="next"
         value={email.value}
@@ -59,17 +57,17 @@ export default function LoginScene({navigation}) {
         keyboardType="email-address"
         errorStyle={{color: theme.colors.error}}
       />
+
       <Input
-        style={[{height: 50}, {width: 300}]}
-        inputContainerStyle={[
-          {height: 50},
-          {width: 300},
-          {maxWidth: 800},
-          {alignSelf: 'center'},
-          {borderColor: theme.colors.mainColor},
-        ]}
+        style={{height: 50, width: 300}}
+        inputContainerStyle={{
+          height: 50,
+          width: 300,
+          alignSelf: 'center',
+          maxWidth: 800,
+        }}
         placeholder="Password"
-        returnKeyType="done"
+        returnKeyType="next"
         value={password.value}
         onChangeText={text => setPassword({value: text, error: ''})}
         error={!!password.error}
