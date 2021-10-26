@@ -2,9 +2,8 @@ import React, {useState, useContext} from 'react';
 import {Input as RNEInput, ThemeContext} from 'react-native-elements';
 import {theme} from '../themes/theme';
 
-const Inputt = props => {
+const Input = props => {
   const [focused, setFocused] = useState(false);
-  const mainColor = theme.colors.mainColor;
   const onFocus = () => {
     setFocused(true);
     props.onFocus();
@@ -17,17 +16,17 @@ const Inputt = props => {
 
   const inputContainerStyle = {
     ...props.inputContainerStyle,
-    ...(focused ? {borderBottomWidth: 3} : {}),
-    borderColor: theme.colors.mainColor,
+    ...(focused ? {borderBottomWidth: 3, borderColor: theme.colors.mainColor} : {borderColor: theme.colors.secondColor,}),
+    
   };
 
-  const placeholderTextColor = 
-    (focused ? mainColor : "gray")
-  ;
-
+  const placeholderTextColor = focused ? theme.colors.mainColor : theme.colors.secondColor;
   const style = {
     ...props.style,
   };
+
+  const ref = 
+    props.refs;
 
   const labelStyle = {
     ...props.labelStyle,
@@ -36,12 +35,12 @@ const Inputt = props => {
 
   const leftIcon = {
     ...props.leftIcon,
-    ...(focused ? {color: theme.colors.mainColor} : {}),
+    ...(focused ? {color: theme.colors.mainColor} : {color: theme.colors.secondColor}),
   };
 
   let rightIcon = {
     ...props.rightIcon,
-    ...(focused ? {color: theme.colors.mainColor} : {}),
+    ...(focused ? {color: theme.colors.mainColor} : {color: theme.colors.secondColor}),
   };
 
   return (
@@ -53,13 +52,13 @@ const Inputt = props => {
       inputContainerStyle={inputContainerStyle}
       labelStyle={labelStyle}
       placeholderTextColor={placeholderTextColor}
-      
-      
+      leftIcon={leftIcon}
+      ref={ref}
     />
   );
 };
 
-Inputt.defaultProps = {
+Input.defaultProps = {
   onFocus: () => null,
   onBlur: () => null,
   inputContainerStyle: {},
@@ -67,6 +66,7 @@ Inputt.defaultProps = {
   leftIcon: {},
   rightIcon: {},
   labelStyle: {},
+  ref: null
 };
 
-export default Inputt;
+export default Input;

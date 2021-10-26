@@ -1,31 +1,76 @@
-import React from 'react';
-import Background from '../components/background';
-import Logo from '../components/logo';
-import Button from '../components/button';
-import BackButton from '../components/back-button';
-import {theme} from '../themes/theme';
-import {Divider, Text} from 'react-native-elements';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import {Input} from 'react-native-elements';
-export default function MainScene({navigation}) {
+import * as React from 'react';
+import { Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+function Home() {
   return (
-    <Background>
-      <Text style={[{color: 'black'}, {fontSize: 16}]}>MainScene</Text>
-      <Divider orientation="horizontal" height={60} />
-      <Button
-        type="solid"
-        style={[
-          {height: 50},
-          {width: 300},
-          {backgroundColor: theme.colors.mainColor},
-        ]}
-        title="LOGOUT"
-        color={theme.colors.mainColor}
-        onPress={() => navigation.reset({
-            index: 0,
-            routes: [{ name: 'StartScene' }],
-          })}></Button>
-      <Divider orientation="horizontal" height={20} />
-    </Background>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Home</Text>
+    </View>
+  );
+}
+
+function Scan() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Scan</Text>
+    </View>
+  );
+}
+
+function Logout() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Logout</Text>
+    </View>
+  );
+}
+
+const Tab = createBottomTabNavigator();
+
+function MyTabs() {
+  return (
+    <Tab.Navigator
+      initialRouteName="Home"
+      screenOptions={{
+        tabBarActiveTintColor: '#e91e63',
+        headerShown: false,
+      }}
+      
+    >
+      <Tab.Screen
+        name="Home"
+        component={Home}
+        options={{
+          tabBarLabel: 'Home',
+          
+        }}
+      />
+      <Tab.Screen
+        name="Scan"
+        component={Scan}
+        options={{
+          tabBarLabel: 'Scan',
+          
+        }}
+      />
+      <Tab.Screen
+        name="Loggout"
+        component={Logout}
+        options={{
+          tabBarLabel: 'Loggout',
+         
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
+
+export default function MainScene() {
+  return (
+    
+      <MyTabs />
+    
   );
 }

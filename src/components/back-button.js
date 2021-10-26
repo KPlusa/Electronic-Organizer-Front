@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     left: -20,
   },
   image: {
-    width: 30,
-    height: 30,
+    width: 20,
+    height: 20,
   },
 })

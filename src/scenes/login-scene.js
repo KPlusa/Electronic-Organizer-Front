@@ -29,6 +29,9 @@ export default function LoginScene({navigation}) {
     });
   };
 
+  const emailRef = React.createRef();
+  const passwordRef = React.createRef();
+
   return (
     <Background>
       <BackButton goBack={navigation.goBack} />
@@ -37,7 +40,9 @@ export default function LoginScene({navigation}) {
         Welcome back!
       </Text>
       <Divider orientation="horizontal" height={30} />
+
       <Input
+        refs={emailRef}
         style={{height: 50, width: 300}}
         inputContainerStyle={{
           height: 50,
@@ -56,9 +61,14 @@ export default function LoginScene({navigation}) {
         textContentType="emailAddress"
         keyboardType="email-address"
         errorStyle={{color: theme.colors.error}}
+        leftIcon={{type: 'font-awesome', name: 'envelope', size: 15}}
+        onSubmitEditing={() => passwordRef.current.focus()}
+        blurOnSubmit={false}
+        forwardRef={true}
       />
 
       <Input
+        refs={passwordRef }
         style={{height: 50, width: 300}}
         inputContainerStyle={{
           height: 50,
@@ -74,6 +84,8 @@ export default function LoginScene({navigation}) {
         errorMessage={password.error}
         secureTextEntry
         errorStyle={{color: theme.colors.error}}
+        leftIcon={{type: 'font-awesome', name: 'lock', size: 20}}
+        onSubmitEditing={onLoginPressed}
       />
       <Divider orientation="horizontal" height={10} />
       <Button

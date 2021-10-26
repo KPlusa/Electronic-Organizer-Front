@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {TouchableOpacity, StyleSheet, View, TextInput} from 'react-native';
+import {TouchableOpacity, StyleSheet, View} from 'react-native';
 import Background from '../components/background';
 import Logo from '../components/logo';
 import Button from '../components/button';
@@ -18,7 +18,9 @@ export default function LoginScene({navigation}) {
   const [email, setEmail] = useState({value: '', error: ''});
   const [password, setPassword] = useState({value: '', error: ''});
   const [password2, setPassword2] = useState({value: '', error: ''});
-
+  const emailRef = React.createRef();
+  const passwordRef = React.createRef();
+  const password2Ref = React.createRef();
   const onSignUpPressed = () => {
     const emailError = emailValidator(email.value);
     const passwordError = passwordValidator(password.value, password2.value);
@@ -44,6 +46,7 @@ export default function LoginScene({navigation}) {
       </Text>
       <Divider orientation="horizontal" height={20} />
       <Input
+        refs={emailRef}
         style={{height: 50, width: 300}}
         inputContainerStyle={{
           height: 50,
@@ -62,8 +65,11 @@ export default function LoginScene({navigation}) {
         textContentType="emailAddress"
         keyboardType="email-address"
         errorStyle={{color: theme.colors.error}}
+        leftIcon={{type: 'font-awesome', name: 'envelope', size: 15}}
+        onSubmitEditing={() => passwordRef.current.focus()}
       />
       <Input
+        refs={passwordRef}
         style={{height: 50, width: 300}}
         inputContainerStyle={{
           height: 50,
@@ -79,8 +85,11 @@ export default function LoginScene({navigation}) {
         errorMessage={password.error}
         secureTextEntry
         errorStyle={{color: theme.colors.error}}
+        leftIcon={{type: 'font-awesome', name: 'lock', size: 20}}
+        onSubmitEditing={() => password2Ref.current.focus()}
       />
       <Input
+        refs={password2Ref}
         style={{height: 50, width: 300}}
         inputContainerStyle={{
           height: 50,
@@ -96,6 +105,8 @@ export default function LoginScene({navigation}) {
         error={!!password2.error}
         errorMessage={password2.error}
         errorStyle={{color: theme.colors.error}}
+        leftIcon={{type: 'font-awesome', name: 'lock', size: 20}}
+        onSubmitEditing={onSignUpPressed}
       />
       <Divider orientation="horizontal" height={10} />
       <Button
