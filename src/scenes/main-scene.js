@@ -1,19 +1,21 @@
 import * as React from 'react';
-import { Text, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {Text, View} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 function Home() {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Home</Text>
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <View>
+        <Text>Home</Text>
+      </View>
     </View>
   );
 }
 
 function Scan() {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <Text>Scan</Text>
     </View>
   );
@@ -21,7 +23,7 @@ function Scan() {
 
 function Logout() {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <Text>Logout</Text>
     </View>
   );
@@ -36,15 +38,12 @@ function MyTabs() {
       screenOptions={{
         tabBarActiveTintColor: '#e91e63',
         headerShown: false,
-      }}
-      
-    >
+      }}>
       <Tab.Screen
         name="Home"
         component={Home}
         options={{
           tabBarLabel: 'Home',
-          
         }}
       />
       <Tab.Screen
@@ -52,7 +51,6 @@ function MyTabs() {
         component={Scan}
         options={{
           tabBarLabel: 'Scan',
-          
         }}
       />
       <Tab.Screen
@@ -60,7 +58,6 @@ function MyTabs() {
         component={Logout}
         options={{
           tabBarLabel: 'Loggout',
-         
         }}
       />
     </Tab.Navigator>
@@ -68,9 +65,5 @@ function MyTabs() {
 }
 
 export default function MainScene() {
-  return (
-    
-      <MyTabs />
-    
-  );
+  return <MyTabs />;
 }
