@@ -68,7 +68,7 @@ export default function LoginScene({navigation}) {
       />
 
       <Input
-        refs={passwordRef }
+        refs={passwordRef}
         style={{height: 50, width: 300}}
         inputContainerStyle={{
           height: 50,
