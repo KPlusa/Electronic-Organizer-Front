@@ -8,6 +8,7 @@ import Background from '../components/background';
 import { theme } from '../themes/theme';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import { DrawerContent } from '../components/drawer';
 
 import Profile from './profile-scene'
 import Home from './home-scene'
@@ -18,17 +19,17 @@ const Drawer = createDrawerNavigator();
 
 function MyDrawer() {
   return (
-    <Drawer.Navigator
+    <Drawer.Navigator drawerContent={props => <DrawerContent {...props} />}
       screenOptions={{
         headerStyle: { backgroundColor: theme.colors.mainColor }
         ,
         headerShown: false,
         headerTintColor: "white",
         headerTitleStyle: "bold",
-        headerTitleAlign: "center"
-
+        headerTitleAlign: "center",
 
       }}>
+        
       <Drawer.Screen name="Home" component={MyTabs} />
       {/* <Drawer.Screen name="Profile" component={Profile} />
       <Drawer.Screen name="Scan" component={Scan} /> */}
@@ -114,7 +115,7 @@ const MyTabs = () => (
 );
 
 export default function MainScene() {
-  return (<MyDrawer />);
+  return (<MyDrawer/>);
 }
 
 const HomeStackScreen = ({ navigation }) => (

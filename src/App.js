@@ -8,7 +8,7 @@ export default function App() {
     return (
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="MainScene"
+          initialRouteName="StartScene"
           screenOptions={{
             headerShown: false,
           }}>

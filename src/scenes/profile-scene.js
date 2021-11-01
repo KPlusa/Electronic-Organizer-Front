@@ -11,11 +11,8 @@ export default function Profile({ navigation }) {
     return (
     <Background>
       <View style={styles.container}>
-        <Text style={{ color: theme.colors.mainColor }}>Home Screen</Text>
-        <Button
-          title="Go to details screen"
-          onPress={() => navigation.navigate("Details")}
-        />
+        <Text style={{ color: theme.colors.mainColor }}>Profile Screen</Text>
+        
       </View>
       </Background>
     );
