@@ -1,144 +1,192 @@
-import React, {useState} from 'react';
-import {Text, View, StyleSheet} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import React, { useState } from 'react';
+import { Text, View, StyleSheet, StatusBar } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {Button, Overlay, Divider} from 'react-native-elements';
+import { Button, Overlay, Divider } from 'react-native-elements';
 import Background from '../components/background';
-import {theme} from '../themes/theme';
+import { theme } from '../themes/theme';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
-function Home() {
-  return (
-    <Background>
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <View>
-          <Text style={styles.signUp}>Home</Text>
-        </View>
-      </View>
-    </Background>
-  );
-}
-function Calendar() {
-  return (
-    <Background>
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <Text style={styles.signUp}>Calendar</Text>
-      </View>
-    </Background>
-  );
-}
+import Profile from './profile-scene'
+import Home from './home-scene'
+import Scan from './scan-scene'
+import Calendar from './calendar-scene'
 
-function Scan() {
+const Drawer = createDrawerNavigator();
+
+function MyDrawer() {
   return (
-    <Background>
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <Text style={styles.signUp}>Scan</Text>
-      </View>
-    </Background>
+    <Drawer.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: theme.colors.mainColor }
+        ,
+        headerShown: false,
+        headerTintColor: "white",
+        headerTitleStyle: "bold",
+        headerTitleAlign: "center"
+
+
+      }}>
+      <Drawer.Screen name="Home" component={MyTabs} />
+      {/* <Drawer.Screen name="Profile" component={Profile} />
+      <Drawer.Screen name="Scan" component={Scan} /> */}
+    </Drawer.Navigator>
   );
 }
 
-function Logout({navigation}) {
-  const set = true;
-  const [visible, setVisible] = useState(true);
-  console.log('set: ' + visible);
-  const toggleOverlay = param => {
-    if (param === 'yes') {
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'StartScene'}],
-      });
-    } else setVisible(false);
-  };
-  return (
-    <Overlay isVisible={visible} onBackdropPress={() => toggleOverlay('no')}>
-      <Text style={styles.signUp}>Are you sure you want to log out?</Text>
-      <View style={styles.row}>
-        <Button title="Yes" onPress={() => toggleOverlay('yes')} />
 
-        <Button title="No" onPress={() => toggleOverlay('no')} />
-      </View>
-    </Overlay>
-  );
-  setVisible(true);
-}
+
+
+
+// const routes = useNavigationState(state => state.routes)
+// const currentRoute = routes[routes.length -1].name
+
 
 const Tab = createBottomTabNavigator();
+const HomeStack = createStackNavigator();
+const ProfileStack = createStackNavigator();
+const CalendarStack = createStackNavigator();
 
-function MyTabs() {
-  return (
-    <Tab.Navigator
-      initialRouteName="Home"
-      screenOptions={{
-        tabBarActiveTintColor: theme.colors.mainColor,
-        tabBarInactiveTintColor: theme.colors.secondColor,
-        headerShown: false,
-        tabBarStyle: {height: 50},
-        tabBarLabelStyle: {
-          fontSize: 12,
-          marginBottom: 5,
-          marginTop: -5,
-        },
-      }}>
-      <Tab.Screen
-        name="Home"
-        component={Home}
-        options={{
-          tabBarLabel: 'Home',
-          tabBarIcon: ({color}) => (
-            <Icon name={'home'} size={26} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Calendar"
-        component={Calendar}
-        options={{
-          tabBarLabel: 'Calendar',
-          tabBarIcon: ({color}) => (
-            <Icon name={'calendar'} size={20} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Scan"
-        component={Scan}
-        options={{
-          tabBarLabel: 'Scan',
-          tabBarIcon: ({color}) => (
-            <Icon name={'camera'} size={20} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Logout"
-        component={Logout}
-        options={{
-          tabBarLabel: 'Logout',
-          tabBarIcon: ({color}) => (
-            <Icon name={'sign-out'} size={24} color={color} />
-          ),
-        }}
-      />
-    </Tab.Navigator>
-  );
-}
+const MyTabs = () => (
+  <Tab.Navigator
+    initialRouteName="Homets"
+    backBehavior="order"
+    screenOptions={{
+      tabBarActiveTintColor: theme.colors.mainColor,
+      tabBarInactiveTintColor: theme.colors.secondColor,
+      headerShown: false,
+      tabBarStyle: { height: 50 },
+      tabBarLabelStyle: {
+        fontSize: 12,
+        marginBottom: 5,
+        marginTop: -5,
+      },
+
+    }}>
+    <Tab.Screen
+      name="Homets"
+      component={HomeStackScreen}
+      options={{
+        tabBarLabel: 'Home',
+        tabBarIcon: ({ color }) => (
+          <Icon name={'home'} size={26} color={color} />
+        ),
+      }}
+    />
+    <Tab.Screen
+      name="Calendarts"
+      component={CalendarStackScreen}
+      options={{
+        tabBarLabel: 'Calendar',
+        tabBarIcon: ({ color }) => (
+          <Icon name={'calendar'} size={20} color={color} />
+        ),
+      }}
+    />
+    <Tab.Screen
+      name="Scants"
+      component={Scan}
+      options={{
+        tabBarLabel: 'Scan',
+        tabBarIcon: ({ color }) => (
+          <Icon name={'camera'} size={20} color={color} />
+        ),
+
+      }}
+
+
+
+    />
+    <Tab.Screen
+      name="Profilets"
+      component={ProfileStackScreen}
+      options={{
+        tabBarLabel: 'Profile',
+        tabBarIcon: ({ color }) => (
+          <Icon name={'user'} size={24} color={color} />
+        ),
+      }}
+
+    />
+  </Tab.Navigator>
+);
 
 export default function MainScene() {
-  return <MyTabs />;
+  return (<MyDrawer />);
 }
 
+const HomeStackScreen = ({ navigation }) => (
+  <HomeStack.Navigator screenOptions={{
+    headerStyle: { backgroundColor: theme.colors.mainColor }
+    ,
+    headerTintColor: "white",
+    headerTitleStyle: {
+      fontWeight: 'bold'
+    },
+    headerTitleAlign: "center"
+  }}>
+    <HomeStack.Screen name="Home" component={Home} options={{
+      title: 'Home',
+      headerLeft: () => (
+        <Icon style={{ marginLeft: 10 }} name={"bars"} size={20} color="white" onPress={() => navigation.openDrawer()}></Icon>
+      )
+    }} />
+  </HomeStack.Navigator>
+);
+
+const CalendarStackScreen = ({ navigation }) => (
+  <CalendarStack.Navigator screenOptions={{
+    headerStyle: { backgroundColor: theme.colors.mainColor },
+    headerTintColor: "white",
+    headerTitleStyle: {
+      fontWeight: 'bold'
+    },
+    headerTitleAlign: "center"
+  }}>
+    <CalendarStack.Screen name="Calendar" component={Calendar} options={{
+      headerLeft: () => (
+        <Icon style={{ marginLeft: 10 }} name={"bars"} size={20} color="white" onPress={() => navigation.openDrawer()}></Icon>
+      )
+    }} />
+  </CalendarStack.Navigator>
+);
+
+const ProfileStackScreen = ({ navigation }) => (
+  <ProfileStack.Navigator screenOptions={{
+    headerStyle: { backgroundColor: theme.colors.mainColor },
+    headerTintColor: "white",
+    headerTitleStyle: {
+      fontWeight: 'bold'
+    },
+    headerTitleAlign: "center"
+  }}>
+    <ProfileStack.Screen name="Profile" component={Profile} options={{
+      headerLeft: () => (
+        <Icon style={{ marginLeft: 10 }} name={"bars"} size={20} color="white" onPress={() => navigation.openDrawer()}></Icon>
+      )
+    }} />
+  </ProfileStack.Navigator>
+);
+
+
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-    maxWidth: 800,
+    maxWidth: 400,
     alignSelf: 'center',
     justifyContent: 'center',
     fontSize: 16,
   },
-  signUp: {
+  tab: {
     fontSize: 16,
     fontWeight: 'bold',
     color: theme.colors.mainColor,
