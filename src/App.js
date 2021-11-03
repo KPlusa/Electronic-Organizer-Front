@@ -1,5 +1,4 @@
 import React from 'react';
-import {StyleSheet, Text, View, Button, Platform, Image} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {StartScene, LoginScene,RegisterScene, MainScene} from './scenes';

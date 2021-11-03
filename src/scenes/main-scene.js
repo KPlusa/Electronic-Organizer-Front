@@ -9,11 +9,13 @@ import {theme} from '../themes/theme';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {DrawerContent} from '../components/drawer';
+import {BackButton} from '../components/back-button';
 
 import Profile from './profile-scene';
 import Home from './home-scene';
 import Scan from './scan-scene';
 import Calendar from './calendar-scene';
+import About from './about-scene';
 
 const Drawer = createDrawerNavigator();
 
@@ -52,7 +54,7 @@ const MyTabs = () => (
       tabBarActiveTintColor: theme.colors.mainColor,
       tabBarInactiveTintColor: theme.colors.secondColor,
       headerShown: false,
-      tabBarStyle: {height: 50},
+      tabBarStyle: {height: 60},
       tabBarLabelStyle: {
         fontSize: 12,
         marginBottom: 5,
@@ -195,6 +197,10 @@ const ProfileStackScreen = ({navigation}) => (
           </TouchableOpacity>
         ),
       }}
+    />
+    <ProfileStack.Screen
+      name="About"
+      component={About}
     />
   </ProfileStack.Navigator>
 );
