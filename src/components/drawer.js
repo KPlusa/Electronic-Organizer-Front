@@ -31,8 +31,8 @@ export function DrawerContent(props) {
                 source={require('../assets/images/user.png')}
                 size={50}
               />
-              <View style={{marginLeft: 15, flexDirection: 'column'}}>
-                <Text style={styles.title}>John Doe</Text>
+              <View style={{marginLeft: 15, flexDirection: 'column', justifyContent:"center"}}>
+                <Text style={styles.title}>user@example.com</Text>
               </View>
             </View>
           </View>
