@@ -1,24 +1,26 @@
 import React, {useState} from 'react';
 import {Text, View, StyleSheet, StatusBar, Image} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {Button, Overlay, Divider} from 'react-native-elements';
+import {Overlay, Divider} from 'react-native-elements';
 import Background from '../components/background';
+import Button from '../components/button';
 import {theme} from '../themes/theme';
-import {
-  launchCamera,
-  launchImageLibrary,
-  ImagePicker,
-} from 'react-native-image-picker';
+import ImagePicker from 'react-native-image-crop-picker';
 
 export default function Scan({navigation}) {
   const [pickedImage, setPickedImage] = useState(null);
+  const [showResetButton, setShowResetButton] = useState(false);
+
+const [image, setImage] = useState('https://api.adorable.io/avatars/80/abott@adorable.png');
+
 
   const takePhotoFromCamera = () => {
     ImagePicker.openCamera({
       compressImageMaxWidth: 300,
       compressImageMaxHeight: 300,
-      cropping: true,
+      cropping: false,
       compressImageQuality: 0.7,
+      rotation: 360
     }).then(image => {
       console.log(image);
       setImage(image.path);
@@ -30,37 +32,71 @@ export default function Scan({navigation}) {
     setPickedImage(null);
   };
 
-  pickImageHandler = () => {
-    ImagePicker.showImagePicker(
-      {title: 'Pick an Image', maxWidth: 800, maxHeight: 600},
-      res => {
-        if (res.didCancel) {
-          console.log('User cancelled!');
-        } else if (res.error) {
-          console.log('Error', res.error);
-        } else {
-          setPickedImage({uri: res.uri});
-        }
-      },
-    );
-  };
-
+const takePhotoFromGalery = () => {
+  ImagePicker.openPicker({
+  width: 300,
+  height: 400,
+  cropping: false,
+  rotation: nonZeroInteger
+}).then(image => {
+  console.log(image);
+});
+};
   resetHandler = () => {
     reset();
   };
   return (
     <Background>
-    
-      <Text style={styles.textStyle}>Pick Image From Camera and Gallery </Text>
+      
+      <View elevation={4} style={styles.rectangle}>
       <View style={styles.placeholder}>
         <Image source={pickedImage} style={styles.previewImage} />
       </View>
-      <View style={styles.button}>
-        <Button title="Pick Image" onPress={pickImageHandler} />
-
-        <Button title="Reset" onPress={resetHandler} />
+        <View>
+          <Button
+            icon={
+              <Icon
+                name="image"
+                size={20}
+                color="white"
+                style={{marginRight: 10}}
+              />
+            }
+            style={[
+              {height: 50},
+              {width: 300},
+              {backgroundColor: theme.colors.mainColor},
+              {alignSelf: 'flex-start'},
+            ]}
+            txtStyle={{justifyContent: 'center'}}
+            title="Pick Image"
+            onPress={takePhotoFromGalery}
+          />
+          <Divider orientation="horizontal" height={20} />
+          <Button
+            icon={
+              <Icon
+                name="camera"
+                size={20}
+                color="white"
+                style={{marginRight: 10}}
+              />
+            }
+            style={[
+              {height: 50},
+              {width: 300},
+              {backgroundColor: theme.colors.mainColor},
+              {alignSelf: 'flex-start'},
+            ]}
+            txtStyle={{justifyContent: 'center'}}
+            title="Take Photo"
+            onPress={takePhotoFromCamera}
+          />
+        </View>
       </View>
-    
+      <View style={styles.button}>
+        {pickedImage ? <Button title="Reset" onPress={resetHandler} /> : null}
+      </View>
     </Background>
   );
 }
@@ -94,11 +130,23 @@ const styles = StyleSheet.create({
   button: {
     width: '80%',
     marginTop: 20,
-    flexDirection: 'row',
     justifyContent: 'space-around',
   },
   previewImage: {
     width: '100%',
     height: '100%',
+  },
+  rectangle: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 15,
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 10,
   },
 });

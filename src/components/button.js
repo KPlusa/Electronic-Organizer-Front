@@ -17,12 +17,11 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingVertical: 10,
     borderRadius: 10,
-    
   },
   text: {
     fontWeight: 'bold',
     fontSize: 20,
     lineHeight: 26,
-    alignItems: "center",
+    alignItems: 'center',
   },
 });
