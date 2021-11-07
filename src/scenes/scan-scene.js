@@ -98,7 +98,8 @@ export default function Scan({navigation}) {
               />
             </View>
           ) : (
-            <View>
+            <View>  
+              <Text h3 style={{color:theme.colors.mainColor}}>Select An Option</Text>
               <Button
                 icon={
                   <Icon
