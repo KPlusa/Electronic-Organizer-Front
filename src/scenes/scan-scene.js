@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View, StyleSheet, StatusBar, Image} from 'react-native';
+import {View, StyleSheet, Alert, Image} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {Divider, Text} from 'react-native-elements';
 import Background from '../components/background';
@@ -10,7 +10,6 @@ import ImagePicker from 'react-native-image-crop-picker';
 export default function Scan({navigation}) {
   const [pickedImage, setPickedImage] = useState(null);
   const [mimeImage, setMimeImage] = useState(null);
-  const [showResetButton, setShowResetButton] = useState(false);
 
   reset = () => {
     setPickedImage(null);
@@ -36,113 +35,102 @@ export default function Scan({navigation}) {
       height: 960,
       cropping: false,
       includeBase64: true,
-    }).then(image => {
-      setPickedImage(image.data);
-      setMimeImage(image.mime);
-    });
+    })
+      .then(image => {
+        setPickedImage(image.data);
+        setMimeImage(image.mime);
+      })
+      .catch(e => {
+        if (e.code !== 'E_PICKER_CANCELLED') {
+          console.log(e);
+          Alert.alert(
+            'Sorry, there was an issue attempting to get the image you selected. Please try again',
+          );
+        }
+      });
   };
-
 
   return (
     <Background>
       <View elevation={4} style={styles.rectangle}>
-        {pickedImage ? (
-          <View style={styles.container}>
-            <Text style={styles.textStyle}>Preview:</Text>
-            <View style={styles.placeholder}>
-              <Image
-                source={{uri: `data:${mimeImage};base64,${pickedImage}`}}
-                style={styles.previewImage}></Image>
+        <View style={styles.subRectangle}>
+          {pickedImage ? (
+            <View style={styles.container}>
+              <View style={styles.placeholder}>
+                <Text style={styles.textStyle}>Preview</Text>
+                <Image
+                  source={{uri: `data:${mimeImage};base64,${pickedImage}`}}
+                  style={styles.previewImage}></Image>
+              </View>
             </View>
-          </View>
-        ) : null}
+          ) : null}
 
-        {pickedImage ? (
-          <View>
-            <Divider orientation="horizontal" height={50} />
-            <Button
-              icon={
-                <Icon
-                  name="file"
-                  size={20}
-                  color="white"
-                  style={{marginRight: 10}}
-                />
-              }
-              style={[
-                {height: 50},
-                {width: 300},
-                {backgroundColor: theme.colors.mainColor},
-                {alignSelf: 'flex-start'},
-              ]}
-              txtStyle={{justifyContent: 'center'}}
-              title="Extract Data"
-              onPress={() => console.log(pickedImage)}
-            />
-            <Divider orientation="horizontal" height={20} />
-            <Button
-              icon={
-                <Icon
-                  name="undo"
-                  size={20}
-                  color="white"
-                  style={{marginRight: 10}}
-                />
-              }
-              style={[
-                {height: 50},
-                {width: 300},
-                {backgroundColor: theme.colors.mainColor},
-                {alignSelf: 'flex-start'},
-              ]}
-              txtStyle={{justifyContent: 'center'}}
-              title="Reset Photo"
-              onPress={reset}
-            />
-          </View>
-        ) : (
-          <View>
-            <Button
-              icon={
-                <Icon
-                  name="image"
-                  size={20}
-                  color="white"
-                  style={{marginRight: 10}}
-                />
-              }
-              style={[
-                {height: 50},
-                {width: 300},
-                {backgroundColor: theme.colors.mainColor},
-                {alignSelf: 'flex-start'},
-              ]}
-              txtStyle={{justifyContent: 'center'}}
-              title="Pick Image"
-              onPress={takePhotoFromGalery}
-            />
-            <Divider orientation="horizontal" height={20} />
-            <Button
-              icon={
-                <Icon
-                  name="camera"
-                  size={20}
-                  color="white"
-                  style={{marginRight: 10}}
-                />
-              }
-              style={[
-                {height: 50},
-                {width: 300},
-                {backgroundColor: theme.colors.mainColor},
-                {alignSelf: 'flex-start'},
-              ]}
-              txtStyle={{justifyContent: 'center'}}
-              title="Take Photo"
-              onPress={takePhotoFromCamera}
-            />
-          </View>
-        )}
+          {pickedImage ? (
+            <View>
+              <Divider orientation="horizontal" height={50} />
+              <Button
+                icon={
+                  <Icon
+                    name="file"
+                    size={20}
+                    color="white"
+                    style={{marginRight: 10}}
+                  />
+                }
+                style={styles.buttonTop}
+                txtStyle={{justifyContent: 'center'}}
+                title="Extract Data"
+                onPress={() => console.log(pickedImage)}
+              />
+              <Button
+                icon={
+                  <Icon
+                    name="undo"
+                    size={20}
+                    color="white"
+                    style={{marginRight: 10}}
+                  />
+                }
+                style={styles.buttonBottom}
+                txtStyle={{justifyContent: 'center'}}
+                title="Reset Photo"
+                onPress={reset}
+              />
+            </View>
+          ) : (
+            <View>
+              <Button
+                icon={
+                  <Icon
+                    name="image"
+                    size={20}
+                    color="white"
+                    style={{marginRight: 10}}
+                  />
+                }
+                style={styles.buttonTop}
+                txtStyle={{justifyContent: 'center'}}
+                title="Pick Image"
+                onPress={takePhotoFromGalery}
+              />
+
+              <Button
+                icon={
+                  <Icon
+                    name="camera"
+                    size={20}
+                    color="white"
+                    style={{marginRight: 10}}
+                  />
+                }
+                style={styles.buttonBottom}
+                txtStyle={{justifyContent: 'center'}}
+                title="Take Photo"
+                onPress={takePhotoFromCamera}
+              />
+            </View>
+          )}
+        </View>
       </View>
     </Background>
   );
@@ -173,10 +161,20 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 20,
   },
-  button: {
-    width: '80%',
+  buttonTop: {
     marginTop: 20,
-    justifyContent: 'space-around',
+    height: 50,
+    width: '80%',
+    backgroundColor: theme.colors.mainColor,
+    alignSelf: 'center',
+  },
+  buttonBottom: {
+    marginTop: 20,
+    marginBottom: 20,
+    height: 50,
+    width: '80%',
+    backgroundColor: theme.colors.mainColor,
+    alignSelf: 'center',
   },
   previewImage: {
     width: '100%',
@@ -190,6 +188,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 10,
+    marginBottom: 20,
+  },
+  subRectangle: {
+    width: '80%',
+    borderRadius: 15,
+    backgroundColor: 'white',
+    alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.8,

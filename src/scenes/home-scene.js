@@ -1,34 +1,104 @@
-import React, { useState } from 'react';
-import { Text, View, StyleSheet, StatusBar } from 'react-native';
+import React, {useState} from 'react';
+import {View, StyleSheet, StatusBar, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { Button, Overlay, Divider } from 'react-native-elements';
+import {Overlay, Divider, Text, Avatar} from 'react-native-elements';
 import Background from '../components/background';
-import { theme } from '../themes/theme';
+import Logo from '../components/logo';
+import {theme} from '../themes/theme';
 
-
-export default function Home({ navigation }) {
-
-    return (
-        <Background>
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <View>
-              <Text style={styles.tab}>Home</Text>
-            </View>
+export default function Home({navigation}) {
+  return (
+    <Background>
+      <View elevation={4} style={styles.rectangle}>
+        <Logo {...{width: 150, height: 100}} />
+      </View>
+      <Divider orientation="horizontal" height={20} />
+      <View
+        elevation={4}
+        style={styles.rectangle}
+        height={370}
+        justifyContent={'center'}>
+        <View elevation={4} style={styles.subRectangle}>
+          <Text h3 style={styles.header}>
+            Upcoming Event
+          </Text>
+          <View style={styles.subSubRectangle}>
+          <Icon name={'clock-o'} size={30} style={{marginTop:10}} color={theme.colors.thirdColor} />
+            <Text style={styles.time}>Starts at 17:00</Text>
+            <Text style={styles.event}>Men's haircut</Text>
           </View>
-        </Background>
-      );
-  
-  }
+        </View>
+        <Divider orientation="horizontal" height={20} />
+        <View elevation={4} style={styles.subRectangle}>
+          <Text h3 style={styles.header}>
+          Remaining Events
+          </Text>
+          <View style={styles.subSubRectangle}>
+            <Text style={styles.remainingEvents}>4</Text>
+          </View>
+        </View>
+      </View>
+    </Background>
+  );
+}
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1, 
-      alignItems: 'center', 
-      justifyContent: 'center'
-    },
-    tab: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: theme.colors.mainColor,
-      },
-  });
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  rectangle: {
+    width: '100%',
+    borderRadius: 15,
+    backgroundColor: 'white',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 10,
+  },
+  subRectangle: {
+    width: '80%',
+    borderRadius: 15,
+    backgroundColor: theme.colors.mainColor,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 10,
+  },
+  subSubRectangle: {
+    width: '80%',
+    borderRadius: 15,
+    backgroundColor: 'white',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  header: {
+    color: 'white',
+    marginBottom: 10,
+    marginTop: 10,
+  },
+  event: {
+    color: theme.colors.thirdColor,
+    fontSize: 20,
+    marginBottom: 10,
+    fontWeight: "bold",
+  },
+  time: {
+    color: theme.colors.thirdColor,
+    fontSize: 20,
+    marginTop: 10,
+    fontWeight: "bold",
+  },
+  remainingEvents: {
+    color: theme.colors.thirdColor,
+    fontSize: 28,
+    fontWeight: "bold",
+    marginTop: 10,
+    marginBottom: 10,
+  },
+});

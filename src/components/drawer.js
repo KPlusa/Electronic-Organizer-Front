@@ -48,7 +48,7 @@ export function DrawerContent(props) {
               onPress={() => {
                 props.navigation.navigate('Homets');
               }}
-              inactiveTintColor={theme.colors.thirdColor}
+              inactiveTintColor={theme.colors.mainColor}
             />
             <DrawerItem
               icon={({color, size}) => (
@@ -56,7 +56,7 @@ export function DrawerContent(props) {
                   <Icon name="calendar" color={color} size={20} />
                 </View>
               )}
-              inactiveTintColor={theme.colors.thirdColor}
+              inactiveTintColor={theme.colors.mainColor}
               label="Calendar"
               onPress={() => {
                 props.navigation.navigate('Calendarts');
@@ -68,7 +68,7 @@ export function DrawerContent(props) {
                   <Icon name="camera" color={color} size={size} size={20} />
                 </View>
               )}
-              inactiveTintColor={theme.colors.thirdColor}
+              inactiveTintColor={theme.colors.mainColor}
               label="Scan"
               onPress={() => {
                 props.navigation.navigate('Scants');
@@ -80,7 +80,7 @@ export function DrawerContent(props) {
                   <Icon name="user" color={color} size={25} />
                 </View>
               )}
-              inactiveTintColor={theme.colors.thirdColor}
+              inactiveTintColor={theme.colors.mainColor}
               label="Profile"
               onPress={() => {
                 props.navigation.navigate('Profilets');
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginTop: 3,
     fontWeight: 'bold',
-    color: theme.colors.mainColor,
+    color: theme.colors.thirdColor,
   },
   caption: {
     fontSize: 14,
@@ -186,6 +186,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     margin: 10,
     fontWeight: 'bold',
-    color: theme.colors.mainColor,
+    color: theme.colors.thirdColor,
   },
 });

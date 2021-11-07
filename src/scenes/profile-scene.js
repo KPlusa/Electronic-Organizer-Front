@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {Overlay, Divider, Text, Avatar} from 'react-native-elements';
 import Button from '../components/button';
@@ -38,7 +38,7 @@ export default function Profile({navigation}) {
       <View
         elevation={4}
         style={styles.rectangle}
-        height={345}
+        height={Dimensions.get('window').height - 370}
         justifyContent={'flex-end'}>
         <Button
           icon={
@@ -59,7 +59,9 @@ export default function Profile({navigation}) {
           txtStyle={{justifyContent: 'center'}}
           onPress={toggleOverlay}
         />
-        <TouchableOpacity style={styles.topacity} onPress= {() => navigation.navigate('About')}>
+        <TouchableOpacity
+          style={styles.topacity}
+          onPress={() => navigation.navigate('About')}>
           <Text style={{fontSize: 15}}>About app</Text>
         </TouchableOpacity>
         <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
@@ -154,6 +156,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     margin: 10,
     fontWeight: 'bold',
-    color: theme.colors.mainColor,
+    color: theme.colors.thirdColor,
   },
 });
