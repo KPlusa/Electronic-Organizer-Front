@@ -121,13 +121,7 @@ const HomeStackScreen = ({navigation}) => (
         title: 'Home',
         headerLeft: () => (
           <TouchableOpacity
-            style={{
-              width: 30,
-              height: 25,
-              marginLeft: 10,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+          style={styles.headerBar}
             onPress={() => navigation.openDrawer()}>
             <Icon name={'bars'} size={25} color="white"></Icon>
           </TouchableOpacity>
@@ -153,13 +147,7 @@ const CalendarStackScreen = ({navigation}) => (
       options={{
         headerLeft: () => (
           <TouchableOpacity
-            style={{
-              width: 30,
-              height: 25,
-              marginLeft: 10,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+          style={styles.headerBar}
             onPress={() => navigation.openDrawer()}>
             <Icon name={'bars'} size={25} color="white"></Icon>
           </TouchableOpacity>
@@ -185,13 +173,7 @@ const ProfileStackScreen = ({navigation}) => (
       options={{
         headerLeft: () => (
           <TouchableOpacity
-            style={{
-              width: 30,
-              height: 25,
-              marginLeft: 10,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+          style={styles.headerBar}
             onPress={() => navigation.openDrawer()}>
             <Icon name={'bars'} size={25} color="white"></Icon>
           </TouchableOpacity>
@@ -221,13 +203,7 @@ const ScanStackScreen = ({navigation}) => (
       options={{
         headerLeft: () => (
           <TouchableOpacity
-            style={{
-              width: 30,
-              height: 25,
-              marginLeft: 10,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+          style={styles.headerBar}
             onPress={() => navigation.openDrawer()}>
             <Icon name={'bars'} size={25} color="white"></Icon>
           </TouchableOpacity>
@@ -256,5 +232,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: theme.colors.mainColor,
+  },
+  headerBar: {
+    width: 35,
+    height: 35,
+    marginLeft: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
