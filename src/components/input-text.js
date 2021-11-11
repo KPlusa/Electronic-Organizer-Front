@@ -30,7 +30,9 @@ const Input = props => {
 
   const labelStyle = {
     ...props.labelStyle,
-    ...(focused ? {color: theme.colors.mainColor} : {}),
+    ...(focused ? {color: theme.colors.mainColor} : {color: theme.colors.secondColor}),
+    
+
   };
 
   const leftIcon = {
@@ -54,6 +56,7 @@ const Input = props => {
       placeholderTextColor={placeholderTextColor}
       leftIcon={leftIcon}
       ref={ref}
+      disabledInputStyle={{color: 'black', opacity:1}}
     />
   );
 };
