@@ -1,4 +1,4 @@
-export function emailValidator(email) {
+export function EmailValidator(email) {
   const mail_checker = /\S+@\S+\.\S+/;
   if (!email) return 'Email is required.';
   if (!mail_checker.test(email)) return 'Email is incorrect.';

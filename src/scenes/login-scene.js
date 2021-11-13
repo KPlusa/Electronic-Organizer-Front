@@ -8,16 +8,16 @@ import Input from '../components/input-text';
 import {theme} from '../themes/theme';
 import {Divider, Text} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {emailValidator} from '../helpers/emailValidator';
-import {passwordValidator} from '../helpers/passwordValidator';
+import {EmailValidator} from '../helpers/email-validator';
+import {PasswordValidator} from '../helpers/password-validator';
 
 export default function LoginScene({navigation}) {
   const [email, setEmail] = useState({value: '', error: ''});
   const [password, setPassword] = useState({value: '', error: ''});
 
   const onLoginPressed = () => {
-    const emailError = emailValidator(email.value);
-    const passwordError = passwordValidator(password.value);
+    const emailError = EmailValidator(email.value);
+    const passwordError = PasswordValidator(password.value);
     if (emailError || passwordError) {
       setEmail({...email, error: emailError});
       setPassword({...password, error: passwordError});
