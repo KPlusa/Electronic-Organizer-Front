@@ -5,6 +5,7 @@ import {
   StyleSheet,
   StatusBar,
   TouchableOpacity,
+  KeyboardAvoidingView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
@@ -17,6 +18,7 @@ import Button from '../components/button';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {StartTimeValidator, EndTimeValidator} from '../helpers/date-validator';
 import {EventValidator} from '../helpers/event-validator';
+import SuccessfulOverlay from '../components/successful-overlay';
 
 export default function Calendar({navigation}) {
   const [count, setCount] = useState(0);
@@ -35,7 +37,8 @@ export default function Calendar({navigation}) {
     useState(false);
   const [isDatePickerEndTimeVisible, setDatePickerEndTimeVisibility] =
     useState(false);
-
+  const [isSuccessfulOverlayVisible, setSuccessfulOverlayVisibility] =
+    useState(false);
   const onOKPressed = () => {
     const startTimeError = StartTimeValidator(startTime.value, endTime.value);
     const endTimeError = EndTimeValidator(startTime.value, endTime.value);
@@ -48,8 +51,15 @@ export default function Calendar({navigation}) {
       return;
     }
     toggleAddFormOverlay();
+    setSuccessfulOverlayVisibility(true);
+    setTimeout(() => {
+      setSuccessfulOverlayVisibility(false);
+    }, 2000);
   };
 
+  const toogleSuccessfulOverlay = () => {
+    setSuccessfulOverlayVisibility(!isSuccessfulOverlayVisible);
+  };
   const toogleStartTimePicker = () => {
     setDatePickerStartTimeVisibility(!isDatePickerStartTimeVisible);
   };
@@ -79,10 +89,14 @@ export default function Calendar({navigation}) {
       error: '',
     });
   };
-
-  const toggleAddFormOverlay = () => {
+  const resetValues = () => {
     setStartTime({value: '', error: ''});
     setEndTime({value: '', error: ''});
+    setEvent({value: '', error: ''});
+    setSuccessfulOverlayVisibility(false);
+  };
+  const toggleAddFormOverlay = () => {
+    resetValues();
     setVisibleAddForm(!visibleAddForm);
   };
   const toggleEditFormOverlay = () => {
@@ -157,6 +171,7 @@ export default function Calendar({navigation}) {
           setCurrentDate(day.dateString);
         }}
       />
+
       <Overlay
         isVisible={visibleAddForm}
         onBackdropPress={toggleAddFormOverlay}>
@@ -179,7 +194,7 @@ export default function Calendar({navigation}) {
           leftIcon={{type: 'material-icons', name: 'today', size: 15}}
           blurOnSubmit={false}
           forwardRef={true}></Input>
-        <View style={{width: '80%', flexDirection: 'row'}}>
+        <KeyboardAvoidingView style={{width: '80%', flexDirection: 'row'}} behavior="height">
           <Input
             style={{height: 50, width: '100%'}}
             inputContainerStyle={{
@@ -200,6 +215,7 @@ export default function Calendar({navigation}) {
             leftIcon={{type: 'material-icons', name: 'access-time', size: 15}}
             blurOnSubmit={false}
             forwardRef={true}></Input>
+
           <TouchableOpacity
             style={{color: theme.colors.mainColor, justifyContent: 'center'}}
             onPress={toogleStartTimePicker}>
@@ -216,8 +232,9 @@ export default function Calendar({navigation}) {
             onCancel={toogleStartTimePicker}
             date={new Date()}
           />
-        </View>
-        <View style={{width: '80%', flexDirection: 'row'}}>
+        </KeyboardAvoidingView>
+
+        <KeyboardAvoidingView style={{width: '80%', flexDirection: 'row'}} behavior="height">
           <Input
             style={{height: 50, width: '100%'}}
             inputContainerStyle={{
@@ -229,7 +246,7 @@ export default function Calendar({navigation}) {
             placeholder="Enter the time"
             returnKeyType="next"
             value={endTime.value}
-            onChangeText={text => setEvent({value: text, error: ''})}
+            onChangeText={text => setEndTime({value: text, error: ''})}
             error={!!endTime.error}
             errorMessage={endTime.error}
             autoCapitalize="none"
@@ -254,27 +271,28 @@ export default function Calendar({navigation}) {
             onCancel={toogleEndTimePicker}
             date={new Date()}
           />
-        </View>
-
-        <Input
-          style={{height: 50, width: '80%'}}
-          inputContainerStyle={{
-            height: 50,
-            width: '80%',
-            alignSelf: 'center',
-          }}
-          placeholder="Enter the event you want to add"
-          returnKeyType="next"
-          value={event.value}
-          onChangeText={text => setEvent({value: text})}
-          error={!!event.error}
-          errorMessage={event.error}
-          autoCapitalize="none"
-          autoCompleteType="off"
-          errorStyle={{color: theme.colors.error}}
-          leftIcon={{type: 'material-icons', name: 'event-note', size: 15}}
-          blurOnSubmit={false}
-          forwardRef={true}></Input>
+        </KeyboardAvoidingView>
+        <KeyboardAvoidingView style={{width: '100%'}} behavior="height">
+          <Input
+            style={{height: 50, width: '80%'}}
+            inputContainerStyle={{
+              height: 50,
+              width: '80%',
+              alignSelf: 'center',
+            }}
+            placeholder="Enter the event you want to add"
+            returnKeyType="next"
+            value={event.value}
+            onChangeText={text => setEvent({value: text})}
+            error={!!event.error}
+            errorMessage={event.error}
+            autoCapitalize="none"
+            autoCompleteType="off"
+            errorStyle={{color: theme.colors.error}}
+            leftIcon={{type: 'material-icons', name: 'event-note', size: 15}}
+            blurOnSubmit={false}
+            forwardRef={true}></Input>
+        </KeyboardAvoidingView>
         <View style={styles.section}>
           <Button
             style={styles.overlayButton}
@@ -297,13 +315,16 @@ export default function Calendar({navigation}) {
           />
         </View>
       </Overlay>
+
+      {isSuccessfulOverlayVisible ? <SuccessfulOverlay /> : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    width: '100%',
+    alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -337,11 +358,5 @@ const styles = StyleSheet.create({
   },
   overlayDivider: {
     margin: 5,
-  },
-  overlayText: {
-    fontSize: 16,
-    margin: 10,
-    fontWeight: 'bold',
-    color: theme.colors.thirdColor,
   },
 });
