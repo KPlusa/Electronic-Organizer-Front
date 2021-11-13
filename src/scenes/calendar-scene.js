@@ -8,11 +8,12 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import {Button, Overlay, Divider} from 'react-native-elements';
+import {Overlay, Divider} from 'react-native-elements';
 import Background from '../components/background';
 import {theme} from '../themes/theme';
 import {Agenda} from 'react-native-calendars';
 import Input from '../components/input-text';
+import Button from '../components/button';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 export default function Calendar({navigation}) {
@@ -242,7 +243,7 @@ export default function Calendar({navigation}) {
                   fontSize: 16,
                   lineHeight: 16,
                 }}
-                title="Ok"
+                title="OK"
                 onPress={toggleAddFormOverlay}
               />
               <View style={styles.overlayDivider}></View>
@@ -292,8 +293,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   overlayButton: {
-    width: 50,
-    backgroundColor: theme.colors.thirdColor,
+    width: 100,
+    backgroundColor: theme.colors.mainColor,
   },
   overlayDivider: {
     margin: 5,
