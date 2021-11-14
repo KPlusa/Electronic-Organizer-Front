@@ -44,7 +44,7 @@ export default function Calendar({navigation}) {
     const endTimeError = EndTimeValidator(startTime.value, endTime.value);
     const eventError = EventValidator(event.value, event.value);
 
-    if (startTimeError || endTimeError) {
+    if (startTimeError || endTimeError || eventError) {
       setStartTime({...startTime, error: startTimeError});
       setEndTime({...endTime, error: endTimeError});
       setEvent({...event, error: eventError});
@@ -111,30 +111,6 @@ export default function Calendar({navigation}) {
     return date.toISOString().split('T')[0];
   };
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <View style={{flexDirection: 'row'}}>
-          <TouchableOpacity
-            style={styles.headerButtons}
-            onPress={toggleAddFormOverlay}>
-            <Icon name={'plus-circle'} size={25} color="white"></Icon>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.headerButtons}
-            onPress={() => navigation.openDrawer()}>
-            <Icon name={'edit'} size={25} color="white"></Icon>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.headerButtons}
-            onPress={() => navigation.openDrawer()}>
-            <Icon name={'trash'} size={25} color="white"></Icon>
-          </TouchableOpacity>
-        </View>
-      ),
-    });
-  }, [navigation]);
-
   const [items, setItems] = useState({});
 
   const loadItems = day => {
@@ -161,17 +137,72 @@ export default function Calendar({navigation}) {
     }, 1000);
   };
 
+  const renderItem = item => {
+    return (
+      <TouchableOpacity style={{marginRight: 10, marginTop: 1}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: 'green',
+          }}>
+          <Text style={{color: 'black'}}>{item.name}</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <View style={{flexDirection: 'row'}}>
+          <TouchableOpacity
+            style={styles.headerButtons}
+            onPress={toggleAddFormOverlay}>
+            <Icon name={'plus-circle'} size={25} color="white"></Icon>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.headerButtons}
+            onPress={() => navigation.openDrawer()}>
+            <Icon name={'edit'} size={25} color="white"></Icon>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.headerButtons}
+            onPress={() => navigation.openDrawer()}>
+            <Icon name={'trash'} size={25} color="white"></Icon>
+          </TouchableOpacity>
+        </View>
+      ),
+    });
+  }, [navigation]);
+
+  
   return (
     <View style={{flex: 1}}>
       <Agenda
         items={items}
         loadItemsForMonth={loadItems}
+        renderItem={renderItem}
+        // pastScrollRange={1}
+        // futureScrollRange={1}
         selected={currentDate}
+        //renderEmptyData={renderEmptyItem}
+        //renderEmptyDate={renderEmptyDate}
         onDayPress={day => {
           setCurrentDate(day.dateString);
         }}
+        showClosingKnob={true}
+        theme={{
+          indicatorColor: theme.colors.mainColor,
+          monthTextColor: theme.colors.mainColor,
+          todayTextColor: theme.colors.thirdColor,
+          dayTextColor: theme.colors.mainColor,
+          selectedDayBackgroundColor: theme.colors.mainColor,
+          dotColor: theme.colors.thirdColor,
+          agendaDayNumColor: theme.colors.mainColor,
+          agendaTodayColor: theme.colors.thirdColor,
+          agendaKnobColor: theme.colors.mainColor,
+        }}
       />
-
       <Overlay
         isVisible={visibleAddForm}
         onBackdropPress={toggleAddFormOverlay}>
@@ -181,27 +212,23 @@ export default function Calendar({navigation}) {
             size={40}
             color={theme.colors.mainColor}></MaterialIcon>
         </View>
-        <Input
-          style={{height: 50, width: '80%'}}
-          inputContainerStyle={{
-            height: 50,
-            width: '80%',
-            alignSelf: 'center',
-          }}
-          disabled
-          label="Selected date"
-          value={currentDate}
-          leftIcon={{type: 'material-icons', name: 'today', size: 15}}
-          blurOnSubmit={false}
-          forwardRef={true}></Input>
-        <KeyboardAvoidingView style={{width: '80%', flexDirection: 'row'}} behavior="height">
+        <KeyboardAvoidingView style={{width: '80%', flexDirection: 'row'}}>
           <Input
-            style={{height: 50, width: '100%'}}
-            inputContainerStyle={{
-              height: 50,
-              width: '100%',
-              alignSelf: 'center',
-            }}
+            style={styles.inputStyle}
+            inputContainerStyle={styles.inputContainerStyle}
+            disabled
+            label="Selected date"
+            value={currentDate}
+            leftIcon={{type: 'material-icons', name: 'today', size: 15}}
+            blurOnSubmit={false}
+            forwardRef={true}></Input>
+        </KeyboardAvoidingView>
+        <KeyboardAvoidingView
+          style={{width: '80%', flexDirection: 'row'}}
+          behavior="height">
+          <Input
+            style={styles.inputStyle}
+            inputContainerStyle={styles.inputContainerStyle}
             label="Start time"
             placeholder="Enter the time"
             returnKeyType="next"
@@ -234,14 +261,12 @@ export default function Calendar({navigation}) {
           />
         </KeyboardAvoidingView>
 
-        <KeyboardAvoidingView style={{width: '80%', flexDirection: 'row'}} behavior="height">
+        <KeyboardAvoidingView
+          style={{width: '80%', flexDirection: 'row'}}
+          behavior="height">
           <Input
-            style={{height: 50, width: '100%'}}
-            inputContainerStyle={{
-              height: 50,
-              width: '100%',
-              alignSelf: 'center',
-            }}
+            style={styles.inputStyle}
+            inputContainerStyle={styles.inputContainerStyle}
             label="End time"
             placeholder="Enter the time"
             returnKeyType="next"
@@ -272,14 +297,10 @@ export default function Calendar({navigation}) {
             date={new Date()}
           />
         </KeyboardAvoidingView>
-        <KeyboardAvoidingView style={{width: '100%'}} behavior="height">
+        <KeyboardAvoidingView style={{width: '80%'}} behavior="height">
           <Input
-            style={{height: 50, width: '80%'}}
-            inputContainerStyle={{
-              height: 50,
-              width: '80%',
-              alignSelf: 'center',
-            }}
+            style={styles.inputStyle}
+            inputContainerStyle={styles.inputContainerStyle}
             placeholder="Enter the event you want to add"
             returnKeyType="next"
             value={event.value}
@@ -315,7 +336,6 @@ export default function Calendar({navigation}) {
           />
         </View>
       </Overlay>
-
       {isSuccessfulOverlayVisible ? <SuccessfulOverlay /> : null}
     </View>
   );
@@ -358,5 +378,14 @@ const styles = StyleSheet.create({
   },
   overlayDivider: {
     margin: 5,
+  },
+  inputStyle: {
+    height: 50,
+    width: '100%',
+  },
+  inputContainerStyle: {
+    height: 50,
+    width: '100%',
+    alignSelf: 'center',
   },
 });
