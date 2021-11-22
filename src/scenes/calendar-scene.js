@@ -1,4 +1,4 @@
-import React, {useState, useLayoutEffect} from 'react';
+import React, {useState, useLayoutEffect, useEffect} from 'react';
 import {
   Text,
   View,
@@ -19,6 +19,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {StartTimeValidator, EndTimeValidator} from '../helpers/date-validator';
 import {EventValidator} from '../helpers/event-validator';
 import SuccessfulOverlay from '../components/successful-overlay';
+import {Text as Txt} from 'react-native-elements';
 
 export default function Calendar({navigation}) {
   const [count, setCount] = useState(0);
@@ -31,6 +32,8 @@ export default function Calendar({navigation}) {
   const [visibleAddForm, setVisibleAddForm] = useState(false);
   const [visibleDeleteForm, setVisibleDeleteForm] = useState(false);
   const [visibleEditForm, setVisibleEditForm] = useState(false);
+  const [visibleEditButton, setVisibleEditButton] = useState(false);
+  const [visibleDeleteButton, setVisibleDeleteButton] = useState(false);
   const [event, setEvent] = useState({value: '', error: ''});
 
   const [isDatePickerStartTimeVisible, setDatePickerStartTimeVisibility] =
@@ -102,6 +105,13 @@ export default function Calendar({navigation}) {
   const toggleEditFormOverlay = () => {
     setVisibleEditForm(!visibleEditForm);
   };
+  const toggleEditButton = () => {
+    setVisibleEditButton(!visibleEditButton);
+  };
+  const toggleDeleteButton = () => {
+    setVisibleDeleteButton(!visibleDeleteButton);
+  };
+
   const toggleDeleteFormOverlay = () => {
     setVisibleDeleteForm(!visibleDeleteForm);
   };
@@ -113,20 +123,46 @@ export default function Calendar({navigation}) {
 
   const [items, setItems] = useState({});
 
+  const getItems = () => {
+    let result = {
+      '2021-11-22': [{name: 'Coloring', startTime: '10:00', endTime: '10:30'}],
+      '2021-11-23': [{name: 'Coloring', startTime: '10:00', endTime: '10:30'}],
+      '2021-11-24': [
+        {name: "Men's haircut", startTime: '10:00', endTime: '10:30'},
+        {name: "Men's haircut", startTime: '10:30', endTime: '11:00'},
+      ],
+      '2021-11-25': [
+        {name: "Men's haircut", startTime: '10:30', endTime: '11:00'},
+      ],
+      '2021-11-26': [
+        {name: "Men's haircut", startTime: '10:30', endTime: '11:00'},
+      ],
+      '2021-11-27': [
+        {name: "Men's haircut", startTime: '10:30', endTime: '11:00'},
+      ],
+      '2021-11-28': [
+        {name: "Men's haircut", startTime: '10:30', endTime: '11:00'},
+      ],
+      '2021-11-29': [
+        {name: "Men's haircut", startTime: '10:30', endTime: '11:00'},
+      ],
+      '2021-11-30': [
+        {name: "Men's haircut", startTime: '10:30', endTime: '11:00'},
+      ],
+    };
+    return result;
+  };
   const loadItems = day => {
     setTimeout(() => {
+      const events = getItems();
       for (let i = -15; i < 85; i++) {
         const time = day.timestamp + i * 24 * 60 * 60 * 1000;
         const strTime = timeToString(time);
         if (!items[strTime]) {
           items[strTime] = [];
-          const numItems = Math.floor(Math.random() * 3 + 1);
-          for (let j = 0; j < numItems; j++) {
-            items[strTime].push({
-              name: 'Item for ' + strTime + ' #' + j,
-              height: Math.max(50, Math.floor(Math.random() * 150)),
-            });
-          }
+        }
+        if (events[strTime]) {
+          items[strTime] = events[strTime];
         }
       }
       const newItems = {};
@@ -134,23 +170,54 @@ export default function Calendar({navigation}) {
         newItems[key] = items[key];
       });
       setItems(newItems);
-    }, 1000);
+    }, 500);
+  };
+  const renderEmptyDate = () => {
+    return (
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'column',
+          justifyContent: 'center',
+          marginRight: 20,
+          marginTop: 20,
+        }}>
+        <View
+          style={{
+            borderBottomColor: theme.colors.secondColor,
+            borderBottomWidth: 1,
+          }}></View>
+      </View>
+    );
   };
 
   const renderItem = item => {
     return (
-      <TouchableOpacity style={{marginRight: 10, marginTop: 1}}>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            backgroundColor: 'green',
-          }}>
-          <Text style={{color: 'black'}}>{item.name}</Text>
-        </View>
+      <TouchableOpacity
+        style={{
+          flex: 1,
+          backgroundColor: 'white',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          borderRadius: 10,
+          padding: 10,
+          marginRight: 20,
+          marginTop: 20,
+        }}
+        onLongPress={() => {
+          setVisibleEditButton(true);
+          console.log(visibleEditButton);
+        }}>
+        <Text style={{color: 'black', fontSize: 18, fontWeight: 'bold'}}>
+          {item.startTime}-{item.endTime}
+        </Text>
+        <Text style={{color: theme.colors.mainColor, fontSize: 16}}>
+          {item.name}
+        </Text>
       </TouchableOpacity>
     );
   };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -160,33 +227,42 @@ export default function Calendar({navigation}) {
             onPress={toggleAddFormOverlay}>
             <Icon name={'plus-circle'} size={25} color="white"></Icon>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.headerButtons}
-            onPress={() => navigation.openDrawer()}>
-            <Icon name={'edit'} size={25} color="white"></Icon>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.headerButtons}
-            onPress={() => navigation.openDrawer()}>
-            <Icon name={'trash'} size={25} color="white"></Icon>
-          </TouchableOpacity>
+          {console.log("sth"+visibleEditButton)}
+          {visibleEditButton ? (
+            <TouchableOpacity
+              style={styles.headerButtons}
+              onPress={() => navigation.openDrawer()}>
+              <Icon name={'edit'} size={25} color="white"></Icon>
+            </TouchableOpacity>
+          ) : null}
+          {visibleEditButton ? (
+            <TouchableOpacity
+              style={styles.headerButtons}
+              onPress={() => navigation.openDrawer()}>
+              <Icon name={'trash'} size={25} color="white"></Icon>
+            </TouchableOpacity>
+          ) : null}
         </View>
       ),
     });
   }, [navigation]);
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('blur', () => {
+      setCurrentDate(currdate.toISOString().split('T')[0]);
+    });
 
-  
+    return unsubscribe;
+  }, [navigation]);
   return (
     <View style={{flex: 1}}>
       <Agenda
         items={items}
         loadItemsForMonth={loadItems}
         renderItem={renderItem}
-        // pastScrollRange={1}
-        // futureScrollRange={1}
+        renderEmptyDate={renderEmptyDate}
+        pastScrollRange={3}
+        futureScrollRange={6}
         selected={currentDate}
-        //renderEmptyData={renderEmptyItem}
-        //renderEmptyDate={renderEmptyDate}
         onDayPress={day => {
           setCurrentDate(day.dateString);
         }}
