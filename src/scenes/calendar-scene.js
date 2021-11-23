@@ -31,8 +31,8 @@ export default function Calendar({navigation}) {
   const [endTime, setEndTime] = useState({value: '', error: ''});
   const [visibleAddForm, setVisibleAddForm] = useState(false);
   const [visibleDeleteForm, setVisibleDeleteForm] = useState(false);
-  const [visibleEditForm, setVisibleEditForm] = useState(false);
-  const [visibleEditButton, setVisibleEditButton] = useState(false);
+  const [visibleEditForm, setVisibleEditForm] = useState(true);
+  const [visibleEditButton, setVisibleEditButton] = useState(true);
   const [visibleDeleteButton, setVisibleDeleteButton] = useState(false);
   const [event, setEvent] = useState({value: '', error: ''});
 
@@ -53,7 +53,7 @@ export default function Calendar({navigation}) {
       setEvent({...event, error: eventError});
       return;
     }
-    toggleAddFormOverlay();
+    toogleAddFormOverlay();
     setSuccessfulOverlayVisibility(true);
     setTimeout(() => {
       setSuccessfulOverlayVisibility(false);
@@ -98,21 +98,59 @@ export default function Calendar({navigation}) {
     setEvent({value: '', error: ''});
     setSuccessfulOverlayVisibility(false);
   };
-  const toggleAddFormOverlay = () => {
+  const toogleAddFormOverlay = () => {
     resetValues();
     setVisibleAddForm(!visibleAddForm);
   };
-  const toggleEditFormOverlay = () => {
+  const toogleEditFormOverlay = () => {
     setVisibleEditForm(!visibleEditForm);
   };
-  const toggleEditButton = () => {
+
+  const fullHeaderOptions = () => {
+    navigation.setOptions({
+      headerRight: () => (
+        <View style={{flexDirection: 'row'}}>
+          <TouchableOpacity
+            style={styles.headerButtons}
+            onPress={toogleAddFormOverlay}>
+            <Icon name={'plus-circle'} size={25} color="white"></Icon>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.headerButtons}
+            onPress={() => navigation.openDrawer()}>
+            <Icon name={'edit'} size={25} color="white"></Icon>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.headerButtons}
+            onPress={() => navigation.openDrawer()}>
+            <Icon name={'trash'} size={25} color="white"></Icon>
+          </TouchableOpacity>
+        </View>
+      ),
+    });
+  };
+const onlyAddHeaderOption = () => {
+    navigation.setOptions({
+      headerRight: () => (
+        <View style={{flexDirection: 'row'}}>
+          <TouchableOpacity
+            style={styles.headerButtons}
+            onPress={toogleAddFormOverlay}>
+            <Icon name={'plus-circle'} size={25} color="white"></Icon>
+          </TouchableOpacity>
+        </View>
+      ),
+    });
+  };
+
+  const toogleEditButton = () => {
     setVisibleEditButton(!visibleEditButton);
   };
-  const toggleDeleteButton = () => {
+  const toogleDeleteButton = () => {
     setVisibleDeleteButton(!visibleDeleteButton);
   };
 
-  const toggleDeleteFormOverlay = () => {
+  const toogleDeleteFormOverlay = () => {
     setVisibleDeleteForm(!visibleDeleteForm);
   };
 
@@ -170,6 +208,7 @@ export default function Calendar({navigation}) {
         newItems[key] = items[key];
       });
       setItems(newItems);
+      console.log(newItems);
     }, 500);
   };
   const renderEmptyDate = () => {
@@ -204,10 +243,7 @@ export default function Calendar({navigation}) {
           marginRight: 20,
           marginTop: 20,
         }}
-        onLongPress={() => {
-          setVisibleEditButton(true);
-          console.log(visibleEditButton);
-        }}>
+        onLongPress={() => {fullHeaderOptions(); console.log("Start: "+item.startTime+"\nEnd: "+item.endTime+ "\nObject: "+Object.keys(item))}}>
         <Text style={{color: 'black', fontSize: 18, fontWeight: 'bold'}}>
           {item.startTime}-{item.endTime}
         </Text>
@@ -224,24 +260,9 @@ export default function Calendar({navigation}) {
         <View style={{flexDirection: 'row'}}>
           <TouchableOpacity
             style={styles.headerButtons}
-            onPress={toggleAddFormOverlay}>
+            onPress={toogleAddFormOverlay}>
             <Icon name={'plus-circle'} size={25} color="white"></Icon>
           </TouchableOpacity>
-          {console.log("sth"+visibleEditButton)}
-          {visibleEditButton ? (
-            <TouchableOpacity
-              style={styles.headerButtons}
-              onPress={() => navigation.openDrawer()}>
-              <Icon name={'edit'} size={25} color="white"></Icon>
-            </TouchableOpacity>
-          ) : null}
-          {visibleEditButton ? (
-            <TouchableOpacity
-              style={styles.headerButtons}
-              onPress={() => navigation.openDrawer()}>
-              <Icon name={'trash'} size={25} color="white"></Icon>
-            </TouchableOpacity>
-          ) : null}
         </View>
       ),
     });
@@ -254,7 +275,10 @@ export default function Calendar({navigation}) {
     return unsubscribe;
   }, [navigation]);
   return (
-    <View style={{flex: 1}}>
+    <TouchableOpacity
+      style={{flex: 1}}
+      activeOpacity={1}
+      onPressIn={onlyAddHeaderOption}>
       <Agenda
         items={items}
         loadItemsForMonth={loadItems}
@@ -264,6 +288,7 @@ export default function Calendar({navigation}) {
         futureScrollRange={6}
         selected={currentDate}
         onDayPress={day => {
+          onlyAddHeaderOption();
           setCurrentDate(day.dateString);
         }}
         showClosingKnob={true}
@@ -281,7 +306,7 @@ export default function Calendar({navigation}) {
       />
       <Overlay
         isVisible={visibleAddForm}
-        onBackdropPress={toggleAddFormOverlay}>
+        onBackdropPress={toogleAddFormOverlay}>
         <View style={{alignSelf: 'center'}}>
           <MaterialIcon
             name={'event'}
@@ -408,12 +433,12 @@ export default function Calendar({navigation}) {
               lineHeight: 16,
             }}
             title="Cancel"
-            onPress={toggleAddFormOverlay}
+            onPress={toogleAddFormOverlay}
           />
         </View>
       </Overlay>
       {isSuccessfulOverlayVisible ? <SuccessfulOverlay /> : null}
-    </View>
+    </TouchableOpacity>
   );
 }
 
