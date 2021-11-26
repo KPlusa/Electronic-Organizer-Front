@@ -36,10 +36,10 @@ export default function Calendar({navigation}) {
   const [visibleEditForm, setVisibleEditForm] = useState(true);
   const [visibleEditButton, setVisibleEditButton] = useState(true);
   const [visibleDeleteButton, setVisibleDeleteButton] = useState(false);
-  const [isFullHeaderOptionsSelected, setFullHeaderOptionsSelected] = useState(false);
+  const [isFullHeaderOptionsSelected, setFullHeaderOptionsSelected] =
+    useState(false);
 
   const toogleAddFormOverlay = () => {
-    resetValues();
     setVisibleAddForm(!visibleAddForm);
   };
   const toogleEditFormOverlay = () => {
@@ -89,6 +89,7 @@ export default function Calendar({navigation}) {
 
   const onlyAddHeaderOption = () => {
     setFullHeaderOptionsSelected(false);
+
     navigation.setOptions({
       headerRight: () => (
         <View style={{flexDirection: 'row'}}>
@@ -114,6 +115,7 @@ export default function Calendar({navigation}) {
         if (events[strTime]) {
           items[strTime] = events[strTime];
           items[strTime][0].day = strTime;
+          items[strTime][0].color = 'white';
         }
       }
       const newItems = {};
@@ -122,6 +124,11 @@ export default function Calendar({navigation}) {
       });
       setItems(newItems);
     }, 500);
+  };
+  const resetItemsColor = () => {
+    for (var key in items) {
+      if (items[key][0]) {console.log(items[key][0].color); items[key][0].color = 'white';}
+    }
   };
 
   useEffect(() => {
@@ -148,6 +155,7 @@ export default function Calendar({navigation}) {
               item={item}
               firstItemInDay={firstItemInDay}
               fullHeaderOptions={fullHeaderOptions}
+              onlyAddHeaderOption={onlyAddHeaderOption}
               isFullHeaderOptionsSelected={isFullHeaderOptionsSelected}
             />
           );
