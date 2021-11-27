@@ -23,6 +23,7 @@ import SuccessfulOverlay from '../components/successful-overlay';
 import {Text as Txt} from 'react-native-elements';
 import GetItems from '../helpers/get-items';
 import AddFormOverlay from '../components/add-form-overlay';
+import EditFormOverlay from '../components/edit-form-overlay';
 import RenderItem from '../components/render-item';
 
 export default function Calendar({navigation}) {
@@ -31,9 +32,10 @@ export default function Calendar({navigation}) {
     currdate.toISOString().split('T')[0],
   );
   const [items, setItems] = useState({});
+  const[itemInfo, setItemInfo] = useState(null);
   const [visibleAddForm, setVisibleAddForm] = useState(false);
+  const [visibleEditForm, setVisibleEditForm] = useState(false);
   const [visibleDeleteForm, setVisibleDeleteForm] = useState(false);
-  const [visibleEditForm, setVisibleEditForm] = useState(true);
   const [visibleEditButton, setVisibleEditButton] = useState(true);
   const [visibleDeleteButton, setVisibleDeleteButton] = useState(false);
   const [isFullHeaderOptionsSelected, setFullHeaderOptionsSelected] =
@@ -62,6 +64,12 @@ export default function Calendar({navigation}) {
     return date.toISOString().split('T')[0];
   };
 
+  const SelectedEvent = (childData) => {
+    setItemInfo(childData);
+    console.log("Log: "+childData.day);
+  }
+
+
   const fullHeaderOptions = () => {
     setFullHeaderOptionsSelected(true);
     navigation.setOptions({
@@ -74,7 +82,7 @@ export default function Calendar({navigation}) {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.headerButtons}
-            onPress={() => navigation.openDrawer()}>
+            onPress={toogleEditFormOverlay}>
             <Icon name={'edit'} size={25} color="white"></Icon>
           </TouchableOpacity>
           <TouchableOpacity
@@ -114,8 +122,10 @@ export default function Calendar({navigation}) {
         }
         if (events[strTime]) {
           items[strTime] = events[strTime];
-          items[strTime][0].day = strTime;
-          items[strTime][0].color = 'white';
+          for (var k in items[strTime]) {
+            items[strTime][k].day = strTime;
+            items[strTime][k].color = 'white';
+          }
         }
       }
       const newItems = {};
@@ -125,12 +135,6 @@ export default function Calendar({navigation}) {
       setItems(newItems);
     }, 500);
   };
-  const resetItemsColor = () => {
-    for (var key in items) {
-      if (items[key][0]) {console.log(items[key][0].color); items[key][0].color = 'white';}
-    }
-  };
-
   useEffect(() => {
     onlyAddHeaderOption();
     const unsubscribe = navigation.addListener('blur', () => {
@@ -157,6 +161,7 @@ export default function Calendar({navigation}) {
               fullHeaderOptions={fullHeaderOptions}
               onlyAddHeaderOption={onlyAddHeaderOption}
               isFullHeaderOptionsSelected={isFullHeaderOptionsSelected}
+              selectedEvent={SelectedEvent}
             />
           );
         }}
@@ -176,6 +181,13 @@ export default function Calendar({navigation}) {
         toogleAddFormOverlay={toogleAddFormOverlay}
         currentDate={currentDate}
       />
+      {itemInfo?<EditFormOverlay
+        visibleEditForm={visibleEditForm}
+        toogleEditFormOverlay={toogleEditFormOverlay}
+        currentDate={currentDate}
+        item={itemInfo}
+        onlyAddHeaderOption={onlyAddHeaderOption}
+      />:null}
     </TouchableOpacity>
   );
 }

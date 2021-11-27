@@ -8,23 +8,27 @@ export default function RenderItem({
   onlyAddHeaderOption,
   firstItemInDay,
   isFullHeaderOptionsSelected,
+  selectedEvent,
 }) {
   const [isItemSelected, setItemSelected] = useState(false);
   const toogleItemSelected = () => {
     setItemSelected(!isItemSelected);
-    onlyAddHeaderOption();  
+    onlyAddHeaderOption();
     fullHeaderOptions();
-    item.color= theme.colors.backgroundColor;    
+    item.color = theme.colors.backgroundColor;
+  };
+  const showItemInfo = () => {
+    selectedEvent(item);
   };
 
   return (
     <TouchableOpacity
       style={[
         styles.item,
-        firstItemInDay ? {marginTop: 25} : null,  
+        firstItemInDay ? {marginTop: 25} : null,
         {backgroundColor: item.color},
       ]}
-      delayLongPress={100} 
+      delayLongPress={100}
       onLongPress={() => {
         console.log(
           'Start: ' +
@@ -34,8 +38,9 @@ export default function RenderItem({
             '\nObject: ' +
             Object.keys(item),
         );
-        item.color= theme.colors.secondColor;
-        toogleItemSelected();    
+        item.color = theme.colors.secondColor;
+        showItemInfo();
+        toogleItemSelected();
       }}>
       <Text style={{color: 'black', fontSize: 18, fontWeight: 'bold'}}>
         {item.startTime}-{item.endTime}
