@@ -77,7 +77,7 @@ export default function AddFormOverlay({
     setSuccessfulOverlayVisibility(true);
     setTimeout(() => {
       resetValues();
-    }, 2000);
+    }, 1000);
   };
 
   const resetValues = () => {

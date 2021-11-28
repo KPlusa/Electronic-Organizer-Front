@@ -6,6 +6,7 @@ import {
   StatusBar,
   TouchableOpacity,
   KeyboardAvoidingView,
+  Dimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
@@ -24,15 +25,24 @@ import {Text as Txt} from 'react-native-elements';
 import GetItems from '../helpers/get-items';
 import AddFormOverlay from '../components/add-form-overlay';
 import EditFormOverlay from '../components/edit-form-overlay';
+import DeleteFormOverlay from '../components/delete-form-overlay';
 import RenderItem from '../components/render-item';
-
+import {useHeaderHeight} from '@react-navigation/elements';
 export default function Calendar({navigation}) {
+  const windowHeight = Dimensions.get('window').height;
+  const headerHeight = useHeaderHeight();
+  const statusBarHeight = StatusBar.currentHeight;
+  const agendaHeight =
+    windowHeight -
+    statusBarHeight -
+    headerHeight -
+    theme.sizes.bottomTabNavigatorHeight;
   const currdate = new Date();
   const [currentDate, setCurrentDate] = useState(
     currdate.toISOString().split('T')[0],
   );
   const [items, setItems] = useState({});
-  const[itemInfo, setItemInfo] = useState(null);
+  const [itemInfo, setItemInfo] = useState(null);
   const [visibleAddForm, setVisibleAddForm] = useState(false);
   const [visibleEditForm, setVisibleEditForm] = useState(false);
   const [visibleDeleteForm, setVisibleDeleteForm] = useState(false);
@@ -64,11 +74,10 @@ export default function Calendar({navigation}) {
     return date.toISOString().split('T')[0];
   };
 
-  const SelectedEvent = (childData) => {
+  const SelectedEvent = childData => {
     setItemInfo(childData);
-    console.log("Log: "+childData.day);
-  }
-
+    console.log('Log: ' + childData.day);
+  };
 
   const fullHeaderOptions = () => {
     setFullHeaderOptionsSelected(true);
@@ -87,7 +96,7 @@ export default function Calendar({navigation}) {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.headerButtons}
-            onPress={() => navigation.openDrawer()}>
+            onPress={toogleDeleteFormOverlay}>
             <Icon name={'trash'} size={25} color="white"></Icon>
           </TouchableOpacity>
         </View>
@@ -150,44 +159,60 @@ export default function Calendar({navigation}) {
       style={{flex: 1}}
       activeOpacity={1}
       onPressIn={onlyAddHeaderOption}>
-      <Agenda
-        items={items}
-        loadItemsForMonth={loadItems}
-        renderItem={(item, firstItemInDay) => {
-          return (
-            <RenderItem
-              item={item}
-              firstItemInDay={firstItemInDay}
-              fullHeaderOptions={fullHeaderOptions}
-              onlyAddHeaderOption={onlyAddHeaderOption}
-              isFullHeaderOptionsSelected={isFullHeaderOptionsSelected}
-              selectedEvent={SelectedEvent}
-            />
-          );
-        }}
-        renderEmptyDate={EmptyDate}
-        pastScrollRange={3}
-        futureScrollRange={6}
-        selected={currentDate}
-        onDayPress={day => {
-          onlyAddHeaderOption();
-          setCurrentDate(day.dateString);
-        }}
-        showClosingKnob={true}
-        theme={styles.agendaTheme}
-      />
-      <AddFormOverlay
-        visibleAddForm={visibleAddForm}
-        toogleAddFormOverlay={toogleAddFormOverlay}
-        currentDate={currentDate}
-      />
-      {itemInfo?<EditFormOverlay
-        visibleEditForm={visibleEditForm}
-        toogleEditFormOverlay={toogleEditFormOverlay}
-        currentDate={currentDate}
-        item={itemInfo}
-        onlyAddHeaderOption={onlyAddHeaderOption}
-      />:null}
+      <View
+        style={{
+          height: agendaHeight,
+        }}>
+        <Agenda
+          items={items}
+          loadItemsForMonth={loadItems}
+          renderItem={(item, firstItemInDay) => {
+            return (
+              <RenderItem
+                item={item}
+                firstItemInDay={firstItemInDay}
+                fullHeaderOptions={fullHeaderOptions}
+                onlyAddHeaderOption={onlyAddHeaderOption}
+                isFullHeaderOptionsSelected={isFullHeaderOptionsSelected}
+                selectedEvent={SelectedEvent}
+              />
+            );
+          }}
+          renderEmptyDate={EmptyDate}
+          pastScrollRange={3}
+          futureScrollRange={6}
+          selected={currentDate}
+          onDayPress={day => {
+            onlyAddHeaderOption();
+            setCurrentDate(day.dateString);
+          }}
+          hideKnob={false}
+          showClosingKnob={true}
+          theme={styles.agendaTheme}
+        />
+
+        <AddFormOverlay
+          visibleAddForm={visibleAddForm}
+          toogleAddFormOverlay={toogleAddFormOverlay}
+          currentDate={currentDate}
+        />
+        {itemInfo ? (
+          <>
+          <EditFormOverlay
+            visibleEditForm={visibleEditForm}
+            toogleEditFormOverlay={toogleEditFormOverlay}
+            item={itemInfo}
+            onlyAddHeaderOption={onlyAddHeaderOption}
+          />
+          <DeleteFormOverlay
+            visibleDeleteForm={visibleDeleteForm}
+            toogleDeleteFormOverlay={toogleDeleteFormOverlay}
+            item={itemInfo}
+            onlyAddHeaderOption={onlyAddHeaderOption}
+          />
+          </>
+        ) : null}
+      </View>
     </TouchableOpacity>
   );
 }

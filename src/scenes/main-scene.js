@@ -54,7 +54,7 @@ const MyTabs = () => (
       tabBarActiveTintColor: theme.colors.mainColor,
       tabBarInactiveTintColor: theme.colors.secondColor,
       headerShown: false,
-      tabBarStyle: {height: 60},
+      tabBarStyle: {height: theme.sizes.bottomTabNavigatorHeight},
       tabBarLabelStyle: {
         fontSize: 12,
         marginBottom: 5,

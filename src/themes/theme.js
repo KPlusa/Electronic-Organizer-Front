@@ -7,6 +7,8 @@ export const theme = {
     backgroundColor: 'white',
     secondary: '#414757',
     error: '#cc1010',
-
   },
+  sizes: {
+    bottomTabNavigatorHeight: 60,
+  }
 }
