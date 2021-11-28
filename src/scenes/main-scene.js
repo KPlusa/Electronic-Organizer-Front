@@ -16,6 +16,7 @@ import Home from './home-scene';
 import Scan from './scan-scene';
 import Calendar from './calendar-scene';
 import About from './about-scene';
+import Service from './service-scene';
 
 const Drawer = createDrawerNavigator();
 
@@ -31,14 +32,9 @@ function MyDrawer() {
         headerTitleAlign: 'center',
       }}>
       <Drawer.Screen name="Home" component={MyTabs} />
-      {/* <Drawer.Screen name="Profile" component={Profile} />
-      <Drawer.Screen name="Scan" component={Scan} /> */}
     </Drawer.Navigator>
   );
 }
-
-// const routes = useNavigationState(state => state.routes)
-// const currentRoute = routes[routes.length -1].name
 
 const Tab = createBottomTabNavigator();
 const HomeStack = createStackNavigator();
@@ -183,6 +179,10 @@ const ProfileStackScreen = ({navigation}) => (
     <ProfileStack.Screen
       name="About"
       component={About}
+    />
+    <ProfileStack.Screen
+      name="Service"
+      component={Service}
     />
   </ProfileStack.Navigator>
 );

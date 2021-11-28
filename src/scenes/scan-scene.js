@@ -22,10 +22,19 @@ export default function Scan({navigation}) {
       compressImageMaxHeight: 1280,
       cropping: false,
       includeBase64: true,
-    }).then(image => {
-      setPickedImage(image.data);
-      setMimeImage(image.mime);
-    });
+    })
+      .then(image => {
+        setPickedImage(image.data);
+        setMimeImage(image.mime);
+      })
+      .catch(e => {
+        if (e.code !== 'E_PICKER_CANCELLED') {
+          console.log(e);
+          Alert.alert(
+            'Sorry, there was an issue attempting to get the image you selected. Please try again',
+          );
+        }
+      });
   };
 
   const takePhotoFromGalery = () => {
@@ -98,8 +107,10 @@ export default function Scan({navigation}) {
               />
             </View>
           ) : (
-            <View>  
-              <Text h3 style={{color:theme.colors.mainColor}}>Select An Option</Text>
+            <View>
+              <Text h3 style={{color: theme.colors.mainColor}}>
+                Select An Option
+              </Text>
               <Button
                 icon={
                   <Icon

@@ -198,18 +198,18 @@ export default function Calendar({navigation}) {
         />
         {itemInfo ? (
           <>
-          <EditFormOverlay
-            visibleEditForm={visibleEditForm}
-            toogleEditFormOverlay={toogleEditFormOverlay}
-            item={itemInfo}
-            onlyAddHeaderOption={onlyAddHeaderOption}
-          />
-          <DeleteFormOverlay
-            visibleDeleteForm={visibleDeleteForm}
-            toogleDeleteFormOverlay={toogleDeleteFormOverlay}
-            item={itemInfo}
-            onlyAddHeaderOption={onlyAddHeaderOption}
-          />
+            <EditFormOverlay
+              visibleEditForm={visibleEditForm}
+              toogleEditFormOverlay={toogleEditFormOverlay}
+              item={itemInfo}
+              onlyAddHeaderOption={onlyAddHeaderOption}
+            />
+            <DeleteFormOverlay
+              visibleDeleteForm={visibleDeleteForm}
+              toogleDeleteFormOverlay={toogleDeleteFormOverlay}
+              item={itemInfo}
+              onlyAddHeaderOption={onlyAddHeaderOption}
+            />
           </>
         ) : null}
       </View>

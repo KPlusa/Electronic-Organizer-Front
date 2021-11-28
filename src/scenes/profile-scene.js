@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {View, StyleSheet, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {Overlay, Divider, Text, Avatar} from 'react-native-elements';
 import Button from '../components/button';
 import Background from '../components/background';
@@ -42,6 +43,20 @@ export default function Profile({navigation}) {
         justifyContent={'flex-end'}>
         <View style={styles.subRectangle}>
           <View>
+            <Button
+              icon={
+                <FontAwesome5
+                  name="cut"
+                  size={20}
+                  color="white"
+                  style={{marginRight: 10}}
+                />
+              }
+              style={styles.button}
+              txtStyle={{justifyContent: 'center'}}
+              title="SERVICES"
+              onPress={() => navigation.navigate('Service')}
+            />
             <Button
               icon={
                 <Icon
@@ -152,7 +167,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 10,
-    marginBottom: 10
+    marginBottom: 10,
   },
   button: {
     marginTop: 20,
