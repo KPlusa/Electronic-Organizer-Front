@@ -21,14 +21,18 @@ import {
 } from '../helpers/service-validator';
 import SuccessfulOverlay from '../components/successful-overlay';
 
-export default function AddServiceFormOverlay({
-  visibleAddServiceForm,
-  toogleAddServiceFormOverlay,
+export default function EditServiceFormOverlay({
+  visibleEditServiceForm,
+  toogleEditServiceFormOverlay,
+  service,
   onlyAddHeaderOption,
 }) {
-  const [title, setTitle] = useState({value: '', error: ''});
-  const [estimatedTime, setEstimatedTime] = useState({value: '', error: ''});
-  const [code, setCode] = useState({value: '', error: ''});
+  const [title, setTitle] = useState({value: service.title, error: ''});
+  const [estimatedTime, setEstimatedTime] = useState({
+    value: service.estimatedTime.toString(),
+    error: '',
+  });
+  const [code, setCode] = useState({value: service.code, error: ''});
 
   const [isSuccessfulOverlayVisible, setSuccessfulOverlayVisibility] =
     useState(false);
@@ -44,7 +48,8 @@ export default function AddServiceFormOverlay({
       setCode({...code, error: codeError});
       return;
     }
-    toogleAddServiceFormOverlay();
+    onlyAddHeaderOption();
+    toogleEditServiceFormOverlay();
     setSuccessfulOverlayVisibility(true);
     setTimeout(() => {
       resetValues();
@@ -52,9 +57,9 @@ export default function AddServiceFormOverlay({
   };
 
   const resetValues = () => {
-    setTitle({value: '', error: ''});
-    setEstimatedTime({value: '', error: ''});
-    setCode({value: '', error: ''});
+    setTitle({value: service.title, error: ''});
+    setEstimatedTime({value: service.estimatedTime.toString(), error: ''});
+    setCode({value: service.code, error: ''});
     setSuccessfulOverlayVisibility(false);
     onlyAddHeaderOption();
   };
@@ -62,10 +67,14 @@ export default function AddServiceFormOverlay({
   return (
     <>
       <Overlay
-        isVisible={visibleAddServiceForm}
-        onBackdropPress={toogleAddServiceFormOverlay}>
+        isVisible={visibleEditServiceForm}
+        onBackdropPress={toogleEditServiceFormOverlay}>
         <View style={{alignSelf: 'center'}}>
-          <FontAwesome5 name="cut" size={40} color={theme.colors.mainColor} />
+          <MaterialIcon
+            name={'edit'}
+            size={40}
+            color={theme.colors.mainColor}
+          />
         </View>
         <KeyboardAvoidingView
           style={{width: '80%', flexDirection: 'row'}}
@@ -73,7 +82,7 @@ export default function AddServiceFormOverlay({
           <Input
             style={styles.inputStyle}
             inputContainerStyle={styles.inputContainerStyle}
-            label="Service title"
+            label="Title of the editing service"
             placeholder="Enter the title of the service"
             returnKeyType="next"
             value={title.value}
@@ -144,7 +153,7 @@ export default function AddServiceFormOverlay({
             }}
             title="Cancel"
             onPress={() => {
-              toogleAddServiceFormOverlay();
+              toogleEditServiceFormOverlay();
               resetValues();
             }}
           />

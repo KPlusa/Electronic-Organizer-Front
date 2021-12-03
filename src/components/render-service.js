@@ -15,9 +15,13 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 export default function RenderService({
   fullHeaderOptions,
   isFullHeaderOptionsSelected,
+  selectedService,
 }) {
   const [isItemSelected, setItemSelected] = useState(false);
-
+const showServiceInfo = value => {
+    selectedService(value);
+    console.log(value);
+  };
   const toogleItemSelected = value => {
     fullHeaderOptions();
     setItemSelected(value);
@@ -33,10 +37,12 @@ export default function RenderService({
               : theme.colors.backgroundColor,
         },
       ]}
+      delayLongPress={100}
       onLongPress={() => {
+        showServiceInfo(item);
         toogleItemSelected(item.id);
       }}>
-      <Text style={styles.title}>{item.name}</Text>
+      <Text style={styles.title}>{item.title}</Text>
       <View
         style={{
           flexDirection: 'row',
@@ -75,7 +81,7 @@ export default function RenderService({
       <FlatList
         data={GetServices()}
         renderItem={renderItem}
-        keyExtractor={item => item.name}
+        keyExtractor={item => item.id}
       />
     </SafeAreaView>
   );

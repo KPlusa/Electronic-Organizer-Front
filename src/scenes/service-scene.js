@@ -15,11 +15,33 @@ import RenderService from '../components/render-service';
 import {useHeaderHeight} from '@react-navigation/elements';
 import BackButton from '../components/back-button';
 import {HeaderBackButton} from '@react-navigation/elements';
+import AddServiceFormOverlay from '../components/add-service-overlay';
+import EditServiceFormOverlay from '../components/edit-service-overlay';
+import DeleteServiceFormOverlay from '../components/delete-service-overlay';
 
 export default function Service({navigation}) {
   const [isFullHeaderOptionsSelected, setFullHeaderOptionsSelected] =
     useState(false);
+  const [visibleAddServiceForm, setVisibleAddServiceForm] = useState(false);
+  const [visibleEditServiceForm, setVisibleEditServiceForm] = useState(false);
+  const [visibleDeleteServiceForm, setVisibleDeleteServiceForm] = useState(false);
+  const [service, setService] = useState(null);
   var isBackButtonPressed = false;
+  const toogleAddServiceFormOverlay = () => {
+    setVisibleAddServiceForm(!visibleAddServiceForm);
+  };
+  const toogleEditServiceFormOverlay = () => {
+    setVisibleEditServiceForm(!visibleEditServiceForm);
+  };
+  const toogleDeleteServiceFormOverlay = () => {
+    setVisibleDeleteServiceForm(!visibleDeleteServiceForm);
+  };
+
+  const SelectedService = childData => {
+    setService(childData);
+    console.log('Log: ' + childData);
+  };
+
   const fullHeaderOptions = () => {
     setFullHeaderOptionsSelected(true);
     navigation.setOptions({
@@ -27,19 +49,17 @@ export default function Service({navigation}) {
         <View style={{flexDirection: 'row'}}>
           <TouchableOpacity
             style={styles.headerButtons}
-            //onPress={toogleAddFormOverlay}
-          >
+            onPress={toogleAddServiceFormOverlay}>
             <Icon name={'plus-circle'} size={25} color="white"></Icon>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.headerButtons}
-            //onPress={toogleEditFormOverlay}
-          >
+            onPress={toogleEditServiceFormOverlay}>
             <Icon name={'edit'} size={25} color="white"></Icon>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.headerButtons}
-            //onPress={toogleDeleteFormOverlay}
+            onPress={toogleDeleteServiceFormOverlay}
           >
             <Icon name={'trash'} size={25} color="white"></Icon>
           </TouchableOpacity>
@@ -64,8 +84,7 @@ export default function Service({navigation}) {
         <View style={{flexDirection: 'row'}}>
           <TouchableOpacity
             style={styles.headerButtons}
-            //onPress={toogleAddFormOverlay}
-          >
+            onPress={toogleAddServiceFormOverlay}>
             <Icon name={'plus-circle'} size={25} color="white"></Icon>
           </TouchableOpacity>
         </View>
@@ -92,7 +111,6 @@ export default function Service({navigation}) {
 
     const unsubscribe = navigation.addListener('blur', () => {
       onlyAddHeaderOption();
-      console.log(isBackButtonPressed);
       isBackButtonPressed ? null : navigation.goBack();
     });
 
@@ -115,8 +133,30 @@ export default function Service({navigation}) {
           <RenderService
             fullHeaderOptions={fullHeaderOptions}
             isFullHeaderOptionsSelected={isFullHeaderOptionsSelected}
+            selectedService={SelectedService}
           />
         </View>
+        <AddServiceFormOverlay
+          visibleAddServiceForm={visibleAddServiceForm}
+          toogleAddServiceFormOverlay={toogleAddServiceFormOverlay}
+          onlyAddHeaderOption={onlyAddHeaderOption}
+        />
+        {service ? (
+          <>
+            <EditServiceFormOverlay
+              visibleEditServiceForm={visibleEditServiceForm}
+              toogleEditServiceFormOverlay={toogleEditServiceFormOverlay}
+              service={service}
+              onlyAddHeaderOption={onlyAddHeaderOption}
+            />
+            <DeleteServiceFormOverlay
+              visibleDeleteServiceForm={visibleDeleteServiceForm}
+              toogleDeleteServiceFormOverlay={toogleDeleteServiceFormOverlay}
+              service={service}
+              onlyAddHeaderOption={onlyAddHeaderOption}
+            />
+          </>
+        ) : null}
       </TouchableOpacity>
     </Background>
   );
