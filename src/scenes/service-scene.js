@@ -1,14 +1,25 @@
 import React, {useState, useEffect} from 'react';
-import {View, StyleSheet, StatusBar, TouchableOpacity} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  StatusBar,
+  TouchableOpacity,
+  Dimensions,
+  BackHandler,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {Button, Overlay, Divider, Text} from 'react-native-elements';
 import Background from '../components/background';
 import {theme} from '../themes/theme';
 import RenderService from '../components/render-service';
+import {useHeaderHeight} from '@react-navigation/elements';
+import BackButton from '../components/back-button';
+import {HeaderBackButton} from '@react-navigation/elements';
 
 export default function Service({navigation}) {
   const [isFullHeaderOptionsSelected, setFullHeaderOptionsSelected] =
     useState(false);
+  var isBackButtonPressed = false;
   const fullHeaderOptions = () => {
     setFullHeaderOptionsSelected(true);
     navigation.setOptions({
@@ -36,6 +47,15 @@ export default function Service({navigation}) {
       ),
     });
   };
+  const windowHeight = Dimensions.get('window').height;
+  const headerHeight = useHeaderHeight();
+  const statusBarHeight = StatusBar.currentHeight;
+  const contentHeight =
+    windowHeight -
+    statusBarHeight -
+    headerHeight -
+    theme.sizes.bottomTabNavigatorHeight -
+    20;
 
   const onlyAddHeaderOption = () => {
     setFullHeaderOptionsSelected(false);
@@ -52,12 +72,28 @@ export default function Service({navigation}) {
       ),
     });
   };
-  const [isVisible, setIsVisible] = useState(false);
   useEffect(() => {
+    isBackButtonPressed = false;
+    BackHandler.addEventListener('hardwareBackPress', () => {
+      isBackButtonPressed = true;
+    });
+    navigation.setOptions({
+      headerLeft: () => (
+        <BackButton
+          color={theme.colors.backgroundColor}
+          goBack={() => {
+            navigation.goBack();
+            isBackButtonPressed = true;
+          }}
+        />
+      ),
+    });
     onlyAddHeaderOption();
+
     const unsubscribe = navigation.addListener('blur', () => {
-      //setCurrentDate(currdate.toISOString().split('T')[0]);
       onlyAddHeaderOption();
+      console.log(isBackButtonPressed);
+      isBackButtonPressed ? null : navigation.goBack();
     });
 
     return unsubscribe;
@@ -65,18 +101,22 @@ export default function Service({navigation}) {
   return (
     <Background>
       <TouchableOpacity
-        elevation={4}
-        style={styles.rectangle}
+        style={styles.container}
         activeOpacity={1}
         onPressIn={onlyAddHeaderOption}>
-        <Text h3 style={styles.title}>
-          Your saved services
-        </Text>
-        <RenderService
-          onlyAddHeaderOption={onlyAddHeaderOption}
-          fullHeaderOptions={fullHeaderOptions}
-          isFullHeaderOptionsSelected={isFullHeaderOptionsSelected}
-        />
+        <View
+          elevation={4}
+          style={[styles.rectangle, {height: contentHeight}]}
+          activeOpacity={1}
+          onPressIn={onlyAddHeaderOption}>
+          <Text h3 style={styles.title}>
+            Your saved services
+          </Text>
+          <RenderService
+            fullHeaderOptions={fullHeaderOptions}
+            isFullHeaderOptionsSelected={isFullHeaderOptionsSelected}
+          />
+        </View>
       </TouchableOpacity>
     </Background>
   );
@@ -84,10 +124,11 @@ export default function Service({navigation}) {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     width: '100%',
-    alignSelf: 'center',
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
   },
   headerButtons: {
     width: 30,
@@ -102,8 +143,7 @@ const styles = StyleSheet.create({
     color: theme.colors.mainColor,
   },
   rectangle: {
-    width: '100%',
-    height: '100%',
+    width: '90%',
     borderRadius: 15,
     backgroundColor: 'white',
     alignItems: 'center',
@@ -113,7 +153,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 10,
-    marginBottom: 20,
   },
   title: {
     fontSize: 20,

@@ -194,8 +194,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   rectangle: {
-    width: '100%',
-    height: '100%',
+    width: '90%',
+    height: '95%',
     borderRadius: 15,
     backgroundColor: 'white',
     alignItems: 'center',
@@ -205,7 +205,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 10,
-    marginBottom: 20,
   },
   subRectangle: {
     width: '80%',

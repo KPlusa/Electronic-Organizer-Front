@@ -12,20 +12,29 @@ import GetServices from '../helpers/get-services';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-export default function RenderService({onlyAddHeaderOption, fullHeaderOptions, isFullHeaderOptionsSelected}) {
+export default function RenderService({
+  fullHeaderOptions,
+  isFullHeaderOptionsSelected,
+}) {
   const [isItemSelected, setItemSelected] = useState(false);
-  const toogleItemSelected = () => {
-    setItemSelected(!isItemSelected);
-    onlyAddHeaderOption();
+
+  const toogleItemSelected = value => {
     fullHeaderOptions();
+    setItemSelected(value);
   };
-  
   const Item = ({item}) => (
     <TouchableOpacity
-      style={styles.item}
+      style={[
+        styles.item,
+        {
+          backgroundColor:
+            isItemSelected === item.id && isFullHeaderOptionsSelected
+              ? theme.colors.secondColor
+              : theme.colors.backgroundColor,
+        },
+      ]}
       onLongPress={() => {
-          toogleItemSelected();
-        console.log(item.code);
+        toogleItemSelected(item.id);
       }}>
       <Text style={styles.title}>{item.name}</Text>
       <View
@@ -91,7 +100,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     alignSelf: 'center',
-    color: theme.colors.mainColor,
+    color: 'black',
     marginBottom: 10,
   },
   content: {

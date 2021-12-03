@@ -13,28 +13,22 @@ import {Overlay, Divider} from 'react-native-elements';
 import {theme} from '../themes/theme';
 import Input from '../components/input-text';
 import Button from '../components/button';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {StartTimeValidator, EndTimeValidator} from '../helpers/date-validator';
 import {EventValidator} from '../helpers/event-validator';
 import SuccessfulOverlay from '../components/successful-overlay';
 
-export default function DeleteFormOverlay({
-  visibleDeleteForm,
-  toogleDeleteFormOverlay,
-  item,
-  onlyAddHeaderOption,
+export default function AddFormServiceOverlay({
+  visibleAddServiceForm,
+  toogleAddFormServiceOverlay,
 }) {
-  const [startTime, setStartTime] = useState({
-    value: item.startTime,
-    error: '',
-  });
-  const [endTime, setEndTime] = useState({value: item.endTime, error: ''});
-  const [event, setEvent] = useState({value: item.name, error: ''});
+  const [title, setTitle] = useState({value: '', error: ''});
+  const [estimatedTime, setEstimatedTime] = useState({value: '', error: ''});
+  const [code, setCode] = useState({value: '', error: ''});
 
-  const showItemInfo = () => {
-    console.log('item', item);
-  };
   const [isSuccessfulOverlayVisible, setSuccessfulOverlayVisibility] =
     useState(false);
+
   const onOKPressed = () => {
     const startTimeError = StartTimeValidator(startTime.value, endTime.value);
     const endTimeError = EndTimeValidator(startTime.value, endTime.value);
@@ -46,7 +40,7 @@ export default function DeleteFormOverlay({
       setEvent({...event, error: eventError});
       return;
     }
-    toogleDeleteFormOverlay();
+    toogleAddFormOverlay();
     setSuccessfulOverlayVisibility(true);
     setTimeout(() => {
       resetValues();
@@ -54,41 +48,41 @@ export default function DeleteFormOverlay({
   };
 
   const resetValues = () => {
-    setStartTime({value: item.startTime, error: ''});
-    setEndTime({value: item.endTime, error: ''});
-    setEvent({value: item.name, error: ''});
-    onlyAddHeaderOption();
+    setStartTime({value: '', error: ''});
+    setEndTime({value: '', error: ''});
+    setEvent({value: '', error: ''});
     setSuccessfulOverlayVisibility(false);
   };
 
   return (
     <>
       <Overlay
-        isVisible={visibleDeleteForm}
-        onBackdropPress={toogleDeleteFormOverlay}>
+        isVisible={visibleAddForm}
+        onBackdropPress={toogleAddFormOverlay}>
         <View style={{alignSelf: 'center'}}>
           <MaterialIcon
-            name={'delete'}
+            name={'event'}
             size={40}
             color={theme.colors.mainColor}></MaterialIcon>
         </View>
-        <View style={{width: '80%', flexDirection: 'row'}}>
+        <KeyboardAvoidingView style={{width: '80%', flexDirection: 'row'}}>
           <Input
             style={styles.inputStyle}
             inputContainerStyle={styles.inputContainerStyle}
             disabled
-            label="Day of the deleting event"
-            value={item.day}
+            label="Selected date"
+            value={currentDate}
             leftIcon={{type: 'material-icons', name: 'today', size: 15}}
             blurOnSubmit={false}
             forwardRef={true}></Input>
-        </View>
-        <View style={{width: '80%', flexDirection: 'row'}} behavior="height">
+        </KeyboardAvoidingView>
+        <KeyboardAvoidingView
+          style={{width: '80%', flexDirection: 'row'}}
+          behavior="height">
           <Input
             style={styles.inputStyle}
             inputContainerStyle={styles.inputContainerStyle}
             label="Start time"
-            disabled
             placeholder="Enter the time"
             returnKeyType="next"
             value={startTime.value}
@@ -100,11 +94,29 @@ export default function DeleteFormOverlay({
             errorStyle={{color: theme.colors.error}}
             leftIcon={{type: 'material-icons', name: 'access-time', size: 15}}
             blurOnSubmit={false}
-            forwardRef={true}>
-            </Input>
-        </View>
+            forwardRef={true}></Input>
 
-        <View style={{width: '80%', flexDirection: 'row'}} behavior="height">
+          <TouchableOpacity
+            style={{color: theme.colors.mainColor, justifyContent: 'center'}}
+            onPress={toogleStartTimePicker}>
+            <MaterialIcon
+              name={'timer'}
+              size={25}
+              color={theme.colors.mainColor}></MaterialIcon>
+          </TouchableOpacity>
+          <DateTimePickerModal
+            isVisible={isDatePickerStartTimeVisible}
+            mode="time"
+            is24Hour={true}
+            onConfirm={handleStartTime}
+            onCancel={toogleStartTimePicker}
+            date={new Date()}
+          />
+        </KeyboardAvoidingView>
+
+        <KeyboardAvoidingView
+          style={{width: '80%', flexDirection: 'row'}}
+          behavior="height">
           <Input
             style={styles.inputStyle}
             inputContainerStyle={styles.inputContainerStyle}
@@ -117,20 +129,34 @@ export default function DeleteFormOverlay({
             errorMessage={endTime.error}
             autoCapitalize="none"
             autoCompleteType="off"
-            disabled
             errorStyle={{color: theme.colors.error}}
             leftIcon={{type: 'material-icons', name: 'access-time', size: 15}}
             blurOnSubmit={false}
             forwardRef={true}></Input>
-        </View>
-        <View style={{width: '80%'}} behavior="height">
+          <TouchableOpacity
+            style={{color: theme.colors.mainColor, justifyContent: 'center'}}
+            onPress={toogleEndTimePicker}>
+            <MaterialIcon
+              name={'timer'}
+              size={25}
+              color={theme.colors.mainColor}></MaterialIcon>
+          </TouchableOpacity>
+          <DateTimePickerModal
+            isVisible={isDatePickerEndTimeVisible}
+            mode="time"
+            is24Hour={true}
+            onConfirm={handleEndTime}
+            onCancel={toogleEndTimePicker}
+            date={new Date()}
+          />
+        </KeyboardAvoidingView>
+        <KeyboardAvoidingView style={{width: '80%'}} behavior="height">
           <Input
             style={styles.inputStyle}
             inputContainerStyle={styles.inputContainerStyle}
             placeholder="Enter the event you want to add"
             returnKeyType="next"
             value={event.value}
-            disabled
             onChangeText={text => setEvent({value: text})}
             error={!!event.error}
             errorMessage={event.error}
@@ -140,7 +166,7 @@ export default function DeleteFormOverlay({
             leftIcon={{type: 'material-icons', name: 'event-note', size: 15}}
             blurOnSubmit={false}
             forwardRef={true}></Input>
-        </View>
+        </KeyboardAvoidingView>
         <View style={styles.section}>
           <Button
             style={styles.overlayButton}
@@ -160,7 +186,7 @@ export default function DeleteFormOverlay({
             }}
             title="Cancel"
             onPress={() => {
-              toogleDeleteFormOverlay();
+              toogleAddFormOverlay();
               resetValues();
             }}
           />

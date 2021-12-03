@@ -112,7 +112,7 @@ export default function Profile({navigation}) {
 
 const styles = StyleSheet.create({
   rectangle: {
-    width: '100%',
+    width: '90%',
     borderRadius: 15,
     backgroundColor: 'white',
     alignItems: 'center',
