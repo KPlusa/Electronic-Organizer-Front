@@ -39,7 +39,7 @@ export default function Service({navigation}) {
 
   const SelectedService = childData => {
     setService(childData);
-    console.log('Log: ' + childData);
+    console.log('Log: ' + childData.id);
   };
 
   const fullHeaderOptions = () => {

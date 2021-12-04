@@ -48,9 +48,6 @@ export default function Calendar({navigation}) {
   const [visibleDeleteForm, setVisibleDeleteForm] = useState(false);
   const [visibleEditButton, setVisibleEditButton] = useState(true);
   const [visibleDeleteButton, setVisibleDeleteButton] = useState(false);
-  const [isFullHeaderOptionsSelected, setFullHeaderOptionsSelected] =
-    useState(false);
-
   const toogleAddFormOverlay = () => {
     setVisibleAddForm(!visibleAddForm);
   };
@@ -75,11 +72,11 @@ export default function Calendar({navigation}) {
   };
 
   const SelectedEvent = childData => {
+    fullHeaderOptions(); 
     setItemInfo(childData);
-    console.log('Log: ' + childData.id);
+    //console.log('Log: ' + childData.id);
   };
   const fullHeaderOptions = () => {
-    setFullHeaderOptionsSelected(true);
     navigation.setOptions({
       headerRight: () => (
         <View style={{flexDirection: 'row'}}>
@@ -104,8 +101,7 @@ export default function Calendar({navigation}) {
   };
 
   const onlyAddHeaderOption = () => {
-    setFullHeaderOptionsSelected(false);
-
+    setItemInfo('');
     navigation.setOptions({
       headerRight: () => (
         <View style={{flexDirection: 'row'}}>
@@ -118,7 +114,6 @@ export default function Calendar({navigation}) {
       ),
     });
   };
-
   const loadItems = day => {
     setTimeout(() => {
       const events = GetItems();
@@ -169,13 +164,10 @@ export default function Calendar({navigation}) {
               <RenderItem
                 item={item}
                 firstItemInDay={firstItemInDay}
-                fullHeaderOptions={fullHeaderOptions}
-                onlyAddHeaderOption={onlyAddHeaderOption}
-                isFullHeaderOptionsSelected={isFullHeaderOptionsSelected}
                 selectedEvent={SelectedEvent}
                 style={{
                   backgroundColor:
-                    itemInfo.id === item.id && isFullHeaderOptionsSelected
+                    itemInfo.id === item.id 
                       ? theme.colors.secondColor
                       : theme.colors.backgroundColor,
                 }}
@@ -190,7 +182,9 @@ export default function Calendar({navigation}) {
             onlyAddHeaderOption();
             setCurrentDate(day.dateString);
           }}
-          onDayChange={day => {setCurrentDate(day.dateString)}}
+          onDayChange={day => {
+            setCurrentDate(day.dateString);
+          }}
           hideKnob={false}
           showClosingKnob={true}
           theme={styles.agendaTheme}

@@ -4,18 +4,10 @@ import {theme} from '../themes/theme';
 
 export default function RenderItem({
   item,
-  fullHeaderOptions,
-  onlyAddHeaderOption,
   firstItemInDay,
-  isFullHeaderOptionsSelected,
   selectedEvent,
   style,
 }) {
-  const [isItemSelected, setItemSelected] = useState(false);
-  const toogleItemSelected = value => {
-    fullHeaderOptions();
-    setItemSelected(value);
-  };
   const showItemInfo = value => {
     selectedEvent(value);
   };
@@ -29,16 +21,15 @@ export default function RenderItem({
       ]}
       delayLongPress={100}
       onLongPress={() => {
-        console.log(
-          'Start: ' +
-            item.startTime +
-            '\nEnd: ' +
-            item.endTime +
-            '\nObject: ' +
-            Object.keys(item),
-        );
+        // console.log(
+        //   'Start: ' +
+        //     item.startTime +
+        //     '\nEnd: ' +
+        //     item.endTime +
+        //     '\nObject: ' +
+        //     Object.keys(item),
+        // );
         showItemInfo(item);
-        toogleItemSelected(item.id);
       }}>
       <Text style={{color: 'black', fontSize: 18, fontWeight: 'bold'}}>
         {item.startTime}-{item.endTime}
