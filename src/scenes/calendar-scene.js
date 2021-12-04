@@ -72,10 +72,11 @@ export default function Calendar({navigation}) {
   };
 
   const SelectedEvent = childData => {
-    fullHeaderOptions(); 
+    fullHeaderOptions();
     setItemInfo(childData);
     //console.log('Log: ' + childData.id);
   };
+
   const fullHeaderOptions = () => {
     navigation.setOptions({
       headerRight: () => (
@@ -167,7 +168,7 @@ export default function Calendar({navigation}) {
                 selectedEvent={SelectedEvent}
                 style={{
                   backgroundColor:
-                    itemInfo.id === item.id 
+                    itemInfo.id === item.id
                       ? theme.colors.secondColor
                       : theme.colors.backgroundColor,
                 }}

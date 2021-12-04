@@ -23,16 +23,13 @@ export default function EditFormOverlay({
   toogleEditFormOverlay,
   item,
   onlyAddHeaderOption,
-
 }) {
-  const [startTime, setStartTime] = useState({value: item.startTime, error: ''});
+  const [startTime, setStartTime] = useState({
+    value: item.startTime,
+    error: '',
+  });
   const [endTime, setEndTime] = useState({value: item.endTime, error: ''});
   const [event, setEvent] = useState({value: item.name, error: ''});
-  
-    const showItemInfo = () => {
-    console.log('item', item);
-  };
-
   const [isDatePickerStartTimeVisible, setDatePickerStartTimeVisibility] =
     useState(false);
   const [isDatePickerEndTimeVisible, setDatePickerEndTimeVisibility] =
@@ -79,6 +76,7 @@ export default function EditFormOverlay({
       setEvent({...event, error: eventError});
       return;
     }
+
     toogleEditFormOverlay();
     setSuccessfulOverlayVisibility(true);
     setTimeout(() => {
@@ -87,12 +85,7 @@ export default function EditFormOverlay({
   };
 
   const resetValues = () => {
-    setStartTime({value: item.startTime, error: ''});
-    setEndTime({value: item.endTime, error: ''});
-    setEvent({value: item.name, error: ''});
     onlyAddHeaderOption();
-    setSuccessfulOverlayVisibility(false);
-
   };
 
   return (

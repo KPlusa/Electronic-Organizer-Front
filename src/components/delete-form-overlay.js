@@ -29,10 +29,6 @@ export default function DeleteFormOverlay({
   });
   const [endTime, setEndTime] = useState({value: item.endTime, error: ''});
   const [event, setEvent] = useState({value: item.name, error: ''});
-
-  const showItemInfo = () => {
-    console.log('item', item);
-  };
   const [isSuccessfulOverlayVisible, setSuccessfulOverlayVisibility] =
     useState(false);
   const onOKPressed = () => {
@@ -46,19 +42,15 @@ export default function DeleteFormOverlay({
       setEvent({...event, error: eventError});
       return;
     }
-    toogleDeleteFormOverlay();
     setSuccessfulOverlayVisibility(true);
+    toogleDeleteFormOverlay();
     setTimeout(() => {
       resetValues();
     }, 1000);
   };
 
   const resetValues = () => {
-    setStartTime({value: item.startTime, error: ''});
-    setEndTime({value: item.endTime, error: ''});
-    setEvent({value: item.name, error: ''});
     onlyAddHeaderOption();
-    setSuccessfulOverlayVisibility(false);
   };
 
   return (
@@ -100,8 +92,7 @@ export default function DeleteFormOverlay({
             errorStyle={{color: theme.colors.error}}
             leftIcon={{type: 'material-icons', name: 'access-time', size: 15}}
             blurOnSubmit={false}
-            forwardRef={true}>
-            </Input>
+            forwardRef={true}></Input>
         </View>
 
         <View style={{width: '80%', flexDirection: 'row'}} behavior="height">
