@@ -9,16 +9,15 @@ export default function RenderItem({
   firstItemInDay,
   isFullHeaderOptionsSelected,
   selectedEvent,
+  style,
 }) {
   const [isItemSelected, setItemSelected] = useState(false);
-  const toogleItemSelected = () => {
-    setItemSelected(!isItemSelected);
-    onlyAddHeaderOption();
+  const toogleItemSelected = value => {
     fullHeaderOptions();
-    item.color = theme.colors.backgroundColor;
+    setItemSelected(value);
   };
-  const showItemInfo = () => {
-    selectedEvent(item);
+  const showItemInfo = value => {
+    selectedEvent(value);
   };
 
   return (
@@ -26,7 +25,7 @@ export default function RenderItem({
       style={[
         styles.item,
         firstItemInDay ? {marginTop: 25} : null,
-        {backgroundColor: item.color},
+        style,
       ]}
       delayLongPress={100}
       onLongPress={() => {
@@ -38,9 +37,8 @@ export default function RenderItem({
             '\nObject: ' +
             Object.keys(item),
         );
-        item.color = theme.colors.secondColor;
-        showItemInfo();
-        toogleItemSelected();
+        showItemInfo(item);
+        toogleItemSelected(item.id);
       }}>
       <Text style={{color: 'black', fontSize: 18, fontWeight: 'bold'}}>
         {item.startTime}-{item.endTime}

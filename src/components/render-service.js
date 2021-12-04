@@ -18,9 +18,8 @@ export default function RenderService({
   selectedService,
 }) {
   const [isItemSelected, setItemSelected] = useState(false);
-const showServiceInfo = value => {
+  const showServiceInfo = value => {
     selectedService(value);
-    console.log(value);
   };
   const toogleItemSelected = value => {
     fullHeaderOptions();

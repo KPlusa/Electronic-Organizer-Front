@@ -34,7 +34,7 @@ export default function Calendar({navigation}) {
   const statusBarHeight = StatusBar.currentHeight;
   const agendaHeight =
     windowHeight -
-    statusBarHeight -
+    //   statusBarHeight -
     headerHeight -
     theme.sizes.bottomTabNavigatorHeight;
   const currdate = new Date();
@@ -42,7 +42,7 @@ export default function Calendar({navigation}) {
     currdate.toISOString().split('T')[0],
   );
   const [items, setItems] = useState({});
-  const [itemInfo, setItemInfo] = useState(null);
+  const [itemInfo, setItemInfo] = useState('');
   const [visibleAddForm, setVisibleAddForm] = useState(false);
   const [visibleEditForm, setVisibleEditForm] = useState(false);
   const [visibleDeleteForm, setVisibleDeleteForm] = useState(false);
@@ -76,9 +76,8 @@ export default function Calendar({navigation}) {
 
   const SelectedEvent = childData => {
     setItemInfo(childData);
-    console.log('Log: ' + childData.day);
+    console.log('Log: ' + childData.id);
   };
-
   const fullHeaderOptions = () => {
     setFullHeaderOptionsSelected(true);
     navigation.setOptions({
@@ -133,7 +132,6 @@ export default function Calendar({navigation}) {
           items[strTime] = events[strTime];
           for (var k in items[strTime]) {
             items[strTime][k].day = strTime;
-            items[strTime][k].color = 'white';
           }
         }
       }
@@ -175,6 +173,12 @@ export default function Calendar({navigation}) {
                 onlyAddHeaderOption={onlyAddHeaderOption}
                 isFullHeaderOptionsSelected={isFullHeaderOptionsSelected}
                 selectedEvent={SelectedEvent}
+                style={{
+                  backgroundColor:
+                    itemInfo.id === item.id && isFullHeaderOptionsSelected
+                      ? theme.colors.secondColor
+                      : theme.colors.backgroundColor,
+                }}
               />
             );
           }}
@@ -186,6 +190,7 @@ export default function Calendar({navigation}) {
             onlyAddHeaderOption();
             setCurrentDate(day.dateString);
           }}
+          onDayChange={day => {setCurrentDate(day.dateString)}}
           hideKnob={false}
           showClosingKnob={true}
           theme={styles.agendaTheme}
