@@ -118,9 +118,10 @@ export default function Calendar({navigation}) {
   const loadItems = day => {
     setTimeout(() => {
       const events = GetItems();
-      for (let i = -15; i < 85; i++) {
+      for (let i = -7; i <= 7; i++) {
         const time = day.timestamp + i * 24 * 60 * 60 * 1000;
         const strTime = timeToString(time);
+        //console.log(strTime);
         if (!items[strTime]) {
           items[strTime] = [];
         }

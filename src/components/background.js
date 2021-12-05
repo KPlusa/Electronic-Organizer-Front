@@ -1,14 +1,28 @@
 import React from 'react';
-import {ImageBackground, StyleSheet, KeyboardAvoidingView} from 'react-native';
+import {
+  ImageBackground,
+  StyleSheet,
+  KeyboardAvoidingView,
+  ScrollView,
+} from 'react-native';
 
-export default function Background({children}) {
+export default function Background({children, noScrollView}) {
   return (
     <ImageBackground
       source={require('../assets/images/background.png')}
       style={styles.background}>
-      <KeyboardAvoidingView style={styles.container} behavior="padding">
-        {children}
-      </KeyboardAvoidingView>
+      {noScrollView === undefined ? (
+        <ScrollView behavior="padding" contentContainerStyle={styles.container}>
+          {children}
+        </ScrollView>
+      ) : (
+        <KeyboardAvoidingView
+          style={styles.container}
+          behavior="padding"
+          enabled>
+          {children}
+        </KeyboardAvoidingView>
+      )}
     </ImageBackground>
   );
 }
@@ -24,6 +38,6 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
     alignItems: 'center',
-    justifyContent:'center'
+    justifyContent: 'center',
   },
 });

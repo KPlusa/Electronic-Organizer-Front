@@ -1,14 +1,21 @@
 import React, {useState} from 'react';
-import {TouchableOpacity, StyleSheet, View} from 'react-native';
+import {
+  TouchableOpacity,
+  StyleSheet,
+  View,
+  ScrollView,
+  TextInput,
+} from 'react-native';
 import Background from '../components/background';
 import Logo from '../components/logo';
 import Button from '../components/button';
 import BackButton from '../components/back-button';
 import Input from '../components/input-text';
 import {theme} from '../themes/theme';
-import {Divider, Text} from 'react-native-elements';
+import {Divider, Text, Avatar} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {EmailValidator} from '../helpers/email-validator';
+import ImagePickerOverlay from '../components/image-picker-overlay';
 import {
   PasswordValidator,
   ConfirmValidator,
@@ -18,9 +25,20 @@ export default function LoginScene({navigation}) {
   const [email, setEmail] = useState({value: '', error: ''});
   const [password, setPassword] = useState({value: '', error: ''});
   const [password2, setPassword2] = useState({value: '', error: ''});
+  const [visiblePicker, setVisiblePicker] = useState(false);
+  const [image, setImage] = useState(theme.sources.defaultAvatar);
+  const tooglePicker = () => {
+    setVisiblePicker(!visiblePicker);
+  };
   const emailRef = React.createRef();
   const passwordRef = React.createRef();
   const password2Ref = React.createRef();
+
+  const SelectedImage = childData => {
+    setImage(childData);
+    console.log('Log: ' + childData);
+  };
+
   const onSignUpPressed = () => {
     const emailError = EmailValidator(email.value);
     const passwordError = PasswordValidator(password.value, password2.value);
@@ -44,7 +62,41 @@ export default function LoginScene({navigation}) {
       <Text h3 style={[{color: theme.colors.mainColor}, {fontSize: 20}]}>
         Create an account!
       </Text>
-      <Divider orientation="horizontal" height={20} />
+      <View
+        style={{
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingTop: 10,
+        }}>
+        <View>
+          <Text style={{color: theme.colors.secondColor, fontSize: 20}}>
+            Avatar
+          </Text>
+        </View>
+        <TouchableOpacity onPress={tooglePicker}>
+          <Avatar
+            rounded
+            source={{uri: image}}
+            size={100}
+            avatarStyle={{borderColor: theme.colors.thirdColor}}
+          />
+        </TouchableOpacity>
+        {image !== theme.sources.defaultAvatar ? (
+          <TouchableOpacity
+            onPress={() => {
+              setImage(theme.sources.defaultAvatar);
+            }}
+            style={{marginTop: 10}}>
+            <Icon name="undo" size={20} color={theme.colors.mainColor} />
+          </TouchableOpacity>
+        ) : null}
+      </View>
+      <ImagePickerOverlay
+        visiblePicker={visiblePicker}
+        tooglePicker={tooglePicker}
+        selectedImage={SelectedImage}
+      />
       <Input
         refs={emailRef}
         style={{height: 50, width: 300}}
@@ -108,7 +160,6 @@ export default function LoginScene({navigation}) {
         leftIcon={{type: 'font-awesome', name: 'lock', size: 20}}
         onSubmitEditing={onSignUpPressed}
       />
-      <Divider orientation="horizontal" height={10} />
       <Button
         type="solid"
         style={[
@@ -142,5 +193,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: theme.colors.mainColor,
+  },
+  buttonBottom: {
+    height: 30,
+    width: '20%',
+    backgroundColor: theme.colors.mainColor,
+    alignSelf: 'center',
   },
 });

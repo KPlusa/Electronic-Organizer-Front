@@ -117,7 +117,7 @@ export default function Service({navigation}) {
     return unsubscribe;
   }, [navigation]);
   return (
-    <Background>
+    <Background noScrollView={true}>
       <TouchableOpacity
         style={styles.container}
         activeOpacity={1}
