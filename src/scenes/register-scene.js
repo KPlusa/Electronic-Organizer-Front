@@ -116,7 +116,7 @@ export default function LoginScene({navigation}) {
         autoCompleteType="email"
         textContentType="emailAddress"
         keyboardType="email-address"
-        errorStyle={{color: theme.colors.error}}
+        errorStyle={styles.errorStyle}
         leftIcon={{type: 'font-awesome', name: 'envelope', size: 15}}
         onSubmitEditing={() => passwordRef.current.focus()}
       />
@@ -136,7 +136,7 @@ export default function LoginScene({navigation}) {
         error={!!password.error}
         errorMessage={password.error}
         secureTextEntry
-        errorStyle={{color: theme.colors.error}}
+        errorStyle={styles.errorStyle}
         leftIcon={{type: 'font-awesome', name: 'lock', size: 20}}
         onSubmitEditing={() => password2Ref.current.focus()}
       />
@@ -156,7 +156,7 @@ export default function LoginScene({navigation}) {
         secureTextEntry
         error={!!password2.error}
         errorMessage={password2.error}
-        errorStyle={{color: theme.colors.error}}
+        errorStyle={styles.errorStyle}
         leftIcon={{type: 'font-awesome', name: 'lock', size: 20}}
         onSubmitEditing={onSignUpPressed}
       />
@@ -199,5 +199,10 @@ const styles = StyleSheet.create({
     width: '20%',
     backgroundColor: theme.colors.mainColor,
     alignSelf: 'center',
+  },
+  errorStyle: {
+    width: 300,
+    alignSelf: 'center',
+    color: theme.colors.error,
   },
 });

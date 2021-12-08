@@ -6,10 +6,12 @@ import Button from '../components/button';
 import BackButton from '../components/back-button';
 import Input from '../components/input-text';
 import {theme} from '../themes/theme';
+import {config} from '../configs/config';
 import {Divider, Text} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {EmailValidator} from '../helpers/email-validator';
 import {PasswordValidator} from '../helpers/password-validator';
+import axios from 'axios';
 
 export default function LoginScene({navigation}) {
   const [email, setEmail] = useState({value: '', error: ''});
@@ -18,15 +20,29 @@ export default function LoginScene({navigation}) {
   const onLoginPressed = () => {
     const emailError = EmailValidator(email.value);
     const passwordError = PasswordValidator(password.value);
+    
     if (emailError || passwordError) {
       setEmail({...email, error: emailError});
       setPassword({...password, error: passwordError});
       return;
     }
-    navigation.reset({
-      index: 0,
-      routes: [{name: 'MainScene'}],
+    axios.post(`${config.api_url}/Authentication/login`,{
+      
+        email: email.value,
+        password: password.value
+      
+    },)
+    .then((response) => {
+       console.log(response.data);
+    })
+    .catch((error) => {
+      console.log(error);
+       return;
     });
+    // navigation.reset({
+    //   index: 0,
+    //   routes: [{name: 'MainScene'}],
+    // });
   };
 
   const emailRef = React.createRef();
@@ -60,7 +76,7 @@ export default function LoginScene({navigation}) {
         autoCompleteType="email"
         textContentType="emailAddress"
         keyboardType="email-address"
-        errorStyle={{color: theme.colors.error}}
+        errorStyle={styles.errorStyle}
         leftIcon={{type: 'font-awesome', name: 'envelope', size: 15}}
         onSubmitEditing={() => passwordRef.current.focus()}
         blurOnSubmit={false}
@@ -83,7 +99,7 @@ export default function LoginScene({navigation}) {
         error={!!password.error}
         errorMessage={password.error}
         secureTextEntry
-        errorStyle={{color: theme.colors.error}}
+        errorStyle={styles.errorStyle}
         leftIcon={{type: 'font-awesome', name: 'lock', size: 20}}
         onSubmitEditing={onLoginPressed}
       />
@@ -112,7 +128,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-    maxWidth: 800,
     alignSelf: 'center',
     justifyContent: 'center',
     fontSize: 16,
@@ -121,5 +136,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: theme.colors.mainColor,
+  },
+  errorStyle: {
+    width: 300,
+    alignSelf: 'center',
+    color: theme.colors.error,
   },
 });
