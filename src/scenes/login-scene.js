@@ -26,6 +26,7 @@ export default function LoginScene({navigation}) {
       setPassword({...password, error: passwordError});
       return;
     }
+    console.log('email: ', email.value);
     axios.post(`${config.api_url}/Authentication/login`,{
       
         email: email.value,
