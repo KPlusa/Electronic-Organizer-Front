@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -10,6 +10,8 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {DrawerContent} from '../components/drawer';
 import {BackButton} from '../components/back-button';
+import jwt_decode from 'jwt-decode';
+import {GetData, StoreData} from '../helpers/store-data';
 
 import Profile from './profile-scene';
 import Home from './home-scene';
@@ -20,21 +22,9 @@ import Service from './service-scene';
 
 const Drawer = createDrawerNavigator();
 
-function MyDrawer() {
-  return (
-    <Drawer.Navigator
-      drawerContent={props => <DrawerContent {...props} />}
-      screenOptions={{
-        headerStyle: {backgroundColor: theme.colors.mainColor},
-        headerShown: false,
-        headerTintColor: 'white',
-        headerTitleStyle: 'bold',
-        headerTitleAlign: 'center',
-      }}>
-      <Drawer.Screen name="Home" component={MyTabs} />
-    </Drawer.Navigator>
-  );
-}
+// function MyDrawer() {
+
+// }
 
 const Tab = createBottomTabNavigator();
 const HomeStack = createStackNavigator();
@@ -97,7 +87,35 @@ const MyTabs = () => (
 );
 
 export default function MainScene() {
-  return <MyDrawer />;
+  const [email, setEmail] = useState();
+  const [avatar, setAvatar] = useState();
+  useEffect(() => {
+    GetData('token').then(res => {
+      const decoded = jwt_decode(res);
+      StoreData('email', decoded.email);
+      StoreData('avatar', decoded.avatar);
+      setEmail(decoded.email);
+      setAvatar(decoded.avatar);
+    });
+  }, []);
+  return email !== undefined
+    ? 
+      (
+        <Drawer.Navigator
+          drawerContent={props => (
+            <DrawerContent {...props} email={email} avatar={avatar} />
+          )}
+          screenOptions={{
+            headerStyle: {backgroundColor: theme.colors.mainColor},
+            headerShown: false,
+            headerTintColor: 'white',
+            headerTitleStyle: 'bold',
+            headerTitleAlign: 'center',
+          }}>
+          <Drawer.Screen name="Home" component={MyTabs} />
+        </Drawer.Navigator>
+      )
+    : null;
 }
 
 const HomeStackScreen = ({navigation}) => (
@@ -117,7 +135,7 @@ const HomeStackScreen = ({navigation}) => (
         title: 'Home',
         headerLeft: () => (
           <TouchableOpacity
-          style={styles.headerBar}
+            style={styles.headerBar}
             onPress={() => navigation.openDrawer()}>
             <Icon name={'bars'} size={25} color="white"></Icon>
           </TouchableOpacity>
@@ -143,7 +161,7 @@ const CalendarStackScreen = ({navigation}) => (
       options={{
         headerLeft: () => (
           <TouchableOpacity
-          style={styles.headerBar}
+            style={styles.headerBar}
             onPress={() => navigation.openDrawer()}>
             <Icon name={'bars'} size={25} color="white"></Icon>
           </TouchableOpacity>
@@ -169,21 +187,15 @@ const ProfileStackScreen = ({navigation}) => (
       options={{
         headerLeft: () => (
           <TouchableOpacity
-          style={styles.headerBar}
+            style={styles.headerBar}
             onPress={() => navigation.openDrawer()}>
             <Icon name={'bars'} size={25} color="white"></Icon>
           </TouchableOpacity>
         ),
       }}
     />
-    <ProfileStack.Screen
-      name="About"
-      component={About}
-    />
-    <ProfileStack.Screen
-      name="Service"
-      component={Service}
-    />
+    <ProfileStack.Screen name="About" component={About} />
+    <ProfileStack.Screen name="Service" component={Service} />
   </ProfileStack.Navigator>
 );
 
@@ -203,7 +215,7 @@ const ScanStackScreen = ({navigation}) => (
       options={{
         headerLeft: () => (
           <TouchableOpacity
-          style={styles.headerBar}
+            style={styles.headerBar}
             onPress={() => navigation.openDrawer()}>
             <Icon name={'bars'} size={25} color="white"></Icon>
           </TouchableOpacity>

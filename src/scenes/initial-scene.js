@@ -3,12 +3,19 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {StartScene, LoginScene, RegisterScene, MainScene} from '../scenes';
 import SplashScreen from 'react-native-splash-screen';
-import {GetData} from './helpers/store-data';
+import {GetData, StoreData} from '../helpers/store-data';
+import jwt_decode from 'jwt-decode';
 const Stack = createStackNavigator();
 
 export default function InitialScene({tokenStatus}) {
   useEffect(() => {
     SplashScreen.hide();
+    // if (tokenStatus) {
+    //   const decoded = jwt_decode(tokenStatus);
+    //   StoreData('email', decoded.email);
+    //   StoreData('avatar', decoded.avatar);
+    //   console.log("stored");
+    // }
   }, []);
   return (
     <NavigationContainer>

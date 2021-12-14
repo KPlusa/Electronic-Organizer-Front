@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, StyleSheet, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -8,36 +8,83 @@ import Background from '../components/background';
 import {theme} from '../themes/theme';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {StoreData, GetData, RemoveData} from '../helpers/store-data';
+import ImagePickerOverlay from '../components/image-picker-overlay';
 
 export default function Profile({navigation}) {
   const [visible, setVisible] = useState(false);
+  const [email, setEmail] = useState();
+  const [avatar, setAvatar] = useState();
+  const [image, setImage] = useState(avatar);
+  const [visiblePicker, setVisiblePicker] = useState(false);
+  const tooglePicker = () => {
+    setVisiblePicker(!visiblePicker);
+  };
+  const SelectedImage = childData => {
+    setImage(avatar);
+    setAvatar(childData);
+  };
   const toggleOverlay = param => {
     setVisible(!visible);
     if (param === 'yes') {
       RemoveData('token');
+      RemoveData('email');
+      RemoveData('avatar');
       navigation.reset({
         index: 0,
         routes: [{name: 'StartScene'}],
       });
     } else setVisible(!visible);
   };
+  useEffect(() => {
+    GetData('email').then(res => {
+      setEmail(res);
+    });
+    GetData('avatar').then(res => {
+      setAvatar(res);
+    });
+  }, []);
   return (
     <Background>
       <View elevation={4} style={styles.rectangle}>
         <Text h3 style={styles.header}>
           Welcome
         </Text>
-
-        <Avatar
-          rounded
-          source={require('../assets/images/user.png')}
-          size={70}
-          avatarStyle={{alignItems: 'flex-start'}}
-        />
-
-        <Text style={styles.user}>user@example.com</Text>
+        <TouchableOpacity onPress={tooglePicker}>
+          {avatar ? (
+            <Avatar
+              rounded
+              source={{uri: avatar}}
+              size={70}
+              avatarStyle={{alignItems: 'flex-start'}}
+            />
+          ) : null}
+        </TouchableOpacity>
+        {image !== avatar && image ? (
+          <View style={{flexDirection: 'row'}}>
+            <TouchableOpacity
+              onPress={() => {
+                setAvatar(image);
+              }}
+              style={{marginTop: 10}}>
+              <Icon name="undo" size={20} color={theme.colors.mainColor} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setAvatar(image);
+              }}
+              style={{marginTop: 10, marginLeft: 10}}>
+              <Icon name="check" size={20} color={theme.colors.mainColor} />
+            </TouchableOpacity>
+          </View>
+        ) : null}
+        {email?<Text style={styles.user}>{email}</Text>:null}
       </View>
       <Divider orientation="horizontal" height={20} />
+      <ImagePickerOverlay
+        visiblePicker={visiblePicker}
+        tooglePicker={tooglePicker}
+        selectedImage={SelectedImage}
+      />
       <View
         elevation={4}
         style={styles.rectangle}

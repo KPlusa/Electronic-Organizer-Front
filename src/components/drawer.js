@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {DrawerContentScrollView, DrawerItem} from '@react-navigation/drawer';
 import {theme} from '../themes/theme';
@@ -8,36 +8,39 @@ import {Avatar, Text, Overlay} from 'react-native-elements';
 import Button from '../components/button';
 import {StoreData, GetData, RemoveData} from '../helpers/store-data';
 
-export function DrawerContent(props) {
+export function DrawerContent(props, {email, avatar}) {
   const [visible, setVisible] = useState(false);
   const toggleOverlay = param => {
     setVisible(!visible);
     if (param === 'yes') {
       RemoveData('token');
+      RemoveData('email');
+      RemoveData('avatar');
       props.navigation.reset({
         index: 0,
         routes: [{name: 'StartScene'}],
       });
     } else setVisible(!visible);
   };
+
   return (
     <View style={{flex: 1}}>
       <DrawerContentScrollView {...props}>
         <View style={styles.drawerContent}>
           <View style={styles.userInfoSection}>
             <View style={{flexDirection: 'row', marginTop: 15}}>
-              <Avatar
-                rounded
-                source={require('../assets/images/user.png')}
-                size={50}
-              />
+              {props.avatar ? (
+                <Avatar rounded source={{uri: props.avatar}} size={50} />
+              ) : null}
               <View
                 style={{
                   marginLeft: 15,
                   flexDirection: 'column',
                   justifyContent: 'center',
                 }}>
-                <Text style={styles.title}>user@example.com</Text>
+                {props.email ? (
+                  <Text style={styles.title}>{props.email}</Text>
+                ) : null}
               </View>
             </View>
           </View>
@@ -142,7 +145,7 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
   },
   title: {
-    fontSize: 18,
+    fontSize: 16,
     marginTop: 3,
     fontWeight: 'bold',
     color: theme.colors.thirdColor,
