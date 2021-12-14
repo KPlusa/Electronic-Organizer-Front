@@ -2,18 +2,18 @@ import React, {useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {DrawerContentScrollView, DrawerItem} from '@react-navigation/drawer';
 import {theme} from '../themes/theme';
-
 import Icon from 'react-native-vector-icons/FontAwesome';
-import AsyncStorage from '@react-native-community/async-storage';
-import {AuthContext} from '../components/context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Avatar, Text, Overlay} from 'react-native-elements';
 import Button from '../components/button';
+import {StoreData, GetData, RemoveData} from '../helpers/store-data';
 
 export function DrawerContent(props) {
   const [visible, setVisible] = useState(false);
   const toggleOverlay = param => {
     setVisible(!visible);
     if (param === 'yes') {
+      RemoveData('token');
       props.navigation.reset({
         index: 0,
         routes: [{name: 'StartScene'}],
@@ -31,7 +31,12 @@ export function DrawerContent(props) {
                 source={require('../assets/images/user.png')}
                 size={50}
               />
-              <View style={{marginLeft: 15, flexDirection: 'column', justifyContent:"center"}}>
+              <View
+                style={{
+                  marginLeft: 15,
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                }}>
                 <Text style={styles.title}>user@example.com</Text>
               </View>
             </View>

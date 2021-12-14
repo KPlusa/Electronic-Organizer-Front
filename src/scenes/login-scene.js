@@ -12,38 +12,54 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import {EmailValidator} from '../helpers/email-validator';
 import {PasswordValidator} from '../helpers/password-validator';
 import axios from 'axios';
+import {StoreData, GetData} from '../helpers/store-data';
 
 export default function LoginScene({navigation}) {
   const [email, setEmail] = useState({value: '', error: ''});
   const [password, setPassword] = useState({value: '', error: ''});
 
   const onLoginPressed = () => {
+    resetValues();
     const emailError = EmailValidator(email.value);
     const passwordError = PasswordValidator(password.value);
-    
+
     if (emailError || passwordError) {
       setEmail({...email, error: emailError});
       setPassword({...password, error: passwordError});
       return;
     }
-    console.log('email: ', email.value);
-    axios.post(`${config.api_url}/Authentication/login`,{
-      
+    axios
+      .post(`${config.api_url}/Authentication/login`, {
         email: email.value,
-        password: password.value
-      
-    },)
-    .then((response) => {
-       console.log(response.data);
-    })
-    .catch((error) => {
-      console.log(error);
-       return;
-    });
-    // navigation.reset({
-    //   index: 0,
-    //   routes: [{name: 'MainScene'}],
-    // });
+        password: password.value,
+      })
+      .then(response => {
+        //console.log(response.data);
+        if (response.data.status === 'Success') {
+          //console.log(response.data.token);
+          StoreData('token',response.data.token);
+          navigation.reset({
+            index: 0,
+            routes: [{name: 'MainScene'}],
+          });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        if (!error.response) {
+          setPassword({...password, error: 'Network error.'});
+        } else {
+          if (error.response.data) {
+            setEmail({...email, error: error.response.data.message});
+          }
+        }
+
+        return;
+      });
+  };
+  const resetValues = () => {
+    setEmail({...email, error: ''});
+    setPassword({...password, error: ''});
   };
 
   const emailRef = React.createRef();

@@ -7,12 +7,14 @@ import Button from '../components/button';
 import Background from '../components/background';
 import {theme} from '../themes/theme';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import {StoreData, GetData, RemoveData} from '../helpers/store-data';
 
 export default function Profile({navigation}) {
   const [visible, setVisible] = useState(false);
   const toggleOverlay = param => {
     setVisible(!visible);
     if (param === 'yes') {
+      RemoveData('token');
       navigation.reset({
         index: 0,
         routes: [{name: 'StartScene'}],

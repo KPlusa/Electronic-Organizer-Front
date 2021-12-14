@@ -1,27 +1,12 @@
-import React, {useEffect} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
-import {StartScene, LoginScene,RegisterScene, MainScene} from './scenes';
-import SplashScreen from 'react-native-splash-screen';
-const Stack = createStackNavigator();
+import React, {useEffect, useState} from 'react';
+import {InitialScene} from './scenes';
+import {GetData} from './helpers/store-data';
 export default function App() {
+  const [tokenState, setTokenState] = useState();
   useEffect(() => {
-    SplashScreen.hide();
-  });
-    return (
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="StartScene"
-          screenOptions={{
-            headerShown: false,
-          }}>
-          <Stack.Screen name="StartScene" component={StartScene} />
-          <Stack.Screen name="LoginScene" component={LoginScene} />
-          <Stack.Screen name="RegisterScene" component={RegisterScene} />
-          <Stack.Screen name="MainScene" component={MainScene} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    );
-    
-  }
- 
+    GetData('token').then(data => setTokenState(data));
+  }, []);
+  return tokenState !== undefined ? (
+    <InitialScene tokenStatus={tokenState} />
+  ) : null;
+}

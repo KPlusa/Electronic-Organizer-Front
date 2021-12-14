@@ -1,0 +1,27 @@
+import React, {useEffect, useState} from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import {StartScene, LoginScene, RegisterScene, MainScene} from '../scenes';
+import SplashScreen from 'react-native-splash-screen';
+import {GetData} from './helpers/store-data';
+const Stack = createStackNavigator();
+
+export default function InitialScene({tokenStatus}) {
+  useEffect(() => {
+    SplashScreen.hide();
+  }, []);
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName={tokenStatus === null ? 'StartScene' : 'MainScene'}
+        screenOptions={{
+          headerShown: false,
+        }}>
+        <Stack.Screen name="StartScene" component={StartScene} />
+        <Stack.Screen name="LoginScene" component={LoginScene} />
+        <Stack.Screen name="RegisterScene" component={RegisterScene} />
+        <Stack.Screen name="MainScene" component={MainScene} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
