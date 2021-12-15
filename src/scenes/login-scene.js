@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {TouchableOpacity, StyleSheet, View, TextInput} from 'react-native';
 import Background from '../components/background';
 import Logo from '../components/logo';
@@ -7,17 +7,54 @@ import BackButton from '../components/back-button';
 import Input from '../components/input-text';
 import {theme} from '../themes/theme';
 import {config} from '../configs/config';
-import {Divider, Text} from 'react-native-elements';
+import {Divider, Text, SocialIcon} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {EmailValidator} from '../helpers/email-validator';
 import {PasswordValidator} from '../helpers/password-validator';
 import axios from 'axios';
 import {StoreData, GetData} from '../helpers/store-data';
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
 
 export default function LoginScene({navigation}) {
+
+  GoogleSignin.configure({
+  scopes: ['https://www.googleapis.com/auth/drive.readonly'], // [Android] what API you want to access on behalf of the user, default is email and profile
+  webClientId: config.google_id, // client ID of type WEB for your server (needed to verify user ID and offline access)
+  offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+});
   const [email, setEmail] = useState({value: '', error: ''});
   const [password, setPassword] = useState({value: '', error: ''});
+  const [userinfo, setUserInfo] = useState();
+  signIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      setUserInfo(userInfo);
+      console.log(userInfo);
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.log("cancelled");
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        // operation (e.g. sign in) is in progress already
+        console.log("in progress");
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        // play services not available or outdated
+        console.log("service not available");
+      } else {
+        console.log(error);
+      }
+    }
+  };
 
+  useEffect(() => {
+    // GoogleSignin.configure({
+    //   webClientId: config.google_id,
+    // });
+  }, []);
   const onLoginPressed = () => {
     resetValues();
     const emailError = EmailValidator(email.value);
@@ -37,7 +74,7 @@ export default function LoginScene({navigation}) {
         //console.log(response.data);
         if (response.data.status === 'Success') {
           //console.log(response.data.token);
-          StoreData('token',response.data.token);
+          StoreData('token', response.data.token);
           navigation.reset({
             index: 0,
             routes: [{name: 'MainScene'}],
@@ -73,7 +110,6 @@ export default function LoginScene({navigation}) {
         Welcome back!
       </Text>
       <Divider orientation="horizontal" height={30} />
-
       <Input
         refs={emailRef}
         style={{height: 50, width: 300}}
@@ -131,11 +167,50 @@ export default function LoginScene({navigation}) {
         title="LOGIN"
         color={theme.colors.mainColor}
         onPress={onLoginPressed}></Button>
+
       <View style={styles.row}>
-        <Text>Don’t have an account? </Text>
+        <Text style={{color: 'gray'}}>Don’t have an account? </Text>
         <TouchableOpacity onPress={() => navigation.replace('RegisterScene')}>
           <Text style={styles.signUp}>Sign up</Text>
         </TouchableOpacity>
+      </View>
+      <View style={styles.column}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: 300,
+            marginTop: 20,
+            marginBottom: 10,
+          }}>
+          <View style={[styles.lineStyle, {marginRight: 10}]} />
+          <View style={{justifyContent: 'center', alignItems: 'center'}}>
+            <Text style={{color: 'gray'}}>Or Login with</Text>
+          </View>
+          <View style={[styles.lineStyle, {marginLeft: 10}]} />
+        </View>
+
+        <SocialIcon
+          type="google"
+          underlayColor="gray"
+          style={{backgroundColor: 'white'}}
+          iconColor="#b70000"
+          onPress={signIn}
+          //disabled={isSigninInProgress}
+        />
+        {/* <GoogleSigninButton
+          style={{
+            width: 48,
+            height: 48,
+            borderRadius: 20,
+            backgroundColor: 'blue',
+          }}
+          size={GoogleSigninButton.Size.Icon}
+          // onPress={this._signIn}
+          // disabled={this.state.isSigninInProgress}
+        /> */}
       </View>
     </Background>
   );
@@ -143,6 +218,14 @@ export default function LoginScene({navigation}) {
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    fontSize: 16,
+  },
+  column: {
+    flexDirection: 'column',
     alignItems: 'center',
     width: '100%',
     alignSelf: 'center',
@@ -158,5 +241,10 @@ const styles = StyleSheet.create({
     width: 300,
     alignSelf: 'center',
     color: theme.colors.error,
+  },
+  lineStyle: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'gray',
   },
 });
