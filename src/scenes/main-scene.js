@@ -98,24 +98,21 @@ export default function MainScene() {
       setAvatar(decoded.avatar);
     });
   }, []);
-  return email !== undefined
-    ? 
-      (
-        <Drawer.Navigator
-          drawerContent={props => (
-            <DrawerContent {...props} email={email} avatar={avatar} />
-          )}
-          screenOptions={{
-            headerStyle: {backgroundColor: theme.colors.mainColor},
-            headerShown: false,
-            headerTintColor: 'white',
-            headerTitleStyle: 'bold',
-            headerTitleAlign: 'center',
-          }}>
-          <Drawer.Screen name="Home" component={MyTabs} />
-        </Drawer.Navigator>
-      )
-    : null;
+  return email !== undefined ? (
+    <Drawer.Navigator
+      drawerContent={props => (
+        <DrawerContent {...props} email={email} avatar={avatar} />
+      )}
+      screenOptions={{
+        headerStyle: {backgroundColor: theme.colors.mainColor},
+        headerShown: false,
+        headerTintColor: 'white',
+        headerTitleStyle: 'bold',
+        headerTitleAlign: 'center',
+      }}>
+      <Drawer.Screen name="Home" component={MyTabs} />
+    </Drawer.Navigator>
+  ) : null;
 }
 
 const HomeStackScreen = ({navigation}) => (

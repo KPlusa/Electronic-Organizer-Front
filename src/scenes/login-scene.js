@@ -15,46 +15,62 @@ import axios from 'axios';
 import {StoreData, GetData} from '../helpers/store-data';
 import {
   GoogleSignin,
-  GoogleSigninButton,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 
 export default function LoginScene({navigation}) {
-
   GoogleSignin.configure({
-  scopes: ['https://www.googleapis.com/auth/drive.readonly'], // [Android] what API you want to access on behalf of the user, default is email and profile
-  webClientId: config.google_id, // client ID of type WEB for your server (needed to verify user ID and offline access)
-  offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
-});
+    scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+    webClientId: config.google_id,
+    offlineAccess: true,
+  });
   const [email, setEmail] = useState({value: '', error: ''});
   const [password, setPassword] = useState({value: '', error: ''});
-  const [userinfo, setUserInfo] = useState();
+
   signIn = async () => {
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
-      setUserInfo(userInfo);
-      console.log(userInfo);
+      axios
+        .post(`${config.api_url}/Authentication/external-login`, {
+          tokenId: userInfo.idToken,
+        })
+        .then(response => {
+          if (response.data.status === 'Success') {
+            StoreData('token', response.data.token);
+            StoreData('googleAccount', 'true');
+            navigation.reset({
+              index: 0,
+              routes: [{name: 'MainScene'}],
+            });
+          }
+        })
+        .catch(error => {
+          if (!error.response) {
+            setPassword({...password, error: 'Network error.'});
+          } else {
+            if (error.response.data) {
+              setEmail({...email, error: error.response.data.message});
+            }
+          }
+          return;
+        });
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        console.log("cancelled");
+        console.log('cancelled');
       } else if (error.code === statusCodes.IN_PROGRESS) {
         // operation (e.g. sign in) is in progress already
-        console.log("in progress");
+        console.log('in progress');
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
         // play services not available or outdated
-        console.log("service not available");
+        console.log('service not available');
       } else {
         console.log(error);
       }
     }
   };
 
-  useEffect(() => {
-    // GoogleSignin.configure({
-    //   webClientId: config.google_id,
-    // });
-  }, []);
+  useEffect(() => {}, []);
   const onLoginPressed = () => {
     resetValues();
     const emailError = EmailValidator(email.value);
@@ -71,9 +87,7 @@ export default function LoginScene({navigation}) {
         password: password.value,
       })
       .then(response => {
-        //console.log(response.data);
         if (response.data.status === 'Success') {
-          //console.log(response.data.token);
           StoreData('token', response.data.token);
           navigation.reset({
             index: 0,
@@ -198,19 +212,7 @@ export default function LoginScene({navigation}) {
           style={{backgroundColor: 'white'}}
           iconColor="#b70000"
           onPress={signIn}
-          //disabled={isSigninInProgress}
         />
-        {/* <GoogleSigninButton
-          style={{
-            width: 48,
-            height: 48,
-            borderRadius: 20,
-            backgroundColor: 'blue',
-          }}
-          size={GoogleSigninButton.Size.Icon}
-          // onPress={this._signIn}
-          // disabled={this.state.isSigninInProgress}
-        /> */}
       </View>
     </Background>
   );

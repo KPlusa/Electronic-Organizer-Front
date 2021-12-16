@@ -11,23 +11,12 @@ export async function StoreData(key, value) {
 export async function GetData(key) {
   try {
     const value = await AsyncStorage.getItem(key);
-    // if(!jsonValue){
-    //     return null;
-    // }
     return value;
-    //console.log(value);
-   
-  } catch (e) {
-  }
-  
+  } catch (e) {}
 }
 
 export async function RemoveData(key) {
   try {
     await AsyncStorage.removeItem(key);
-  } catch (e) {
-    // remove error
-  }
-
-  //console.log('Done.');
+  } catch (e) {}
 }

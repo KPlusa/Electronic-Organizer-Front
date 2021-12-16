@@ -9,6 +9,7 @@ import {theme} from '../themes/theme';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {StoreData, GetData, RemoveData} from '../helpers/store-data';
 import ImagePickerOverlay from '../components/image-picker-overlay';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 
 export default function Profile({navigation}) {
   const [visible, setVisible] = useState(false);
@@ -29,6 +30,11 @@ export default function Profile({navigation}) {
       RemoveData('token');
       RemoveData('email');
       RemoveData('avatar');
+      GetData('googleAccount').then(async res => {
+        if (res === 'true') {
+          await GoogleSignin.signOut();
+        }
+      });
       navigation.reset({
         index: 0,
         routes: [{name: 'StartScene'}],
@@ -77,7 +83,7 @@ export default function Profile({navigation}) {
             </TouchableOpacity>
           </View>
         ) : null}
-        {email?<Text style={styles.user}>{email}</Text>:null}
+        {email ? <Text style={styles.user}>{email}</Text> : null}
       </View>
       <Divider orientation="horizontal" height={20} />
       <ImagePickerOverlay
