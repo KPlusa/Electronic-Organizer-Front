@@ -16,17 +16,22 @@ import {Divider, Text, Avatar} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {EmailValidator} from '../helpers/email-validator';
 import ImagePickerOverlay from '../components/image-picker-overlay';
+import {config} from '../configs/config';
+import SuccessfulOverlay from '../components/successful-overlay';
 import {
   PasswordValidator,
   ConfirmValidator,
 } from '../helpers/password-validator';
+import axios from 'axios';
 
-export default function LoginScene({navigation}) {
+export default function RegisterScene({navigation}) {
   const [email, setEmail] = useState({value: '', error: ''});
   const [password, setPassword] = useState({value: '', error: ''});
   const [password2, setPassword2] = useState({value: '', error: ''});
   const [visiblePicker, setVisiblePicker] = useState(false);
   const [image, setImage] = useState(theme.sources.defaultAvatar);
+  const [isSuccessfulOverlayVisible, setSuccessfulOverlayVisibility] =
+    useState(false);
   const tooglePicker = () => {
     setVisiblePicker(!visiblePicker);
   };
@@ -49,10 +54,34 @@ export default function LoginScene({navigation}) {
       setPassword2({...password2, error: confirmError});
       return;
     }
-    navigation.reset({
-      index: 0,
-      routes: [{name: 'StartScene'}],
-    });
+    axios
+      .post(`${config.api_url}/Authentication/register`, {
+        email: email.value,
+        password: password.value,
+        avatar: image,
+      })
+      .then(response => {
+        if (response.data.status === 'Success') {
+          setSuccessfulOverlayVisibility(true);
+          setTimeout(() => {
+            navigation.reset({
+              index: 0,
+              routes: [{name: 'LoginScene'}],
+            });
+          }, 1000);
+        }
+      })
+      .catch(error => {
+        if (!error.response) {
+          setPassword({...password, error: 'Network error.'});
+        } else {
+          if (error.response.data) {
+            setEmail({...email, error: error.response.data.message});
+          }
+        }
+
+        return;
+      });
   };
 
   return (
@@ -176,6 +205,7 @@ export default function LoginScene({navigation}) {
           <Text style={styles.signUp}>Login</Text>
         </TouchableOpacity>
       </View>
+      {isSuccessfulOverlayVisible ? <SuccessfulOverlay /> : null}
     </Background>
   );
 }

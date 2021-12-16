@@ -17,15 +17,13 @@ import {
   GoogleSignin,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
+import SuccessfulOverlay from '../components/successful-overlay';
 
 export default function LoginScene({navigation}) {
-  GoogleSignin.configure({
-    scopes: ['https://www.googleapis.com/auth/drive.readonly'],
-    webClientId: config.google_id,
-    offlineAccess: true,
-  });
   const [email, setEmail] = useState({value: '', error: ''});
   const [password, setPassword] = useState({value: '', error: ''});
+  const [isSuccessfulOverlayVisible, setSuccessfulOverlayVisibility] =
+    useState(false);
 
   signIn = async () => {
     try {
@@ -70,7 +68,13 @@ export default function LoginScene({navigation}) {
     }
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    GoogleSignin.configure({
+      scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+      webClientId: config.google_id,
+      offlineAccess: true,
+    });
+  }, []);
   const onLoginPressed = () => {
     resetValues();
     const emailError = EmailValidator(email.value);
@@ -89,10 +93,13 @@ export default function LoginScene({navigation}) {
       .then(response => {
         if (response.data.status === 'Success') {
           StoreData('token', response.data.token);
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'MainScene'}],
-          });
+          setSuccessfulOverlayVisibility(true);
+          setTimeout(() => {
+            navigation.reset({
+              index: 0,
+              routes: [{name: 'MainScene'}],
+            });
+          }, 1000);
         }
       })
       .catch(error => {
@@ -214,6 +221,7 @@ export default function LoginScene({navigation}) {
           onPress={signIn}
         />
       </View>
+      {isSuccessfulOverlayVisible ? <SuccessfulOverlay /> : null}
     </Background>
   );
 }
