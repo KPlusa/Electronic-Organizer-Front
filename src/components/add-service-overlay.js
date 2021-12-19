@@ -83,7 +83,7 @@ export default function AddServiceFormOverlay({
             autoCapitalize="none"
             autoCompleteType="off"
             errorStyle={{color: theme.colors.error}}
-            leftIcon={{type: 'material-icons', name: 'access-time', size: 15}}
+            leftIcon={{type: 'material-icons', name: 'title', size: 15}}
             blurOnSubmit={false}
             forwardRef={true}></Input>
         </KeyboardAvoidingView>
