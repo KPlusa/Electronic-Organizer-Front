@@ -20,16 +20,20 @@ import {
   CodeValidator,
 } from '../helpers/service-validator';
 import SuccessfulOverlay from '../components/successful-overlay';
+import axios from 'axios';
+import {config} from '../configs/config';
+import {StoreData, GetData} from '../helpers/store-data';
 
 export default function DeleteServiceFormOverlay({
   visibleDeleteServiceForm,
   toogleDeleteServiceFormOverlay,
   service,
   onlyAddHeaderOption,
+  getService,
 }) {
-  const [title, setTitle] = useState({value: service.title, error: ''});
+  const [title, setTitle] = useState({value: service.name, error: ''});
   const [estimatedTime, setEstimatedTime] = useState({
-    value: service.estimatedTime.toString(),
+    value: service.estimated_time.toString(),
     error: '',
   });
   const [code, setCode] = useState({value: service.code, error: ''});
@@ -48,17 +52,39 @@ export default function DeleteServiceFormOverlay({
       setCode({...code, error: codeError});
       return;
     }
-    onlyAddHeaderOption();
-    toogleDeleteServiceFormOverlay();
-    setSuccessfulOverlayVisibility(true);
-    setTimeout(() => {
-      resetValues();
-    }, 1000);
+    GetData('token').then(token => {
+      GetData('email').then(mail => {
+        axios
+          .delete(`${config.api_url}/Services/${service.id}`, {
+            headers: {Authorization: `Bearer ${token}`},
+          })
+          .then(response => {
+            if (response.status === 204) {
+              toogleDeleteServiceFormOverlay();
+              setSuccessfulOverlayVisibility(true);
+              setTimeout(() => {
+                getService();
+                resetValues();
+              }, 1000);
+            }
+          })
+          .catch(error => {
+            if (!error.response) {
+              setCode({...code, error: 'Network error.'});
+            } else {
+              if (error.response.data) {
+                setCode({...code, error: error.response.data.message});
+              }
+            }
+            return;
+          });
+      });
+    });
   };
 
   const resetValues = () => {
-    setTitle({value: service.title, error: ''});
-    setEstimatedTime({value: service.estimatedTime.toString(), error: ''});
+    setTitle({value: service.name, error: ''});
+    setEstimatedTime({value: service.estimated_time.toString(), error: ''});
     setCode({value: service.code, error: ''});
     setSuccessfulOverlayVisibility(false);
     onlyAddHeaderOption();

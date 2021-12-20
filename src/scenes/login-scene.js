@@ -67,12 +67,9 @@ export default function LoginScene({navigation}) {
       }
     }
   };
-
   useEffect(() => {
     GoogleSignin.configure({
-      scopes: ['https://www.googleapis.com/auth/drive.readonly'],
       webClientId: config.google_id,
-      offlineAccess: true,
     });
   }, []);
   const onLoginPressed = () => {
@@ -111,7 +108,6 @@ export default function LoginScene({navigation}) {
             setEmail({...email, error: error.response.data.message});
           }
         }
-
         return;
       });
   };

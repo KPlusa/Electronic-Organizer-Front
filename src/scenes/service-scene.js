@@ -18,17 +18,25 @@ import {HeaderBackButton} from '@react-navigation/elements';
 import AddServiceFormOverlay from '../components/add-service-overlay';
 import EditServiceFormOverlay from '../components/edit-service-overlay';
 import DeleteServiceFormOverlay from '../components/delete-service-overlay';
+import {StoreData, GetData, RemoveData} from '../helpers/store-data';
+import axios from 'axios';
+import {config} from '../configs/config';
 
 export default function Service({navigation}) {
   const [isFullHeaderOptionsSelected, setFullHeaderOptionsSelected] =
     useState(false);
   const [visibleAddServiceForm, setVisibleAddServiceForm] = useState(false);
   const [visibleEditServiceForm, setVisibleEditServiceForm] = useState(false);
-  const [visibleDeleteServiceForm, setVisibleDeleteServiceForm] = useState(false);
+  const [visibleDeleteServiceForm, setVisibleDeleteServiceForm] =
+    useState(false);
   const [service, setService] = useState(null);
+  const [services, setServices] = useState([]);
+  const [isLoading, setLoading] = useState(true);
+
   var isBackButtonPressed = false;
   const toogleAddServiceFormOverlay = () => {
     setVisibleAddServiceForm(!visibleAddServiceForm);
+    !visibleAddServiceForm ? onlyAddHeaderOption() : null;
   };
   const toogleEditServiceFormOverlay = () => {
     setVisibleEditServiceForm(!visibleEditServiceForm);
@@ -39,6 +47,25 @@ export default function Service({navigation}) {
 
   const SelectedService = childData => {
     setService(childData);
+  };
+  const getService = () => {
+    GetData('token').then(token => {
+      GetData('email').then(mail => {
+        axios
+          .post(
+            `${config.api_url}/Services/list-services`,
+            {
+              userMail: mail,
+            },
+            {headers: {Authorization: `Bearer ${token}`}},
+          )
+          .then(response => {
+            setServices(JSON.parse(response.data.data));
+          })
+          .catch(error => {})
+          .finally(() => setLoading(false));
+      });
+    });
   };
 
   const fullHeaderOptions = () => {
@@ -58,8 +85,7 @@ export default function Service({navigation}) {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.headerButtons}
-            onPress={toogleDeleteServiceFormOverlay}
-          >
+            onPress={toogleDeleteServiceFormOverlay}>
             <Icon name={'trash'} size={25} color="white"></Icon>
           </TouchableOpacity>
         </View>
@@ -133,12 +159,16 @@ export default function Service({navigation}) {
             fullHeaderOptions={fullHeaderOptions}
             isFullHeaderOptionsSelected={isFullHeaderOptionsSelected}
             selectedService={SelectedService}
+            servicesList={services}
+            getService={getService}
+            isLoading={isLoading}
           />
         </View>
         <AddServiceFormOverlay
           visibleAddServiceForm={visibleAddServiceForm}
           toogleAddServiceFormOverlay={toogleAddServiceFormOverlay}
           onlyAddHeaderOption={onlyAddHeaderOption}
+          getService={getService}
         />
         {service ? (
           <>
@@ -153,6 +183,7 @@ export default function Service({navigation}) {
               toogleDeleteServiceFormOverlay={toogleDeleteServiceFormOverlay}
               service={service}
               onlyAddHeaderOption={onlyAddHeaderOption}
+              getService={getService}
             />
           </>
         ) : null}
@@ -168,6 +199,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
+    marginTop: 35,
   },
   headerButtons: {
     width: 30,

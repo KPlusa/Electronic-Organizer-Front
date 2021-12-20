@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -6,18 +6,25 @@ import {
   StyleSheet,
   FlatList,
   SafeAreaView,
+  ActivityIndicator,
 } from 'react-native';
 import {theme} from '../themes/theme';
-import GetServices from '../helpers/get-services';
+import {StoreData, GetData, RemoveData} from '../helpers/store-data';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import axios from 'axios';
+import {config} from '../configs/config';
 
 export default function RenderService({
   fullHeaderOptions,
   isFullHeaderOptionsSelected,
   selectedService,
+  servicesList,
+  getService,
+  isLoading,
 }) {
   const [isItemSelected, setItemSelected] = useState(false);
+  const [services, setServices] = useState([]);
   const showServiceInfo = value => {
     selectedService(value);
   };
@@ -25,6 +32,11 @@ export default function RenderService({
     fullHeaderOptions();
     setItemSelected(value);
   };
+
+
+  useEffect(() => {
+    getService();
+  }, []);
   const Item = ({item}) => (
     <TouchableOpacity
       style={[
@@ -41,7 +53,7 @@ export default function RenderService({
         showServiceInfo(item);
         toogleItemSelected(item.id);
       }}>
-      <Text style={styles.title}>{item.title}</Text>
+      <Text style={styles.title}>{item.name}</Text>
       <View
         style={{
           flexDirection: 'row',
@@ -54,7 +66,7 @@ export default function RenderService({
             color={theme.colors.mainColor}></IonIcon>
         </View>
         <Text style={styles.content}>Estimated Time:</Text>
-        <Text style={styles.content}>{item.estimatedTime} min</Text>
+        <Text style={styles.content}>{item.estimated_time} min</Text>
       </View>
       <View
         style={{
@@ -77,18 +89,22 @@ export default function RenderService({
 
   return (
     <SafeAreaView style={styles.container}>
-      <FlatList
-        data={GetServices()}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-      />
+      {isLoading ? (
+        <ActivityIndicator />
+      ) : (
+        <FlatList
+          data={servicesList}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+        />
+      )}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 2,
     backgroundColor: '#f2f4f5',
     width: '80%',
     borderRadius: 15,

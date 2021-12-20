@@ -50,6 +50,7 @@ export default function Calendar({navigation}) {
   const [visibleDeleteButton, setVisibleDeleteButton] = useState(false);
   const toogleAddFormOverlay = () => {
     setVisibleAddForm(!visibleAddForm);
+    !visibleAddForm?onlyAddHeaderOption():null;
   };
   const toogleEditFormOverlay = () => {
     setVisibleEditForm(!visibleEditForm);
@@ -118,7 +119,7 @@ export default function Calendar({navigation}) {
   const loadItems = day => {
     setTimeout(() => {
       const events = GetItems();
-      for (let i = -7; i <= 7; i++) {
+      for (let i = -30; i <= 30; i++) {
         const time = day.timestamp + i * 24 * 60 * 60 * 1000;
         const strTime = timeToString(time);
         //console.log(strTime);

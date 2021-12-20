@@ -6,6 +6,7 @@ import {
   StatusBar,
   TouchableOpacity,
   KeyboardAvoidingView,
+  ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -14,6 +15,9 @@ import {Overlay, Divider} from 'react-native-elements';
 import {theme} from '../themes/theme';
 import Input from '../components/input-text';
 import Button from '../components/button';
+import axios from 'axios';
+import {config} from '../configs/config';
+import {StoreData, GetData} from '../helpers/store-data';
 import {
   TitleValidator,
   TimeValidator,
@@ -25,6 +29,7 @@ export default function AddServiceFormOverlay({
   visibleAddServiceForm,
   toogleAddServiceFormOverlay,
   onlyAddHeaderOption,
+  getService,
 }) {
   const [title, setTitle] = useState({value: '', error: ''});
   const [estimatedTime, setEstimatedTime] = useState({value: '', error: ''});
@@ -44,23 +49,53 @@ export default function AddServiceFormOverlay({
       setCode({...code, error: codeError});
       return;
     }
-    toogleAddServiceFormOverlay();
-    setSuccessfulOverlayVisibility(true);
-    setTimeout(() => {
-      resetValues();
-    }, 1000);
+    GetData('token').then(token => {
+      GetData('email').then(mail => {
+        axios
+          .post(
+            `${config.api_url}/Services`,
+            {
+              userMail: mail,
+              title: title.value,
+              estimatedTime: estimatedTime.value,
+              serviceCode: code.value,
+            },
+            {headers: {Authorization: `Bearer ${token}`}},
+          )
+          .then(response => {
+            if (response.data.status === 'Success') {
+              toogleAddServiceFormOverlay();
+              setSuccessfulOverlayVisibility(true);
+              setTimeout(() => {
+                resetValues();
+                getService();
+              }, 1000);
+            }
+          })
+          .catch(error => {
+            if (!error.response) {
+              setCode({...code, error: 'Network error.'});
+            } else {
+              if (error.response.data) {
+                setCode({...code, error: error.response.data.message});
+              }
+            }
+            return;
+          });
+      });
+    });
   };
 
-  const resetValues = () => {
+  const resetValues = param => {
     setTitle({value: '', error: ''});
     setEstimatedTime({value: '', error: ''});
     setCode({value: '', error: ''});
     setSuccessfulOverlayVisibility(false);
-    onlyAddHeaderOption();
+    getService();
   };
 
   return (
-    <>
+    <ScrollView>
       <Overlay
         isVisible={visibleAddServiceForm}
         onBackdropPress={toogleAddServiceFormOverlay}>
@@ -151,7 +186,7 @@ export default function AddServiceFormOverlay({
         </View>
       </Overlay>
       {isSuccessfulOverlayVisible ? <SuccessfulOverlay /> : null}
-    </>
+    </ScrollView>
   );
 }
 

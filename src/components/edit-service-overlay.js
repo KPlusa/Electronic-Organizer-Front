@@ -6,6 +6,7 @@ import {
   StatusBar,
   TouchableOpacity,
   KeyboardAvoidingView,
+  ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -14,6 +15,9 @@ import {Overlay, Divider} from 'react-native-elements';
 import {theme} from '../themes/theme';
 import Input from '../components/input-text';
 import Button from '../components/button';
+import axios from 'axios';
+import {config} from '../configs/config';
+import {StoreData, GetData} from '../helpers/store-data';
 import {
   TitleValidator,
   TimeValidator,
@@ -27,9 +31,9 @@ export default function EditServiceFormOverlay({
   service,
   onlyAddHeaderOption,
 }) {
-  const [title, setTitle] = useState({value: service.title, error: ''});
+  const [title, setTitle] = useState({value: service.name, error: ''});
   const [estimatedTime, setEstimatedTime] = useState({
-    value: service.estimatedTime.toString(),
+    value: service.estimated_time.toString(),
     error: '',
   });
   const [code, setCode] = useState({value: service.code, error: ''});
@@ -48,7 +52,7 @@ export default function EditServiceFormOverlay({
       setCode({...code, error: codeError});
       return;
     }
-    onlyAddHeaderOption();
+    //onlyAddHeaderOption();
     toogleEditServiceFormOverlay();
     setSuccessfulOverlayVisibility(true);
     setTimeout(() => {
@@ -57,15 +61,15 @@ export default function EditServiceFormOverlay({
   };
 
   const resetValues = () => {
-    setTitle({value: service.title, error: ''});
-    setEstimatedTime({value: service.estimatedTime.toString(), error: ''});
+    setTitle({value: service.name, error: ''});
+    setEstimatedTime({value: service.estimated_time.toString(), error: ''});
     setCode({value: service.code, error: ''});
     setSuccessfulOverlayVisibility(false);
     onlyAddHeaderOption();
   };
 
   return (
-    <>
+    <ScrollView>
       <Overlay
         isVisible={visibleEditServiceForm}
         onBackdropPress={toogleEditServiceFormOverlay}>
@@ -160,7 +164,7 @@ export default function EditServiceFormOverlay({
         </View>
       </Overlay>
       {isSuccessfulOverlayVisible ? <SuccessfulOverlay /> : null}
-    </>
+    </ScrollView>
   );
 }
 
