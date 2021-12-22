@@ -46,6 +46,7 @@ export default function Service({navigation}) {
   };
 
   const SelectedService = childData => {
+    setService('');
     setService(childData);
   };
   const getService = () => {
@@ -177,6 +178,7 @@ export default function Service({navigation}) {
               toogleEditServiceFormOverlay={toogleEditServiceFormOverlay}
               service={service}
               onlyAddHeaderOption={onlyAddHeaderOption}
+              getService={getService}
             />
             <DeleteServiceFormOverlay
               visibleDeleteServiceForm={visibleDeleteServiceForm}

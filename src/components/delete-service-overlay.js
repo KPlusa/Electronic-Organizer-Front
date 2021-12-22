@@ -83,9 +83,6 @@ export default function DeleteServiceFormOverlay({
   };
 
   const resetValues = () => {
-    setTitle({value: service.name, error: ''});
-    setEstimatedTime({value: service.estimated_time.toString(), error: ''});
-    setCode({value: service.code, error: ''});
     setSuccessfulOverlayVisibility(false);
     onlyAddHeaderOption();
   };

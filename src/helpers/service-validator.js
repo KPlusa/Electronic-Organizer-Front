@@ -6,6 +6,7 @@ export function TitleValidator(title) {
 export function TimeValidator(time) {
     if (!time) return 'Estimated time is required.';
     if (time>180 || time<10) return 'Wrong estimated time. It must be between 10 and 180 minutes.';
+    if(!Number.isInteger(Number(time))) return 'Estimated time must be an integer.';
   return '';
 }
 

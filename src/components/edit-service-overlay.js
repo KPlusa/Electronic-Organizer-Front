@@ -30,6 +30,7 @@ export default function EditServiceFormOverlay({
   toogleEditServiceFormOverlay,
   service,
   onlyAddHeaderOption,
+  getService,
 }) {
   const [title, setTitle] = useState({value: service.name, error: ''});
   const [estimatedTime, setEstimatedTime] = useState({
@@ -37,7 +38,6 @@ export default function EditServiceFormOverlay({
     error: '',
   });
   const [code, setCode] = useState({value: service.code, error: ''});
-
   const [isSuccessfulOverlayVisible, setSuccessfulOverlayVisibility] =
     useState(false);
 
@@ -52,18 +52,48 @@ export default function EditServiceFormOverlay({
       setCode({...code, error: codeError});
       return;
     }
-    //onlyAddHeaderOption();
-    toogleEditServiceFormOverlay();
-    setSuccessfulOverlayVisibility(true);
-    setTimeout(() => {
-      resetValues();
-    }, 1000);
+    GetData('token').then(token => {
+      GetData('email').then(mail => {
+        axios
+          .put(
+            `${config.api_url}/Services`,
+            {
+              userMail: mail,
+              title: title.value,
+              estimatedTime: estimatedTime.value,
+              serviceCode: code.value,
+              serviceId: service.id,
+            },
+            {
+              headers: {Authorization: `Bearer ${token}`},
+            },
+          )
+          .then(response => {
+            if (response.data.status === 'Success') {
+              //console.log(response.data);
+              toogleEditServiceFormOverlay();
+              setSuccessfulOverlayVisibility(true);
+              setTimeout(() => {
+                getService();
+                resetValues();
+              }, 1000);
+            }
+          })
+          .catch(error => {
+            if (!error.response) {
+              setCode({...code, error: 'Network error.'});
+            } else {
+              if (error.response.data) {
+                setCode({...code, error: error.response.data.message});
+              }
+            }
+            return;
+          });
+      });
+    });
   };
 
   const resetValues = () => {
-    setTitle({value: service.name, error: ''});
-    setEstimatedTime({value: service.estimated_time.toString(), error: ''});
-    setCode({value: service.code, error: ''});
     setSuccessfulOverlayVisibility(false);
     onlyAddHeaderOption();
   };
