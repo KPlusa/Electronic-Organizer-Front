@@ -15,3 +15,8 @@ export function ConfirmValidator(password, password2) {
   }
   return '';
 }
+export function OldPasswordValidator(password) {
+  if (typeof password2 !== 'undefined')
+    return 'Old Password is required.';
+  return '';
+}

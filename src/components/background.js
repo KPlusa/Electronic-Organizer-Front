@@ -12,7 +12,7 @@ export default function Background({children, noScrollView}) {
       source={require('../assets/images/background.png')}
       style={styles.background}>
       {noScrollView === undefined ? (
-        <ScrollView behavior="padding" contentContainerStyle={styles.container}>
+        <ScrollView keyboardShouldPersistTaps="handled" behavior="padding" contentContainerStyle={styles.container}>
           {children}
         </ScrollView>
       ) : (

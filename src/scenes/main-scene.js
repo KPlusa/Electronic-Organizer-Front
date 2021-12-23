@@ -19,13 +19,9 @@ import Scan from './scan-scene';
 import Calendar from './calendar-scene';
 import About from './about-scene';
 import Service from './service-scene';
+import SetPassword from './set-password-scene';
 
 const Drawer = createDrawerNavigator();
-
-// function MyDrawer() {
-
-// }
-
 const Tab = createBottomTabNavigator();
 const HomeStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
@@ -193,6 +189,7 @@ const ProfileStackScreen = ({navigation}) => (
     />
     <ProfileStack.Screen name="About" component={About} />
     <ProfileStack.Screen name="Service" component={Service} />
+    <ProfileStack.Screen name="SetPassword" component={SetPassword} />
   </ProfileStack.Navigator>
 );
 

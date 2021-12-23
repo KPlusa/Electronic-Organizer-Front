@@ -8,6 +8,7 @@ import {Avatar, Text, Overlay} from 'react-native-elements';
 import Button from '../components/button';
 import {StoreData, GetData, RemoveData} from '../helpers/store-data';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {config} from '../configs/config';
 
 export function DrawerContent(props, {email, avatar}) {
   const [visible, setVisible] = useState(false);
@@ -29,7 +30,11 @@ export function DrawerContent(props, {email, avatar}) {
       });
     } else setVisible(!visible);
   };
-
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: config.google_id,
+    });
+  }, []);
   return (
     <View style={{flex: 1}}>
       <DrawerContentScrollView {...props}>
