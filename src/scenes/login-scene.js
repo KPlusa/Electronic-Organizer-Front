@@ -24,7 +24,6 @@ export default function LoginScene({navigation}) {
   const [password, setPassword] = useState({value: '', error: ''});
   const [isSuccessfulOverlayVisible, setSuccessfulOverlayVisibility] =
     useState(false);
-
   signIn = async () => {
     try {
       await GoogleSignin.hasPlayServices();
@@ -37,10 +36,13 @@ export default function LoginScene({navigation}) {
           if (response.data.status === 'Success') {
             StoreData('token', response.data.token);
             StoreData('googleAccount', 'true');
-            navigation.reset({
-              index: 0,
-              routes: [{name: 'MainScene'}],
-            });
+            setSuccessfulOverlayVisibility(true);
+            setTimeout(() => {
+              navigation.reset({
+                index: 0,
+                routes: [{name: 'MainScene'}],
+              });
+            }, 1000);
           }
         })
         .catch(error => {

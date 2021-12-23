@@ -1,5 +1,11 @@
 import React, {useState, useEffect} from 'react';
-import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -82,9 +88,10 @@ const MyTabs = () => (
   </Tab.Navigator>
 );
 
-export default function MainScene() {
+export default function MainScene({route}) {
   const [email, setEmail] = useState();
   const [avatar, setAvatar] = useState();
+  const [loaded, setLoaded] = useState(true);
   useEffect(() => {
     GetData('token').then(res => {
       const decoded = jwt_decode(res);
@@ -94,11 +101,18 @@ export default function MainScene() {
       setAvatar(decoded.avatar);
     });
   }, []);
-  return email !== undefined ? (
+  return loaded ? (
+    (setTimeout(() => {
+      setLoaded(false);
+    }, 1000),
+    (
+      <Background>
+        <ActivityIndicator size="large" color={theme.colors.mainColor} />
+      </Background>
+    ))
+  ) : email !== undefined ? (
     <Drawer.Navigator
-      drawerContent={props => (
-        <DrawerContent {...props} email={email} avatar={avatar} />
-      )}
+      drawerContent={props => <DrawerContent {...props} email={email} />}
       screenOptions={{
         headerStyle: {backgroundColor: theme.colors.mainColor},
         headerShown: false,

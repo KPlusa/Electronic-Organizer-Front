@@ -13,6 +13,8 @@ import ImagePickerOverlay from '../components/image-picker-overlay';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import axios from 'axios';
 import {config} from '../configs/config';
+import SuccessfulOverlay from '../components/successful-overlay';
+
 
 export default function Profile({navigation}) {
   const [visible, setVisible] = useState(false);
@@ -22,6 +24,8 @@ export default function Profile({navigation}) {
   const [visiblePicker, setVisiblePicker] = useState(false);
   const [passwordExistance, setPasswordExistance] = useState(false);
   const [isLoading, setLoading] = useState(true);
+  const [isSuccessfulOverlayVisible, setSuccessfulOverlayVisibility] =
+    useState(false);
   const tooglePicker = () => {
     setVisiblePicker(!visiblePicker);
   };
@@ -49,15 +53,39 @@ export default function Profile({navigation}) {
       });
     } else setVisible(!visible);
   };
-  useEffect(() => {
-    GetData('avatar').then(res => {
-      setAvatar(res);
+  const SetAvatar = () => {
+    GetData('token').then(token => {
+      GetData('email').then(mail => {
+        axios
+          .post(
+            `${config.api_url}/EndUsers/set-avatar`,
+            {
+              userMail: mail,
+              avatar: avatar,
+            },
+            {headers: {Authorization: `Bearer ${token}`}},
+          )
+          .then(response => {
+            setImage(null);
+            StoreData('avatar', avatar);
+            setSuccessfulOverlayVisibility(true);
+            setTimeout(() => {
+              setSuccessfulOverlayVisibility(false);
+            }, 1000);
+          })
+          .catch(error => {})
+          .finally(() => {});
+      });
     });
+  };
+  useEffect(() => {
     GoogleSignin.configure({
       webClientId: config.google_id,
     });
-
     const unsubscribe = navigation.addListener('focus', () => {
+      GetData('avatar').then(res => {
+        setAvatar(res);
+      });
       GetData('token').then(token => {
         GetData('email').then(mail => {
           setEmail(mail);
@@ -73,13 +101,11 @@ export default function Profile({navigation}) {
               if (response.status === 200) setPasswordExistance(true);
               else setPasswordExistance(false);
             })
-            .catch(error => {})
+            .catch(error => {console.log(error);})
             .finally(() => setLoading(false));
         });
       });
     });
-
-    // Return the function to unsubscribe from the event so it gets removed on unmount
     return unsubscribe;
   }, [navigation]);
   return (
@@ -113,7 +139,7 @@ export default function Profile({navigation}) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => {
-                    setAvatar(image);
+                    SetAvatar();
                   }}
                   style={{marginTop: 10, marginLeft: 10}}>
                   <Icon name="check" size={20} color={theme.colors.mainColor} />
@@ -217,6 +243,7 @@ export default function Profile({navigation}) {
           </View>
         </>
       )}
+      {isSuccessfulOverlayVisible ? <SuccessfulOverlay /> : null}
     </Background>
   );
 }

@@ -1,6 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
-import {DrawerContentScrollView, DrawerItem} from '@react-navigation/drawer';
+import {
+  DrawerContentScrollView,
+  DrawerItem,
+  useDrawerStatus,
+} from '@react-navigation/drawer';
 import {theme} from '../themes/theme';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,8 +14,15 @@ import {StoreData, GetData, RemoveData} from '../helpers/store-data';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {config} from '../configs/config';
 
-export function DrawerContent(props, {email, avatar}) {
+export function DrawerContent(props, {email}) {
   const [visible, setVisible] = useState(false);
+  const [avatar, setAvatar] = useState();
+  const isDrawerOpen = useDrawerStatus() === 'open';
+  if (isDrawerOpen) {
+    GetData('avatar').then(res => {
+      setAvatar(res);
+    });
+  }
   const toggleOverlay = param => {
     setVisible(!visible);
     if (param === 'yes') {
@@ -41,8 +52,8 @@ export function DrawerContent(props, {email, avatar}) {
         <View style={styles.drawerContent}>
           <View style={styles.userInfoSection}>
             <View style={{flexDirection: 'row', marginTop: 15}}>
-              {props.avatar ? (
-                <Avatar rounded source={{uri: props.avatar}} size={50} />
+              {avatar ? (
+                <Avatar rounded source={{uri: avatar}} size={50} />
               ) : null}
               <View
                 style={{

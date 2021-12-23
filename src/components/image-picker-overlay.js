@@ -23,8 +23,8 @@ export default function ImagePickerOverlay({
 }) {
   const takePhotoFromCamera = () => {
     ImagePicker.openCamera({
-      compressImageMaxWidth: 300,
-      compressImageMaxHeight: 300,
+      compressImageMaxWidth: 80,
+      compressImageMaxHeight: 80,
       cropping: true,
       includeBase64: true,
     })
@@ -44,8 +44,8 @@ export default function ImagePickerOverlay({
 
   const takePhotoFromGalery = () => {
     ImagePicker.openPicker({
-      width: 300,
-      height: 300,
+      width: 80,
+      height: 80,
       cropping: true,
       includeBase64: true,
     })
