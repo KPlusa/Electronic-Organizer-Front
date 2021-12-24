@@ -28,6 +28,9 @@ import EditFormOverlay from '../components/edit-form-overlay';
 import DeleteFormOverlay from '../components/delete-form-overlay';
 import RenderItem from '../components/render-item';
 import {useHeaderHeight} from '@react-navigation/elements';
+import {StoreData, GetData, RemoveData} from '../helpers/store-data';
+import axios from 'axios';
+import {config} from '../configs/config';
 export default function Calendar({navigation}) {
   const windowHeight = Dimensions.get('window').height;
   const headerHeight = useHeaderHeight();
@@ -48,9 +51,15 @@ export default function Calendar({navigation}) {
   const [visibleDeleteForm, setVisibleDeleteForm] = useState(false);
   const [visibleEditButton, setVisibleEditButton] = useState(true);
   const [visibleDeleteButton, setVisibleDeleteButton] = useState(false);
+
+  const [search, setSearch] = useState('');
+  const [filteredDataSource, setFilteredDataSource] = useState([]);
+  const [masterDataSource, setMasterDataSource] = useState([]);
+  const [isFlatListVisible, setFlatListVisible] = useState(false);
+
   const toogleAddFormOverlay = () => {
     setVisibleAddForm(!visibleAddForm);
-    !visibleAddForm?onlyAddHeaderOption():null;
+    !visibleAddForm ? onlyAddHeaderOption() : null;
   };
   const toogleEditFormOverlay = () => {
     setVisibleEditForm(!visibleEditForm);
@@ -77,7 +86,7 @@ export default function Calendar({navigation}) {
     setItemInfo(childData);
     //console.log('Log: ' + childData.id);
   };
-
+  
   const fullHeaderOptions = () => {
     navigation.setOptions({
       headerRight: () => (

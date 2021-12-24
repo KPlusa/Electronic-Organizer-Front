@@ -26,6 +26,9 @@ export default function GetItems() {
     '2021-12-10': [
       {id: 9, name: "Men's haircut", startTime: '10:30', endTime: '11:00'},
     ],
+    '2021-12-23': [
+      {id: 10, name: "Men's haircut", startTime: '11:30', endTime: '12:00'},
+    ],
   };
   return result;
 }

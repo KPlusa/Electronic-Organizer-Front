@@ -42,6 +42,9 @@ export function DrawerContent(props, {email}) {
     } else setVisible(!visible);
   };
   useEffect(() => {
+    // GetData('avatar').then(res => {
+    //   setAvatar(res);
+    // });
     GoogleSignin.configure({
       webClientId: config.google_id,
     });

@@ -122,6 +122,7 @@ export default function DeleteFormOverlay({
             returnKeyType="next"
             value={event.value}
             disabled
+            label="Title"
             onChangeText={text => setEvent({value: text})}
             error={!!event.error}
             errorMessage={event.error}
