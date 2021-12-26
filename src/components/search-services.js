@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import Input from '../components/input-text';
 import {theme} from '../themes/theme';
-export default function SearchServices({navigation, setEvent, event}) {
+export default function SearchServices({navigation, setEvent, event, disable}) {
   const [search, setSearch] = useState('');
   const [filteredDataSource, setFilteredDataSource] = useState([]);
   const [masterDataSource, setMasterDataSource] = useState([]);
@@ -76,6 +76,7 @@ export default function SearchServices({navigation, setEvent, event}) {
           setEvent({value: text});
           searchFilterFunction(text);
         }}
+        disabled={disable}
         label="Title"
         error={!!event.error}
         errorMessage={event.error}

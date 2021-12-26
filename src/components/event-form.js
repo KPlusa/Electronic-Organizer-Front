@@ -21,18 +21,44 @@ import {EventValidator} from '../helpers/event-validator';
 import SuccessfulOverlay from '../components/successful-overlay';
 import SearchServices from '../components/search-services';
 
-export default function EditFormOverlay({
-  visibleEditForm,
-  toogleEditFormOverlay,
+export default function EventForm({
+  visibleEventForm,
+  toogleEventForm,
   item,
   onlyAddHeaderOption,
+  formType,
+  currentDate,
 }) {
   const [startTime, setStartTime] = useState({
-    value: item.startTime,
+    value: '',
     error: '',
   });
-  const [endTime, setEndTime] = useState({value: item.endTime, error: ''});
-  const [event, setEvent] = useState({value: item.name, error: ''});
+  const [endTime, setEndTime] = useState({value: '', error: ''});
+  const [event, setEvent] = useState({value: '', error: ''});
+  useEffect(() => {
+    if (formType !== 'add') {
+      setStartTime({
+        value: item.startTime,
+        error: '',
+      });
+      setEvent({value: item.name, error: ''});
+      setEndTime({
+        value: item.endTime,
+        error: '',
+      });
+    } else {
+      setStartTime({
+        value: '',
+        error: '',
+      });
+      setEvent({value: '', error: ''});
+      setEndTime({
+        value: '',
+        error: '',
+      });
+    }
+  }, [visibleEventForm]);
+
   const [isDatePickerStartTimeVisible, setDatePickerStartTimeVisibility] =
     useState(false);
   const [isDatePickerEndTimeVisible, setDatePickerEndTimeVisibility] =
@@ -57,6 +83,7 @@ export default function EditFormOverlay({
       error: '',
     });
   };
+
   const handleEndTime = date => {
     toogleEndTimePicker();
 
@@ -82,28 +109,34 @@ export default function EditFormOverlay({
       setEvent({...event, error: eventError});
       return;
     }
-
     setSuccessfulOverlayVisibility(true);
-    toogleEditFormOverlay();
+    toogleEventForm();
     setTimeout(() => {
       resetValues();
     }, 1000);
   };
 
-  const resetValues = () => {
-    onlyAddHeaderOption();
+  const resetValues = () => { 
+    setSuccessfulOverlayVisibility(false);
+    formType!=='add' && visibleEventForm?onlyAddHeaderOption():null;
   };
 
   return (
     <>
       <Overlay
-        isVisible={visibleEditForm}
-        onBackdropPress={toogleEditFormOverlay}
+        isVisible={visibleEventForm}
+        onBackdropPress={toogleEventForm}
         overlayStyle={{height: '80%'}}>
-        <ScrollView keyboardShouldPersistTaps="handled" style={{width: '80%'}}>
+        <ScrollView keyboardShouldPersistTaps="handled" style={{width: '85%'}}>
           <View style={{alignSelf: 'center'}}>
             <MaterialIcon
-              name={'edit'}
+              name={
+                formType === 'add'
+                  ? 'event'
+                  : formType === 'edit'
+                  ? 'edit'
+                  : 'delete'
+              }
               size={40}
               color={theme.colors.mainColor}></MaterialIcon>
           </View>
@@ -112,29 +145,24 @@ export default function EditFormOverlay({
               style={styles.inputStyle}
               inputContainerStyle={styles.inputContainerStyle}
               disabled
-              label="Day of the editing event"
-              value={item.day}
+              label={
+                formType === 'add'
+                  ? 'Selected date'
+                  : formType === 'edit'
+                  ? 'Day of the editing event'
+                  : 'Day of the deleting event'
+              }
+              value={formType === 'add' ? currentDate : item.day}
               leftIcon={{type: 'material-icons', name: 'today', size: 15}}
               blurOnSubmit={false}
               forwardRef={true}></Input>
           </View>
-          {/* <Input
-            style={styles.inputStyle}
-            inputContainerStyle={styles.inputContainerStyle}
-            placeholder="Enter the event you want to add"
-            returnKeyType="next"
-            value={event.value}
-            onChangeText={text => setEvent({value: text})}
-            error={!!event.error}
-            errorMessage={event.error}
-            autoCapitalize="none"
-            autoCompleteType="off"
-            errorStyle={{color: theme.colors.error}}
-            leftIcon={{type: 'material-icons', name: 'event-note', size: 15}}
-            blurOnSubmit={false}
-            forwardRef={true}></Input> */}
-          <SearchServices setEvent={SetEvent} event={event} />
-          <View style={{width: '90%', flexDirection: 'row'}} behavior="height">
+          <SearchServices
+            setEvent={SetEvent}
+            event={event}
+            disable={formType === 'delete' ? true : false}
+          />
+          <View style={{flexDirection: 'row'}} behavior="height">
             <Input
               style={styles.inputStyle}
               inputContainerStyle={styles.inputContainerStyle}
@@ -148,18 +176,25 @@ export default function EditFormOverlay({
               autoCapitalize="none"
               autoCompleteType="off"
               errorStyle={{color: theme.colors.error}}
-              leftIcon={{type: 'material-icons', name: 'access-time', size: 15}}
+              leftIcon={{
+                type: 'material-icons',
+                name: 'access-time',
+                size: 15,
+              }}
+              rightIcon={
+                formType === 'delete'
+                  ? null
+                  : {
+                      type: 'material-icons',
+                      name: 'timer',
+                      size: 25,
+                      color: theme.colors.mainColor,
+                      onPress: toogleEndTimePicker,
+                    }
+              }
+              disabled={formType === 'delete' ? true : false}
               blurOnSubmit={false}
               forwardRef={true}></Input>
-
-            <TouchableOpacity
-              style={{color: theme.colors.mainColor, justifyContent: 'center'}}
-              onPress={toogleStartTimePicker}>
-              <MaterialIcon
-                name={'timer'}
-                size={25}
-                color={theme.colors.mainColor}></MaterialIcon>
-            </TouchableOpacity>
             <DateTimePickerModal
               isVisible={isDatePickerStartTimeVisible}
               mode="time"
@@ -170,7 +205,7 @@ export default function EditFormOverlay({
             />
           </View>
 
-          <View style={{width: '90%', flexDirection: 'row'}} behavior="height">
+          <View style={{flexDirection: 'row'}} behavior="height">
             <Input
               style={styles.inputStyle}
               inputContainerStyle={styles.inputContainerStyle}
@@ -184,25 +219,35 @@ export default function EditFormOverlay({
               autoCapitalize="none"
               autoCompleteType="off"
               errorStyle={{color: theme.colors.error}}
-              leftIcon={{type: 'material-icons', name: 'access-time', size: 15}}
+              leftIcon={{
+                type: 'material-icons',
+                name: 'access-time',
+                size: 15,
+              }}
+              disabled={formType === 'delete' ? true : false}
               blurOnSubmit={false}
+              rightIcon={
+                formType === 'delete'
+                  ? null
+                  : {
+                      type: 'material-icons',
+                      name: 'timer',
+                      size: 25,
+                      color: theme.colors.mainColor,
+                      onPress: toogleEndTimePicker,
+                    }
+              }
               forwardRef={true}></Input>
-            <TouchableOpacity
-              style={{color: theme.colors.mainColor, justifyContent: 'center'}}
-              onPress={toogleEndTimePicker}>
-              <MaterialIcon
-                name={'timer'}
-                size={25}
-                color={theme.colors.mainColor}></MaterialIcon>
-            </TouchableOpacity>
-            <DateTimePickerModal
-              isVisible={isDatePickerEndTimeVisible}
-              mode="time"
-              is24Hour={true}
-              onConfirm={handleEndTime}
-              onCancel={toogleEndTimePicker}
-              date={new Date()}
-            />
+            {formType === 'delete' ? null : (
+              <DateTimePickerModal
+                isVisible={isDatePickerEndTimeVisible}
+                mode="time"
+                is24Hour={true}
+                onConfirm={handleEndTime}
+                onCancel={toogleEndTimePicker}
+                date={new Date()}
+              />
+            )}
           </View>
 
           <View style={styles.section}>
@@ -224,7 +269,7 @@ export default function EditFormOverlay({
               }}
               title="Cancel"
               onPress={() => {
-                toogleEditFormOverlay();
+                toogleEventForm();
                 resetValues();
               }}
             />
@@ -256,10 +301,7 @@ const styles = StyleSheet.create({
   overlayDivider: {
     margin: 5,
   },
-  inputStyle: {
-    height: 50,
-    width: '100%',
-  },
+  inputStyle: {},
   inputContainerStyle: {
     height: 50,
     width: '100%',

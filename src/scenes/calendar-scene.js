@@ -23,9 +23,7 @@ import {EventValidator} from '../helpers/event-validator';
 import SuccessfulOverlay from '../components/successful-overlay';
 import {Text as Txt} from 'react-native-elements';
 import GetItems from '../helpers/get-items';
-import AddFormOverlay from '../components/add-form-overlay';
-import EditFormOverlay from '../components/edit-form-overlay';
-import DeleteFormOverlay from '../components/delete-form-overlay';
+import EventForm from '../components/event-form';
 import RenderItem from '../components/render-item';
 import {useHeaderHeight} from '@react-navigation/elements';
 import {StoreData, GetData, RemoveData} from '../helpers/store-data';
@@ -46,36 +44,14 @@ export default function Calendar({navigation}) {
   );
   const [items, setItems] = useState({});
   const [itemInfo, setItemInfo] = useState('');
-  const [visibleAddForm, setVisibleAddForm] = useState(false);
-  const [visibleEditForm, setVisibleEditForm] = useState(false);
-  const [visibleDeleteForm, setVisibleDeleteForm] = useState(false);
-  const [visibleEditButton, setVisibleEditButton] = useState(true);
-  const [visibleDeleteButton, setVisibleDeleteButton] = useState(false);
-
-  const [search, setSearch] = useState('');
-  const [filteredDataSource, setFilteredDataSource] = useState([]);
-  const [masterDataSource, setMasterDataSource] = useState([]);
-  const [isFlatListVisible, setFlatListVisible] = useState(false);
-
-  const toogleAddFormOverlay = () => {
-    setVisibleAddForm(!visibleAddForm);
-    !visibleAddForm ? onlyAddHeaderOption() : null;
+  const [visibleEventForm, setVisibleEventForm] = useState(false);
+  const [formType, setFormType] = useState('add');
+  const toogleEventForm = type => {
+    if (type === 'add') setFormType('add');
+    if (type === 'delete') setFormType('delete');
+    if (type === 'edit') setFormType('edit');
+    setVisibleEventForm(!visibleEventForm);
   };
-  const toogleEditFormOverlay = () => {
-    setVisibleEditForm(!visibleEditForm);
-  };
-
-  const toogleEditButton = () => {
-    setVisibleEditButton(!visibleEditButton);
-  };
-  const toogleDeleteButton = () => {
-    setVisibleDeleteButton(!visibleDeleteButton);
-  };
-
-  const toogleDeleteFormOverlay = () => {
-    setVisibleDeleteForm(!visibleDeleteForm);
-  };
-
   const timeToString = time => {
     const date = new Date(time);
     return date.toISOString().split('T')[0];
@@ -86,24 +62,24 @@ export default function Calendar({navigation}) {
     setItemInfo(childData);
     //console.log('Log: ' + childData.id);
   };
-  
+
   const fullHeaderOptions = () => {
     navigation.setOptions({
       headerRight: () => (
         <View style={{flexDirection: 'row'}}>
           <TouchableOpacity
             style={styles.headerButtons}
-            onPress={toogleAddFormOverlay}>
+            onPress={() => toogleEventForm('add')}>
             <Icon name={'plus-circle'} size={25} color="white"></Icon>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.headerButtons}
-            onPress={toogleEditFormOverlay}>
+            onPress={() => toogleEventForm('edit')}>
             <Icon name={'edit'} size={25} color="white"></Icon>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.headerButtons}
-            onPress={toogleDeleteFormOverlay}>
+            onPress={() => toogleEventForm('delete')}>
             <Icon name={'trash'} size={25} color="white"></Icon>
           </TouchableOpacity>
         </View>
@@ -118,7 +94,10 @@ export default function Calendar({navigation}) {
         <View style={{flexDirection: 'row'}}>
           <TouchableOpacity
             style={styles.headerButtons}
-            onPress={toogleAddFormOverlay}>
+            onPress={() => {
+              setFormType('add');
+              setVisibleEventForm(true);
+            }}>
             <Icon name={'plus-circle'} size={25} color="white"></Icon>
           </TouchableOpacity>
         </View>
@@ -202,27 +181,15 @@ export default function Calendar({navigation}) {
           theme={styles.agendaTheme}
         />
 
-        <AddFormOverlay
-          visibleAddForm={visibleAddForm}
-          toogleAddFormOverlay={toogleAddFormOverlay}
+        <EventForm
+          visibleEventForm={visibleEventForm}
+          toogleEventForm={toogleEventForm}
+          onlyAddHeaderOption={onlyAddHeaderOption}
           currentDate={currentDate}
+          item={itemInfo}
+          formType={formType}
+          navigation={navigation}
         />
-        {itemInfo ? (
-          <>
-            <EditFormOverlay
-              visibleEditForm={visibleEditForm}
-              toogleEditFormOverlay={toogleEditFormOverlay}
-              item={itemInfo}
-              onlyAddHeaderOption={onlyAddHeaderOption}
-            />
-            <DeleteFormOverlay
-              visibleDeleteForm={visibleDeleteForm}
-              toogleDeleteFormOverlay={toogleDeleteFormOverlay}
-              item={itemInfo}
-              onlyAddHeaderOption={onlyAddHeaderOption}
-            />
-          </>
-        ) : null}
       </View>
     </TouchableOpacity>
   );
