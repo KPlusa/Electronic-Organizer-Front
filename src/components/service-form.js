@@ -25,19 +25,40 @@ import {
 } from '../helpers/service-validator';
 import SuccessfulOverlay from '../components/successful-overlay';
 
-export default function AddServiceFormOverlay({
-  visibleAddServiceForm,
-  toogleAddServiceFormOverlay,
+export default function ServiceForm({
+  visibleServiceForm,
+  toogleServiceForm,
+  service,
   onlyAddHeaderOption,
   getService,
+  formType,
 }) {
   const [title, setTitle] = useState({value: '', error: ''});
-  const [estimatedTime, setEstimatedTime] = useState({value: '', error: ''});
+  const [estimatedTime, setEstimatedTime] = useState({
+    value: '',
+    error: '',
+  });
   const [code, setCode] = useState({value: '', error: ''});
-
   const [isSuccessfulOverlayVisible, setSuccessfulOverlayVisibility] =
     useState(false);
 
+  useEffect(() => {
+    if (formType !== 'add') {
+      setTitle({value: service.name, error: ''});
+      setEstimatedTime({
+        value: service.estimated_time.toString(),
+        error: '',
+      });
+      setCode({value: service.code, error: ''});
+    } else {
+      setTitle({value: '', error: ''});
+      setEstimatedTime({
+        value: '',
+        error: '',
+      });
+      setCode({value: '', error: ''});
+    }
+  }, [visibleServiceForm]);
   const onOKPressed = () => {
     const titleError = TitleValidator(title.value);
     const estimatedTimeError = TimeValidator(estimatedTime.value);
@@ -51,56 +72,107 @@ export default function AddServiceFormOverlay({
     }
     GetData('token').then(token => {
       GetData('email').then(mail => {
-        axios
-          .post(
-            `${config.api_url}/Services`,
-            {
-              userMail: mail,
-              title: title.value,
-              estimatedTime: estimatedTime.value,
-              serviceCode: code.value,
-            },
-            {headers: {Authorization: `Bearer ${token}`}},
-          )
-          .then(response => {
-            if (response.data.status === 'Success') {
-              toogleAddServiceFormOverlay();
-              setSuccessfulOverlayVisibility(true);
-              setTimeout(() => {
-                resetValues();
-                getService();
-              }, 1000);
-            }
-          })
-          .catch(error => {
-            if (!error.response) {
-              setCode({...code, error: 'Network error.'});
-            } else {
-              if (error.response.data) {
-                setCode({...code, error: error.response.data.message});
+        if (formType === 'add') {
+          axios
+            .post(
+              `${config.api_url}/Services`,
+              {
+                userMail: mail,
+                title: title.value,
+                estimatedTime: estimatedTime.value,
+                serviceCode: code.value,
+              },
+              {headers: {Authorization: `Bearer ${token}`}},
+            )
+            .then(response => {
+              if (response.data.status === 'Success') {
+                resposeBehaviour();
               }
-            }
-            return;
-          });
+            })
+            .catch(error => {
+              errorBehaviour(error);
+            });
+        }
+        if (formType === 'edit') {
+          axios
+            .put(
+              `${config.api_url}/Services`,
+              {
+                userMail: mail,
+                title: title.value,
+                estimatedTime: estimatedTime.value,
+                serviceCode: code.value,
+                serviceId: service.id,
+              },
+              {
+                headers: {Authorization: `Bearer ${token}`},
+              },
+            )
+            .then(response => {
+              if (response.data.status === 'Success') {
+                resposeBehaviour();
+              }
+            })
+            .catch(error => {
+              errorBehaviour(error);
+            });
+        }
+        if (formType === 'delete') {
+          axios
+            .delete(`${config.api_url}/Services/${service.id}`, {
+              headers: {Authorization: `Bearer ${token}`},
+            })
+            .then(response => {
+              if (response.status === 204) {
+                resposeBehaviour();
+              }
+            })
+            .catch(error => {
+              errorBehaviour(error);
+            });
+        }
       });
     });
   };
 
-  const resetValues = param => {
-    setTitle({value: '', error: ''});
-    setEstimatedTime({value: '', error: ''});
-    setCode({value: '', error: ''});
+  const resposeBehaviour = () => {
+    toogleServiceForm();
+    setSuccessfulOverlayVisibility(true);
+    setTimeout(() => {
+      getService();
+      resetValues();
+    }, 1000);
+  };
+  const errorBehaviour = error => {
+    if (!error.response) {
+      setCode({...code, error: 'Network error.'});
+    } else {
+      if (error.response.data) {
+        setCode({...code, error: error.response.data.message});
+      }
+    }
+    return;
+  };
+  const resetValues = () => {
     setSuccessfulOverlayVisibility(false);
-    getService();
+    onlyAddHeaderOption();
   };
 
   return (
-    <ScrollView>
+    <ScrollView keyboardShouldPersistTaps="handled">
       <Overlay
-        isVisible={visibleAddServiceForm}
-        onBackdropPress={toogleAddServiceFormOverlay}>
+        isVisible={visibleServiceForm}
+        onBackdropPress={toogleServiceForm}>
         <View style={{alignSelf: 'center'}}>
-          <FontAwesome5 name="cut" size={40} color={theme.colors.mainColor} />
+          {formType !== 'add' ? (
+            <MaterialIcon
+              name={formType === 'edit' ? 'edit' : 'delete'}
+              size={40}
+              color={theme.colors.mainColor}
+            />
+          ) : (
+            <FontAwesome5 name="cut" size={40} color={theme.colors.mainColor} />
+          )}
         </View>
         <KeyboardAvoidingView
           style={{width: '80%', flexDirection: 'row'}}
@@ -108,7 +180,13 @@ export default function AddServiceFormOverlay({
           <Input
             style={styles.inputStyle}
             inputContainerStyle={styles.inputContainerStyle}
-            label="Service title"
+            label={
+              formType === 'add'
+                ? 'Service title'
+                : formType === 'edit'
+                ? 'Title of the editing service'
+                : 'Title of the deleting service'
+            }
             placeholder="Enter the title of the service"
             returnKeyType="next"
             value={title.value}
@@ -118,9 +196,10 @@ export default function AddServiceFormOverlay({
             autoCapitalize="none"
             autoCompleteType="off"
             errorStyle={{color: theme.colors.error}}
-            leftIcon={{type: 'material-icons', name: 'title', size: 15}}
+            leftIcon={{type: 'material-icons', name: 'access-time', size: 15}}
             blurOnSubmit={false}
-            forwardRef={true}></Input>
+            forwardRef={true}
+            disabled={formType === 'delete' ? true : false}></Input>
         </KeyboardAvoidingView>
 
         <KeyboardAvoidingView
@@ -141,7 +220,8 @@ export default function AddServiceFormOverlay({
             errorStyle={{color: theme.colors.error}}
             leftIcon={{type: 'material-icons', name: 'access-time', size: 15}}
             blurOnSubmit={false}
-            forwardRef={true}></Input>
+            forwardRef={true}
+            disabled={formType === 'delete' ? true : false}></Input>
         </KeyboardAvoidingView>
         <KeyboardAvoidingView style={{width: '80%'}} behavior="height">
           <Input
@@ -158,7 +238,8 @@ export default function AddServiceFormOverlay({
             errorStyle={{color: theme.colors.error}}
             leftIcon={{type: 'material-icons', name: 'event-note', size: 15}}
             blurOnSubmit={false}
-            forwardRef={true}></Input>
+            forwardRef={true}
+            disabled={formType === 'delete' ? true : false}></Input>
         </KeyboardAvoidingView>
         <View style={styles.section}>
           <Button
@@ -179,7 +260,7 @@ export default function AddServiceFormOverlay({
             }}
             title="Cancel"
             onPress={() => {
-              toogleAddServiceFormOverlay();
+              toogleServiceForm();
               resetValues();
             }}
           />

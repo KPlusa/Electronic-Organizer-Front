@@ -15,9 +15,7 @@ import RenderService from '../components/render-service';
 import {useHeaderHeight} from '@react-navigation/elements';
 import BackButton from '../components/back-button';
 import {HeaderBackButton} from '@react-navigation/elements';
-import AddServiceFormOverlay from '../components/add-service-overlay';
-import EditServiceFormOverlay from '../components/edit-service-overlay';
-import DeleteServiceFormOverlay from '../components/delete-service-overlay';
+import ServiceForm from '../components/service-form';
 import {StoreData, GetData, RemoveData} from '../helpers/store-data';
 import axios from 'axios';
 import {config} from '../configs/config';
@@ -25,24 +23,18 @@ import {config} from '../configs/config';
 export default function Service({navigation}) {
   const [isFullHeaderOptionsSelected, setFullHeaderOptionsSelected] =
     useState(false);
-  const [visibleAddServiceForm, setVisibleAddServiceForm] = useState(false);
-  const [visibleEditServiceForm, setVisibleEditServiceForm] = useState(false);
-  const [visibleDeleteServiceForm, setVisibleDeleteServiceForm] =
-    useState(false);
+  const [visibleServiceForm, setVisibleServiceForm] = useState(false);
   const [service, setService] = useState(null);
   const [services, setServices] = useState([]);
   const [isLoading, setLoading] = useState(true);
-
+  const [formType, setFormType] = useState('add');
   var isBackButtonPressed = false;
-  const toogleAddServiceFormOverlay = () => {
-    setVisibleAddServiceForm(!visibleAddServiceForm);
-    !visibleAddServiceForm ? onlyAddHeaderOption() : null;
-  };
-  const toogleEditServiceFormOverlay = () => {
-    setVisibleEditServiceForm(!visibleEditServiceForm);
-  };
-  const toogleDeleteServiceFormOverlay = () => {
-    setVisibleDeleteServiceForm(!visibleDeleteServiceForm);
+
+  const toogleServiceForm = type => {
+    if (type === 'add') setFormType('add');
+    if (type === 'delete') setFormType('delete');
+    if (type === 'edit') setFormType('edit');
+    setVisibleServiceForm(!visibleServiceForm);
   };
 
   const SelectedService = childData => {
@@ -76,17 +68,23 @@ export default function Service({navigation}) {
         <View style={{flexDirection: 'row'}}>
           <TouchableOpacity
             style={styles.headerButtons}
-            onPress={toogleAddServiceFormOverlay}>
+            onPress={() => {
+              toogleServiceForm('add');
+            }}>
             <Icon name={'plus-circle'} size={25} color="white"></Icon>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.headerButtons}
-            onPress={toogleEditServiceFormOverlay}>
+            onPress={() => {
+              toogleServiceForm('edit');
+            }}>
             <Icon name={'edit'} size={25} color="white"></Icon>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.headerButtons}
-            onPress={toogleDeleteServiceFormOverlay}>
+            onPress={() => {
+              toogleServiceForm('delete');
+            }}>
             <Icon name={'trash'} size={25} color="white"></Icon>
           </TouchableOpacity>
         </View>
@@ -110,7 +108,10 @@ export default function Service({navigation}) {
         <View style={{flexDirection: 'row'}}>
           <TouchableOpacity
             style={styles.headerButtons}
-            onPress={toogleAddServiceFormOverlay}>
+            onPress={() => {
+              setFormType('add');
+              setVisibleServiceForm(true);
+            }}>
             <Icon name={'plus-circle'} size={25} color="white"></Icon>
           </TouchableOpacity>
         </View>
@@ -165,30 +166,14 @@ export default function Service({navigation}) {
             isLoading={isLoading}
           />
         </View>
-        <AddServiceFormOverlay
-          visibleAddServiceForm={visibleAddServiceForm}
-          toogleAddServiceFormOverlay={toogleAddServiceFormOverlay}
+        <ServiceForm
+          visibleServiceForm={visibleServiceForm}
+          toogleServiceForm={toogleServiceForm}
           onlyAddHeaderOption={onlyAddHeaderOption}
           getService={getService}
+          formType={formType}
+          service={service}
         />
-        {service ? (
-          <>
-            <EditServiceFormOverlay
-              visibleEditServiceForm={visibleEditServiceForm}
-              toogleEditServiceFormOverlay={toogleEditServiceFormOverlay}
-              service={service}
-              onlyAddHeaderOption={onlyAddHeaderOption}
-              getService={getService}
-            />
-            <DeleteServiceFormOverlay
-              visibleDeleteServiceForm={visibleDeleteServiceForm}
-              toogleDeleteServiceFormOverlay={toogleDeleteServiceFormOverlay}
-              service={service}
-              onlyAddHeaderOption={onlyAddHeaderOption}
-              getService={getService}
-            />
-          </>
-        ) : null}
       </TouchableOpacity>
     </Background>
   );

@@ -116,9 +116,9 @@ export default function EventForm({
     }, 1000);
   };
 
-  const resetValues = () => { 
+  const resetValues = () => {
     setSuccessfulOverlayVisibility(false);
-    formType!=='add' && visibleEventForm?onlyAddHeaderOption():null;
+    onlyAddHeaderOption();
   };
 
   return (
@@ -189,7 +189,7 @@ export default function EventForm({
                       name: 'timer',
                       size: 25,
                       color: theme.colors.mainColor,
-                      onPress: toogleEndTimePicker,
+                      onPress: toogleStartTimePicker,
                     }
               }
               disabled={formType === 'delete' ? true : false}
