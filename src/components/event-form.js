@@ -20,6 +20,9 @@ import {StartTimeValidator, EndTimeValidator} from '../helpers/date-validator';
 import {EventValidator} from '../helpers/event-validator';
 import SuccessfulOverlay from '../components/successful-overlay';
 import SearchServices from '../components/search-services';
+import axios from 'axios';
+import {config} from '../configs/config';
+import {StoreData, GetData} from '../helpers/store-data';
 
 export default function EventForm({
   visibleEventForm,
@@ -33,8 +36,47 @@ export default function EventForm({
     value: '',
     error: '',
   });
+
+  const [startTimeFocused, setStartTimeFocused] = useState(false);
+  const [titleFocused, setTitleFocused] = useState(false);
   const [endTime, setEndTime] = useState({value: '', error: ''});
   const [event, setEvent] = useState({value: '', error: ''});
+  const [endTimeCount, setEndTimeCount] = useState(false);
+  const SetTitleFocused = state => {
+    if (state === 'focus') setTitleFocused(true);
+    else setTitleFocused(false);
+  };
+
+  const getEndTime = data => {
+    // console.log('getEndTime');
+    // console.log(typeof data.value);
+    GetData('token').then(token => {
+      GetData('email').then(mail => {
+        axios
+          .post(
+            `${config.api_url}/Events/count-time`,
+            {
+              userMail: mail,
+              title: event.value,
+              startTime:
+                formType === 'add'
+                  ? new Date(currentDate + ' ' + data.value)
+                  : new Date(item.day + ' ' + data.value),
+            },
+            {headers: {Authorization: `Bearer ${token}`}},
+          )
+          .then(response => {
+            if (response.status !== 204) {
+              setEndTime({value: response.data.data, error: ''});
+            }
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      });
+    });
+  };
+
   useEffect(() => {
     if (formType !== 'add') {
       setStartTime({
@@ -74,19 +116,19 @@ export default function EventForm({
   };
   const handleStartTime = date => {
     toogleStartTimePicker();
-
-    setStartTime({
+    data = {
       value:
         String(date.getHours()).padStart(2, '0') +
         ':' +
         String(date.getMinutes()).padStart(2, '0'),
       error: '',
-    });
+    };
+    setStartTime(data);
+    action(data);
   };
 
   const handleEndTime = date => {
     toogleEndTimePicker();
-
     setEndTime({
       value:
         String(date.getHours()).padStart(2, '0') +
@@ -95,9 +137,11 @@ export default function EventForm({
       error: '',
     });
   };
+
   const SetEvent = childData => {
     setEvent(childData);
   };
+
   const onOKPressed = () => {
     const startTimeError = StartTimeValidator(startTime.value, endTime.value);
     const endTimeError = EndTimeValidator(startTime.value, endTime.value);
@@ -121,6 +165,20 @@ export default function EventForm({
     onlyAddHeaderOption();
   };
 
+  const action = data => {
+    let dataTime = {};
+    if (data !== undefined) {
+      dataTime = data;
+    } else {
+      dataTime = startTime;
+    }
+    if (
+      event.value !== '' &&
+      dataTime.value !== '' &&
+      startTimeFocused === false
+    )
+      getEndTime(dataTime);
+  };
   return (
     <>
       <Overlay
@@ -161,10 +219,15 @@ export default function EventForm({
             setEvent={SetEvent}
             event={event}
             disable={formType === 'delete' ? true : false}
+            setTitleFocused={SetTitleFocused}
+            action={action}
           />
           <View style={{flexDirection: 'row'}} behavior="height">
             <Input
               style={styles.inputStyle}
+              onBlur={() => {
+                action(startTime);
+              }}
               inputContainerStyle={styles.inputContainerStyle}
               label="Start time"
               placeholder="Enter the time"

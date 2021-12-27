@@ -14,7 +14,14 @@ import {
 } from 'react-native';
 import Input from '../components/input-text';
 import {theme} from '../themes/theme';
-export default function SearchServices({navigation, setEvent, event, disable}) {
+export default function SearchServices({
+  navigation,
+  setEvent,
+  event,
+  disable,
+  setTitleFocused,
+  action,
+}) {
   const [search, setSearch] = useState('');
   const [filteredDataSource, setFilteredDataSource] = useState([]);
   const [masterDataSource, setMasterDataSource] = useState([]);
@@ -40,6 +47,7 @@ export default function SearchServices({navigation, setEvent, event, disable}) {
     });
   };
   useEffect(() => {
+    setTitleFocused(false);
     getService();
   }, []);
   const searchFilterFunction = text => {
@@ -86,9 +94,12 @@ export default function SearchServices({navigation, setEvent, event, disable}) {
         inputContainerStyle={styles.inputContainerStyle}
         onPressIn={() => {
           setFlatListVisible(true);
+          setTitleFocused('focus');
         }}
         onBlur={() => {
+          action();
           setFlatListVisible(false);
+          setTitleFocused('blur');
         }}
       />
       {isFlatListVisible ? (
