@@ -31,6 +31,9 @@ export default function EventForm({
   onlyAddHeaderOption,
   formType,
   currentDate,
+  getEvent,
+  loadItems,
+  reloadAgenda,
 }) {
   const [startTime, setStartTime] = useState({
     value: '',
@@ -42,6 +45,8 @@ export default function EventForm({
   const [endTime, setEndTime] = useState({value: '', error: ''});
   const [event, setEvent] = useState({value: '', error: ''});
   const [endTimeCount, setEndTimeCount] = useState(false);
+  const _startTime = new Date(item.start_time);
+  const _endTime = new Date(item.end_time);
   const SetTitleFocused = state => {
     if (state === 'focus') setTitleFocused(true);
     else setTitleFocused(false);
@@ -80,12 +85,21 @@ export default function EventForm({
   useEffect(() => {
     if (formType !== 'add') {
       setStartTime({
-        value: item.startTime,
+        value:
+          String(_startTime.getHours()).padStart(2, '0') +
+          ':' +
+          String(_startTime.getMinutes()).padStart(2, '0'),
         error: '',
       });
-      setEvent({value: item.name, error: ''});
+      setEvent({
+        value: item.name !== undefined ? item.name : item.title,
+        error: '',
+      });
       setEndTime({
-        value: item.endTime,
+        value:
+          String(_endTime.getHours()).padStart(2, '0') +
+          ':' +
+          String(_endTime.getMinutes()).padStart(2, '0'),
         error: '',
       });
     } else {
@@ -153,11 +167,91 @@ export default function EventForm({
       setEvent({...event, error: eventError});
       return;
     }
-    setSuccessfulOverlayVisibility(true);
+    GetData('token').then(token => {
+      GetData('email').then(mail => {
+        // if (formType === 'add') {
+        //   axios
+        //     .post(
+        //       `${config.api_url}/Services`,
+        //       {
+        //         userMail: mail,
+        //         title: title.value,
+        //         estimatedTime: estimatedTime.value,
+        //         serviceCode: code.value,
+        //       },
+        //       {headers: {Authorization: `Bearer ${token}`}},
+        //     )
+        //     .then(response => {
+        //       if (response.data.status === 'Success') {
+        //         resposeBehaviour();
+        //       }
+        //     })
+        //     .catch(error => {
+        //       errorBehaviour(error);
+        //     });
+        // }
+        // if (formType === 'edit') {
+        //   axios
+        //     .put(
+        //       `${config.api_url}/Services`,
+        //       {
+        //         userMail: mail,
+        //         title: title.value,
+        //         estimatedTime: estimatedTime.value,
+        //         serviceCode: code.value,
+        //         serviceId: service.id,
+        //       },
+        //       {
+        //         headers: {Authorization: `Bearer ${token}`},
+        //       },
+        //     )
+        //     .then(response => {
+        //       if (response.data.status === 'Success') {
+        //         resposeBehaviour();
+        //       }
+        //     })
+        //     .catch(error => {
+        //       errorBehaviour(error);
+        //     });
+        // }
+        if (formType === 'delete') {
+          axios
+            .delete(`${config.api_url}/Events/${item.id}`, {
+              headers: {Authorization: `Bearer ${token}`},
+            })
+            .then(response => {
+              if (response.status === 204) {
+                resposeBehaviour();
+                
+              }
+            })
+            .catch(error => {
+              console.log(error);
+              errorBehaviour(error);
+            });
+        }
+      });
+    });
+  };
+
+  const resposeBehaviour = () => {
     toogleEventForm();
-    setTimeout(() => {
+    setSuccessfulOverlayVisibility(true);
+    setTimeout(() => { 
       resetValues();
+      //getEvent();
+      reloadAgenda();
     }, 1000);
+  };
+  const errorBehaviour = error => {
+    if (!error.response) {
+      setEndTime({...endTime, error: 'Network error.'});
+    } else {
+      if (error.response.data) {
+        setEndTime({...endTime, error: error.response.data.message});
+      }
+    }
+    return;
   };
 
   const resetValues = () => {
@@ -334,6 +428,7 @@ export default function EventForm({
               onPress={() => {
                 toogleEventForm();
                 resetValues();
+                reloadAgenda();
               }}
             />
           </View>

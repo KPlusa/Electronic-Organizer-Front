@@ -46,6 +46,8 @@ export default function Calendar({navigation}) {
   const [itemInfo, setItemInfo] = useState('');
   const [visibleEventForm, setVisibleEventForm] = useState(false);
   const [formType, setFormType] = useState('add');
+  const [Events, setEvents] = useState({});
+  const [isLoading, setLoading] = useState(true);
   const toogleEventForm = type => {
     if (type === 'add') setFormType('add');
     if (type === 'delete') setFormType('delete');
@@ -60,9 +62,7 @@ export default function Calendar({navigation}) {
   const SelectedEvent = childData => {
     fullHeaderOptions();
     setItemInfo(childData);
-    //console.log('Log: ' + childData.id);
   };
-
   const fullHeaderOptions = () => {
     navigation.setOptions({
       headerRight: () => (
@@ -95,6 +95,7 @@ export default function Calendar({navigation}) {
           <TouchableOpacity
             style={styles.headerButtons}
             onPress={() => {
+              //loadItems();
               setFormType('add');
               setVisibleEventForm(true);
             }}>
@@ -105,30 +106,62 @@ export default function Calendar({navigation}) {
     });
   };
   const loadItems = day => {
-    setTimeout(() => {
-      const events = GetItems();
-      for (let i = -30; i <= 30; i++) {
-        const time = day.timestamp + i * 24 * 60 * 60 * 1000;
-        const strTime = timeToString(time);
-        //console.log(strTime);
-        if (!items[strTime]) {
-          items[strTime] = [];
-        }
-        if (events[strTime]) {
-          items[strTime] = events[strTime];
-          for (var k in items[strTime]) {
-            items[strTime][k].day = strTime;
-          }
+    var myDate = currentDate;
+    myDate = myDate.split('-');
+    var newDate = new Date(myDate[0], myDate[1] - 1, myDate[2]);
+    let timestamp;
+    if (day !== undefined && day.timestamp !== undefined) timestamp = day.timestamp;
+    else timestamp = newDate.getTime();
+    const events = Events;
+    for (let i = -30; i <= 30; i++) {
+      const time = timestamp + i * 24 * 60 * 60 * 1000;
+      const strTime = timeToString(time);
+      if (!items[strTime]) {
+        items[strTime] = [];
+      }
+      if (events[strTime]) {
+        items[strTime] = events[strTime];
+        for (var k in items[strTime]) {
+          items[strTime][k].day = strTime;
         }
       }
-      const newItems = {};
-      Object.keys(items).forEach(key => {
-        newItems[key] = items[key];
+    }
+    const newItems = {};
+    Object.keys(items).forEach(key => {
+      newItems[key] = items[key];
+    });
+    setItems(newItems);
+  };
+
+  const getEvent = () => {
+    GetData('token').then(token => {
+      GetData('email').then(mail => {
+        axios
+          .post(
+            `${config.api_url}/Events/list-events`,
+            {
+              userMail: mail,
+            },
+            {headers: {Authorization: `Bearer ${token}`}},
+          )
+          .then(response => {
+            setEvents(JSON.parse(response.data.data));
+          })
+          .catch(error => {})
+          .finally(() => {
+            loadItems(currentDate);
+          });
       });
-      setItems(newItems);
-    }, 500);
+    });
+  };
+  const reloadAgenda = () => {
+    setEvents({});
+    setItems({});
   };
   useEffect(() => {
+    if (Object.keys(items).length === 0 ) {
+      getEvent();
+    }
     onlyAddHeaderOption();
     const unsubscribe = navigation.addListener('blur', () => {
       setCurrentDate(currdate.toISOString().split('T')[0]);
@@ -136,7 +169,7 @@ export default function Calendar({navigation}) {
     });
 
     return unsubscribe;
-  }, [navigation]);
+  }, [navigation, items, Events]);
 
   return (
     <TouchableOpacity
@@ -187,8 +220,10 @@ export default function Calendar({navigation}) {
           onlyAddHeaderOption={onlyAddHeaderOption}
           currentDate={currentDate}
           item={itemInfo}
+          reloadAgenda={reloadAgenda}
           formType={formType}
-          navigation={navigation}
+          getEvent={getEvent}
+          loadItems={loadItems}
         />
       </View>
     </TouchableOpacity>

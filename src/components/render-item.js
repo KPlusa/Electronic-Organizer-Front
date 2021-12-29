@@ -11,33 +11,28 @@ export default function RenderItem({
   const showItemInfo = value => {
     selectedEvent(value);
   };
-
+  const startTime = new Date(item.start_time);
+  const endTime = new Date(item.end_time);
   return (
-    <TouchableOpacity
-      style={[
-        styles.item,
-        firstItemInDay ? {marginTop: 25} : null,
-        style,
-      ]}
-      delayLongPress={100}
-      onLongPress={() => {
-        // console.log(
-        //   'Start: ' +
-        //     item.startTime +
-        //     '\nEnd: ' +
-        //     item.endTime +
-        //     '\nObject: ' +
-        //     Object.keys(item),
-        // );
-        showItemInfo(item);
-      }}>
-      <Text style={{color: 'black', fontSize: 18, fontWeight: 'bold'}}>
-        {item.startTime}-{item.endTime}
-      </Text>
-      <Text style={{color: theme.colors.mainColor, fontSize: 16}}>
-        {item.name}
-      </Text>
-    </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.item, firstItemInDay ? {marginTop: 25} : null, style]}
+          delayLongPress={100}
+          onLongPress={() => {
+            showItemInfo(item);
+          }}>
+          <Text style={{color: 'black', fontSize: 18, fontWeight: 'bold'}}>
+            {String(startTime.getHours()).padStart(2, '0') +
+              ':' +
+              String(startTime.getMinutes()).padStart(2, '0')}
+            -
+            {String(endTime.getHours()).padStart(2, '0') +
+              ':' +
+              String(endTime.getMinutes()).padStart(2, '0')}
+          </Text>
+          <Text style={{color: theme.colors.mainColor, fontSize: 16}}>
+            {item.name !== undefined ? item.name : item.title}
+          </Text>
+        </TouchableOpacity>
   );
 }
 

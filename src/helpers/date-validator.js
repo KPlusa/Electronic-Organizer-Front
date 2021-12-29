@@ -22,6 +22,7 @@ export function StartTimeValidator(startTime, endTime) {
 }
 
 export function EndTimeValidator(startTime, endTime) {
+  if (!endTime) return 'End Time is required.';
   let startTimeConverted = startTime.split(':');
   if (typeof endTime !== 'undefined' && endTime !== '') {
     if (!timeChecker.test(endTime)) return 'Invalid Time Format.';
