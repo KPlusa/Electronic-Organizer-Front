@@ -39,7 +39,6 @@ export default function EventForm({
     value: '',
     error: '',
   });
-
   const [startTimeFocused, setStartTimeFocused] = useState(false);
   const [titleFocused, setTitleFocused] = useState(false);
   const [endTime, setEndTime] = useState({value: '', error: ''});
@@ -53,8 +52,6 @@ export default function EventForm({
   };
 
   const getEndTime = data => {
-    // console.log('getEndTime');
-    // console.log(typeof data.value);
     GetData('token').then(token => {
       GetData('email').then(mail => {
         axios
@@ -65,8 +62,14 @@ export default function EventForm({
               title: event.value,
               startTime:
                 formType === 'add'
-                  ? new Date(currentDate + ' ' + data.value)
-                  : new Date(item.day + ' ' + data.value),
+                  ? new Date(
+                      new Date(currentDate + ' ' + data.value).getTime() +
+                        60 * 60 * 1000,
+                    )
+                  : new Date(
+                      new Date(item.day + ' ' + data.value).getTime() +
+                        60 * 60 * 1000,
+                    ),
             },
             {headers: {Authorization: `Bearer ${token}`}},
           )
@@ -169,51 +172,65 @@ export default function EventForm({
     }
     GetData('token').then(token => {
       GetData('email').then(mail => {
-        // if (formType === 'add') {
-        //   axios
-        //     .post(
-        //       `${config.api_url}/Services`,
-        //       {
-        //         userMail: mail,
-        //         title: title.value,
-        //         estimatedTime: estimatedTime.value,
-        //         serviceCode: code.value,
-        //       },
-        //       {headers: {Authorization: `Bearer ${token}`}},
-        //     )
-        //     .then(response => {
-        //       if (response.data.status === 'Success') {
-        //         resposeBehaviour();
-        //       }
-        //     })
-        //     .catch(error => {
-        //       errorBehaviour(error);
-        //     });
-        // }
-        // if (formType === 'edit') {
-        //   axios
-        //     .put(
-        //       `${config.api_url}/Services`,
-        //       {
-        //         userMail: mail,
-        //         title: title.value,
-        //         estimatedTime: estimatedTime.value,
-        //         serviceCode: code.value,
-        //         serviceId: service.id,
-        //       },
-        //       {
-        //         headers: {Authorization: `Bearer ${token}`},
-        //       },
-        //     )
-        //     .then(response => {
-        //       if (response.data.status === 'Success') {
-        //         resposeBehaviour();
-        //       }
-        //     })
-        //     .catch(error => {
-        //       errorBehaviour(error);
-        //     });
-        // }
+        if (formType === 'add') {
+          axios
+            .post(
+              `${config.api_url}/Events`,
+              {
+                title: event.value,
+                date: new Date(currentDate),
+                startTime: new Date(
+                  new Date(currentDate + ' ' + startTime.value).getTime() +
+                    60 * 60 * 1000,
+                ),
+                endTime: new Date(
+                  new Date(currentDate + ' ' + endTime.value).getTime() +
+                    60 * 60 * 1000,
+                ),
+                userMail: mail,
+              },
+              {headers: {Authorization: `Bearer ${token}`}},
+            )
+            .then(response => {
+              if (response.data.status === 'Success') {
+                resposeBehaviour();
+              }
+            })
+            .catch(error => {
+              errorBehaviour(error);
+            });
+        }
+        if (formType === 'edit') {
+          axios
+            .put(
+              `${config.api_url}/Events`,
+              {
+                title: event.value,
+                date: new Date(currentDate),
+                startTime: new Date(
+                  new Date(currentDate + ' ' + startTime.value).getTime() +
+                    60 * 60 * 1000,
+                ),
+                endTime: new Date(
+                  new Date(currentDate + ' ' + endTime.value).getTime() +
+                    60 * 60 * 1000,
+                ),
+                userMail: mail,
+                id: item.id,
+              },
+              {
+                headers: {Authorization: `Bearer ${token}`},
+              },
+            )
+            .then(response => {
+              if (response.data.status === 'Success') {
+                resposeBehaviour();
+              }
+            })
+            .catch(error => {
+              errorBehaviour(error);
+            });
+        }
         if (formType === 'delete') {
           axios
             .delete(`${config.api_url}/Events/${item.id}`, {
@@ -222,7 +239,6 @@ export default function EventForm({
             .then(response => {
               if (response.status === 204) {
                 resposeBehaviour();
-                
               }
             })
             .catch(error => {
@@ -237,9 +253,8 @@ export default function EventForm({
   const resposeBehaviour = () => {
     toogleEventForm();
     setSuccessfulOverlayVisibility(true);
-    setTimeout(() => { 
+    setTimeout(() => {
       resetValues();
-      //getEvent();
       reloadAgenda();
     }, 1000);
   };
@@ -428,7 +443,6 @@ export default function EventForm({
               onPress={() => {
                 toogleEventForm();
                 resetValues();
-                reloadAgenda();
               }}
             />
           </View>

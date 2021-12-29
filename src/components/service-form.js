@@ -46,10 +46,16 @@ export default function ServiceForm({
     if (formType !== 'add') {
       setTitle({value: service.name, error: ''});
       setEstimatedTime({
-        value: service.estimated_time.toString(),
+        value:
+          service.estimated_time !== undefined
+            ? service.estimated_time.toString()
+            : '',
         error: '',
       });
-      setCode({value: service.code, error: ''});
+      setCode({
+        value: service.code !== undefined ? service.code.toString() : '',
+        error: '',
+      });
     } else {
       setTitle({value: '', error: ''});
       setEstimatedTime({
@@ -63,12 +69,13 @@ export default function ServiceForm({
     const titleError = TitleValidator(title.value);
     const estimatedTimeError = TimeValidator(estimatedTime.value);
     const codeError = CodeValidator(code.value);
-
-    if (titleError || estimatedTimeError || codeError) {
-      setTitle({...title, error: titleError});
-      setEstimatedTime({...estimatedTime, error: estimatedTimeError});
-      setCode({...code, error: codeError});
-      return;
+    if (formType !== 'delete') {
+      if (titleError || estimatedTimeError || codeError) {
+        setTitle({...title, error: titleError});
+        setEstimatedTime({...estimatedTime, error: estimatedTimeError});
+        setCode({...code, error: codeError});
+        return;
+      }
     }
     GetData('token').then(token => {
       GetData('email').then(mail => {

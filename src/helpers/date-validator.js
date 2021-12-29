@@ -15,8 +15,8 @@ export function StartTimeValidator(startTime, endTime) {
 
     if (totalMinutesEndTime <= totalMinutesStartTime)
       return 'Start Time should be less than End Time.';
-    if (totalMinutesEndTime < totalMinutesStartTime + timeDifference)
-      return 'Start Time should be less than Start Time for at least 30 minutes.';
+    // if (totalMinutesEndTime < totalMinutesStartTime + timeDifference)
+    //   return 'Start Time should be less than Start Time for at least 30 minutes.';
   }
   return '';
 }
@@ -36,8 +36,8 @@ export function EndTimeValidator(startTime, endTime) {
 
     if (totalMinutesEndTime <= totalMinutesStartTime)
       return 'End Time should be greater than Start Time.';
-    if (totalMinutesEndTime < totalMinutesStartTime + timeDifference)
-      return 'End Time should be greater than Start Time for at least 30 minutes.';
+    // if (totalMinutesEndTime < totalMinutesStartTime + timeDifference)
+    //   return 'End Time should be greater than Start Time for at least 30 minutes.';
   }
   return '';
 }
