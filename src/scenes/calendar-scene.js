@@ -38,9 +38,8 @@ export default function Calendar({navigation}) {
     //   statusBarHeight -
     headerHeight -
     theme.sizes.bottomTabNavigatorHeight;
-  const currdate = new Date();
   const [currentDate, setCurrentDate] = useState(
-    currdate.toISOString().split('T')[0],
+    new Date().toISOString().split('T')[0],
   );
   const [items, setItems] = useState({});
   const [itemInfo, setItemInfo] = useState('');
@@ -159,12 +158,13 @@ export default function Calendar({navigation}) {
     setItems({});
   };
   useEffect(() => {
+
     if (Object.keys(items).length === 0 ) {
       getEvent();
     }
     onlyAddHeaderOption();
     const unsubscribe = navigation.addListener('blur', () => {
-      setCurrentDate(currdate.toISOString().split('T')[0]);
+      setCurrentDate(new Date().toISOString().split('T')[0]);
       onlyAddHeaderOption();
     });
 
