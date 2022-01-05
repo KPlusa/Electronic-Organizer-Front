@@ -31,8 +31,6 @@ export default function EventForm({
   onlyAddHeaderOption,
   formType,
   currentDate,
-  getEvent,
-  loadItems,
   reloadAgenda,
 }) {
   const [startTime, setStartTime] = useState({
@@ -46,11 +44,12 @@ export default function EventForm({
   const [endTimeCount, setEndTimeCount] = useState(false);
   const _startTime = new Date(item.start_time);
   const _endTime = new Date(item.end_time);
+  const recognizedStartTime = new Date(item.StartTime);
+  const recognizedEndTime = new Date(item.EndTime);
   const SetTitleFocused = state => {
     if (state === 'focus') setTitleFocused(true);
     else setTitleFocused(false);
   };
-
   const getEndTime = data => {
     GetData('token').then(token => {
       GetData('email').then(mail => {
@@ -86,25 +85,46 @@ export default function EventForm({
   };
 
   useEffect(() => {
-    if (formType !== 'add') {
-      setStartTime({
-        value:
-          String(_startTime.getHours()).padStart(2, '0') +
-          ':' +
-          String(_startTime.getMinutes()).padStart(2, '0'),
-        error: '',
-      });
-      setEvent({
-        value: item.name !== undefined ? item.name : item.title,
-        error: '',
-      });
-      setEndTime({
-        value:
-          String(_endTime.getHours()).padStart(2, '0') +
-          ':' +
-          String(_endTime.getMinutes()).padStart(2, '0'),
-        error: '',
-      });
+    if (formType !== 'add' && formType !== 'addRecognized') {
+      if (formType === 'editRecognized' || formType === 'deleteRecognized') {
+        setStartTime({
+          value:
+            String(recognizedStartTime.getHours()).padStart(2, '0') +
+            ':' +
+            String(recognizedStartTime.getMinutes()).padStart(2, '0'),
+          error: '',
+        });
+        setEvent({
+          value: item.Name,
+          error: '',
+        });
+        setEndTime({
+          value:
+            String(recognizedEndTime.getHours()).padStart(2, '0') +
+            ':' +
+            String(recognizedEndTime.getMinutes()).padStart(2, '0'),
+          error: '',
+        });
+      } else {
+        setStartTime({
+          value:
+            String(_startTime.getHours()).padStart(2, '0') +
+            ':' +
+            String(_startTime.getMinutes()).padStart(2, '0'),
+          error: '',
+        });
+        setEvent({
+          value: item.name !== undefined ? item.name : item.title,
+          error: '',
+        });
+        setEndTime({
+          value:
+            String(_endTime.getHours()).padStart(2, '0') +
+            ':' +
+            String(_endTime.getMinutes()).padStart(2, '0'),
+          error: '',
+        });
+      }
     } else {
       setStartTime({
         value: '',
@@ -255,7 +275,7 @@ export default function EventForm({
     setSuccessfulOverlayVisibility(true);
     setTimeout(() => {
       resetValues();
-      reloadAgenda();
+      reloadAgenda !== undefined ? reloadAgenda() : null;
     }, 1000);
   };
   const errorBehaviour = error => {
@@ -273,7 +293,6 @@ export default function EventForm({
     setSuccessfulOverlayVisibility(false);
     onlyAddHeaderOption();
   };
-
   const action = data => {
     let dataTime = {};
     if (data !== undefined) {
@@ -319,7 +338,15 @@ export default function EventForm({
                   ? 'Day of the editing event'
                   : 'Day of the deleting event'
               }
-              value={formType === 'add' ? currentDate : item.day}
+              value={
+                formType === 'add'
+                  ? currentDate
+                  : item.day !== undefined
+                  ? item.day
+                  : item.Date !== undefined
+                  ? new Date(Date.parse(item.Date)).toISOString().split('T')[0]
+                  : null
+              }
               leftIcon={{type: 'material-icons', name: 'today', size: 15}}
               blurOnSubmit={false}
               forwardRef={true}></Input>

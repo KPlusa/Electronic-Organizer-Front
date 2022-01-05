@@ -109,10 +109,11 @@ export default function Calendar({navigation}) {
     myDate = myDate.split('-');
     var newDate = new Date(myDate[0], myDate[1] - 1, myDate[2]);
     let timestamp;
-    if (day !== undefined && day.timestamp !== undefined) timestamp = day.timestamp;
+    if (day !== undefined && day.timestamp !== undefined)
+      timestamp = day.timestamp;
     else timestamp = newDate.getTime();
     const events = Events;
-    for (let i = -30; i <= 30; i++) {
+    for (let i = -30; i <= 60; i++) {
       const time = timestamp + i * 24 * 60 * 60 * 1000;
       const strTime = timeToString(time);
       if (!items[strTime]) {
@@ -158,8 +159,7 @@ export default function Calendar({navigation}) {
     setItems({});
   };
   useEffect(() => {
-
-    if (Object.keys(items).length === 0 ) {
+    if (Object.keys(items).length === 0) {
       getEvent();
     }
     onlyAddHeaderOption();
@@ -167,9 +167,8 @@ export default function Calendar({navigation}) {
       setCurrentDate(new Date().toISOString().split('T')[0]);
       onlyAddHeaderOption();
     });
-
     return unsubscribe;
-  }, [navigation, items, Events]);
+  }, [navigation, items]);
 
   return (
     <TouchableOpacity

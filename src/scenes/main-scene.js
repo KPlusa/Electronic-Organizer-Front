@@ -26,6 +26,7 @@ import Calendar from './calendar-scene';
 import About from './about-scene';
 import Service from './service-scene';
 import SetPassword from './set-password-scene';
+import Events from './recognized-events-scene';
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -230,6 +231,7 @@ const ScanStackScreen = ({navigation}) => (
         ),
       }}
     />
+    <ScanStack.Screen name="Events" component={Events} />
   </ScanStack.Navigator>
 );
 

@@ -6,6 +6,9 @@ import Background from '../components/background';
 import Button from '../components/button';
 import {theme} from '../themes/theme';
 import ImagePicker from 'react-native-image-crop-picker';
+import {StoreData, GetData, RemoveData} from '../helpers/store-data';
+import axios from 'axios';
+import {config} from '../configs/config';
 
 export default function Scan({navigation}) {
   const [pickedImage, setPickedImage] = useState(null);
@@ -36,6 +39,60 @@ export default function Scan({navigation}) {
         }
       });
   };
+
+  const extractData = () => {
+    GetData('token').then(token => {
+      GetData('email').then(mail => {
+        axios
+          .post(`${config.google_api}`, {
+            requests: [
+              {
+                image: {
+                  content: pickedImage,
+                },
+                features: [
+                  {
+                    type: 'DOCUMENT_TEXT_DETECTION',
+                  },
+                ],
+              },
+            ],
+          })
+          .then(response => {
+            // console.log(
+            //   JSON.stringify(
+            //     response.data.responses[0].fullTextAnnotation.text,
+            //   ),
+            // );
+            axios
+              .post(
+                `${config.api_url}/Recognition`,
+                {
+                  userMail: mail,
+                  recognizedText: 
+                    response.data.responses[0].fullTextAnnotation.text,
+                  
+                },
+                {headers: {Authorization: `Bearer ${token}`}},
+              )
+              .then(response => {
+                //setServices(JSON.parse(response.data.data));
+                console.log(response.data.data);
+              })
+              .catch(error => {
+                console.log(error);
+              });
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      });
+    });
+  };
+
+  const goToRecognized = () => {
+    navigation.navigate('Events');
+  }
 
   const takePhotoFromGalery = () => {
     reset();
@@ -89,7 +146,7 @@ export default function Scan({navigation}) {
                 style={styles.buttonTop}
                 txtStyle={{justifyContent: 'center'}}
                 title="Extract Data"
-                onPress={() => console.log(pickedImage)}
+                onPress={() => goToRecognized()}
               />
               <Button
                 icon={
