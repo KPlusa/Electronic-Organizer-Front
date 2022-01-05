@@ -168,7 +168,7 @@ export default function Calendar({navigation}) {
       onlyAddHeaderOption();
     });
     return unsubscribe;
-  }, [navigation, items]);
+  }, [navigation, items, Events]);
 
   return (
     <TouchableOpacity
