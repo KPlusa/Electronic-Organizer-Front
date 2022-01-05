@@ -344,7 +344,9 @@ export default function EventForm({
                   : item.day !== undefined
                   ? item.day
                   : item.Date !== undefined
-                  ? new Date(Date.parse(item.Date)).toISOString().split('T')[0]
+                  ? new Date(Date.parse(item.StartTime))
+                      .toISOString()
+                      .split('T')[0]
                   : null
               }
               leftIcon={{type: 'material-icons', name: 'today', size: 15}}

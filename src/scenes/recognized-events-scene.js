@@ -8,7 +8,8 @@ import {
   BackHandler,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {Button, Overlay, Divider, Text} from 'react-native-elements';
+import {Overlay, Divider, Text} from 'react-native-elements';
+import Button from '../components/button';
 import Background from '../components/background';
 import {theme} from '../themes/theme';
 import RenderRecognizedEvents from '../components/render-recognized-events';
@@ -20,16 +21,20 @@ import {StoreData, GetData, RemoveData} from '../helpers/store-data';
 import axios from 'axios';
 import {config} from '../configs/config';
 
-export default function Events({navigation}) {
+export default function Events({navigation, route}) {
   const [isFullHeaderOptionsSelected, setFullHeaderOptionsSelected] =
     useState(false);
   const [visibleRecognizedEventsForm, setVisibleRecognizedEventsForm] =
     useState(false);
-  const [recognizedEvent, setRecognizedEvent] = useState("");
-  const [recognizedEvents, setRecognizedEvents] = useState([]);
+  const [recognizedEvent, setRecognizedEvent] = useState('');
+  const [recognizedEvents, setRecognizedEvents] = useState(
+    JSON.parse(route.params?.recEvents),
+  );
   const [isLoading, setLoading] = useState(true);
   const [formType, setFormType] = useState('addRecognized');
   var isBackButtonPressed = false;
+  console.log(route.params?.recEvents);
+
   const toogleRecognizedEventsForm = type => {
     if (type === 'add') setFormType('addRecognized');
     if (type === 'delete') setFormType('deleteRecognized');
@@ -41,50 +46,37 @@ export default function Events({navigation}) {
     setRecognizedEvent('');
     setRecognizedEvent(childData);
   };
-  //   const getRecognizedEvent = () => {
-  //     GetData('token').then(token => {
-  //       GetData('email').then(mail => {
-  //         axios
-  //           .post(
-  //             `${config.api_url}/Services/list-services`,
-  //             {
-  //               userMail: mail,
-  //             },
-  //             {headers: {Authorization: `Bearer ${token}`}},
-  //           )
-  //           .then(response => {
-  //             setServices(JSON.parse(response.data.data));
-  //           })
-  //           .catch(error => {})
-  //           .finally(() => setLoading(false));
-  //       });
-  //     });
-  //   };
+
+  console.log(recognizedEvents);
+  console.log(typeof(recognizedEvents));
+  const ChangeRecognizedEvent = childData => {
+    setRecognizedEvents(childData);
+  };
   const getRecognizedEvent = () => {
-    const res=[
-      {
-        Id: 0,
-        Name: 'Coloring',
-        StartTime: '2022-01-01T12:00:00',
-        EndTime: '2022-01-01T12:30:00',
-        Date: '2022-01-01T00:00:00',
-      },
-      {
-        Id: 1,
-        Name: 'Decolorization',
-        StartTime: '2022-01-01T12:30:00',
-        EndTime: '2022-01-01T13:00:00',
-        Date: '2022-01-01T00:00:00',
-      },
-      {
-        Id: 2,
-        Name: 'Coloring',
-        StartTime: '2022-01-01T13:30:00',
-        EndTime: '2022-01-01T14:00:00',
-        Date: '2022-01-01T00:00:00',
-      },
-    ];
-    return res;
+    // const res = [
+    //   {
+    //     Id: 0,
+    //     Name: 'Coloring',
+    //     StartTime: '2022-01-01T12:00:00',
+    //     EndTime: '2022-01-01T12:30:00',
+    //     Date: '2022-01-01T00:00:00',
+    //   },
+    //   {
+    //     Id: 1,
+    //     Name: 'Decolorization',
+    //     StartTime: '2022-01-01T12:30:00',
+    //     EndTime: '2022-01-01T13:00:00',
+    //     Date: '2022-01-01T00:00:00',
+    //   },
+    //   {
+    //     Id: 2,
+    //     Name: 'Coloring',
+    //     StartTime: '2022-01-01T13:30:00',
+    //     EndTime: '2022-01-01T14:00:00',
+    //     Date: '2022-01-01T00:00:00',
+    //   },
+    // ];
+    // return res;
   };
 
   const fullHeaderOptions = () => {
@@ -135,7 +127,7 @@ export default function Events({navigation}) {
           <TouchableOpacity
             style={styles.headerButtons}
             onPress={() => {
-              setFormType('add');
+              setFormType('addRecognized');
               setVisibleRecognizedEventsForm(true);
             }}>
             <Icon name={'plus-circle'} size={25} color="white"></Icon>
@@ -145,7 +137,7 @@ export default function Events({navigation}) {
     });
   };
   useEffect(() => {
-      setRecognizedEvents(getRecognizedEvent());
+    //setRecognizedEvents(getRecognizedEvent());
     isBackButtonPressed = false;
     BackHandler.addEventListener('hardwareBackPress', () => {
       isBackButtonPressed = true;
@@ -192,6 +184,30 @@ export default function Events({navigation}) {
             getRecognizedEvent={getRecognizedEvent}
             isLoading={isLoading}
           />
+          <View style={styles.section}>
+            <Button
+              style={styles.overlayButton}
+              titleStyle={{
+                fontSize: 16,
+                lineHeight: 16,
+              }}
+              title="Add"
+              //onPress={onOKPressed}
+            />
+            <View style={styles.overlayDivider}></View>
+            <Button
+              style={styles.overlayButton}
+              titleStyle={{
+                fontSize: 16,
+                lineHeight: 16,
+              }}
+              title="Cancel"
+              onPress={() => {
+                toogleEventForm();
+                resetValues();
+              }}
+            />
+          </View>
         </View>
         <EventForm
           visibleEventForm={visibleRecognizedEventsForm}
@@ -245,5 +261,18 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: 10,
     marginBottom: 10,
+  },
+  section: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10,
+  },
+  overlayButton: {
+    width: 100,
+    backgroundColor: theme.colors.mainColor,
+  },
+  overlayDivider: {
+    margin: 10,
   },
 });

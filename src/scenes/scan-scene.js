@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {View, StyleSheet, Alert, Image} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {View, StyleSheet, Alert, Image, ActivityIndicator} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {Divider, Text} from 'react-native-elements';
 import Background from '../components/background';
@@ -13,7 +13,7 @@ import {config} from '../configs/config';
 export default function Scan({navigation}) {
   const [pickedImage, setPickedImage] = useState(null);
   const [mimeImage, setMimeImage] = useState(null);
-
+  const [isLoading, setLoading] = useState(false);
   reset = () => {
     setPickedImage(null);
     setMimeImage(null);
@@ -39,10 +39,18 @@ export default function Scan({navigation}) {
         }
       });
   };
-
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('blur', () => {
+      console.log('blur');
+      setLoading(false);
+      reset();
+      });
+      return unsubscribe;
+  }, [navigation]);
   const extractData = () => {
     GetData('token').then(token => {
       GetData('email').then(mail => {
+        setLoading(true);
         axios
           .post(`${config.google_api}`, {
             requests: [
@@ -69,30 +77,39 @@ export default function Scan({navigation}) {
                 `${config.api_url}/Recognition`,
                 {
                   userMail: mail,
-                  recognizedText: 
+                  recognizedText:
                     response.data.responses[0].fullTextAnnotation.text,
-                  
                 },
                 {headers: {Authorization: `Bearer ${token}`}},
               )
               .then(response => {
-                //setServices(JSON.parse(response.data.data));
+                console.log('here');
                 console.log(response.data.data);
+                navigation.navigate({
+                  name: 'Events',
+                  params: {recEvents: response.data.data},
+                });
               })
               .catch(error => {
                 console.log(error);
+                console.log('from api');
               });
+            //.finally(() => setLoading(true));
           })
           .catch(error => {
             console.log(error);
+            console.log('from google');
           });
       });
     });
   };
 
   const goToRecognized = () => {
-    navigation.navigate('Events');
-  }
+    navigation.navigate({
+      name: 'Events',
+      params: {recEvents: 'sth'},
+    });
+  };
 
   const takePhotoFromGalery = () => {
     reset();
@@ -118,89 +135,95 @@ export default function Scan({navigation}) {
 
   return (
     <Background>
-      <View elevation={4} style={styles.rectangle}>
-        <View style={styles.subRectangle}>
-          {pickedImage ? (
-            <View style={styles.container}>
-              <View style={styles.placeholder}>
-                <Text style={styles.textStyle}>Preview</Text>
-                <Image
-                  source={{uri: `data:${mimeImage};base64,${pickedImage}`}}
-                  style={styles.previewImage}></Image>
+      {isLoading ? (
+        <ActivityIndicator size="large" color={theme.colors.mainColor} />
+      ) : (
+        <View elevation={4} style={styles.rectangle}>
+          <View style={styles.subRectangle}>
+            {pickedImage ? (
+              <View style={styles.container}>
+                <View style={styles.placeholder}>
+                  <Text style={styles.textStyle}>Preview</Text>
+                  <Image
+                    source={{uri: `data:${mimeImage};base64,${pickedImage}`}}
+                    style={styles.previewImage}></Image>
+                </View>
               </View>
-            </View>
-          ) : null}
+            ) : null}
 
-          {pickedImage ? (
-            <View>
-              <Divider orientation="horizontal" height={50} />
-              <Button
-                icon={
-                  <Icon
-                    name="file"
-                    size={20}
-                    color="white"
-                    style={{marginRight: 10}}
-                  />
-                }
-                style={styles.buttonTop}
-                txtStyle={{justifyContent: 'center'}}
-                title="Extract Data"
-                onPress={() => goToRecognized()}
-              />
-              <Button
-                icon={
-                  <Icon
-                    name="undo"
-                    size={20}
-                    color="white"
-                    style={{marginRight: 10}}
-                  />
-                }
-                style={styles.buttonBottom}
-                txtStyle={{justifyContent: 'center'}}
-                title="Reset Photo"
-                onPress={reset}
-              />
-            </View>
-          ) : (
-            <View>
-              <Text h3 style={{color: theme.colors.mainColor}}>
-                Select An Option
-              </Text>
-              <Button
-                icon={
-                  <Icon
-                    name="image"
-                    size={20}
-                    color="white"
-                    style={{marginRight: 10}}
-                  />
-                }
-                style={styles.buttonTop}
-                txtStyle={{justifyContent: 'center'}}
-                title="Pick Image"
-                onPress={takePhotoFromGalery}
-              />
+            {pickedImage ? (
+              <View>
+                <Divider orientation="horizontal" height={50} />
+                <Button
+                  icon={
+                    <Icon
+                      name="file"
+                      size={20}
+                      color="white"
+                      style={{marginRight: 10}}
+                    />
+                  }
+                  style={styles.buttonTop}
+                  txtStyle={{justifyContent: 'center'}}
+                  title="Extract Data"
+                  onPress={() => {
+                    extractData();
+                  }}
+                />
+                <Button
+                  icon={
+                    <Icon
+                      name="undo"
+                      size={20}
+                      color="white"
+                      style={{marginRight: 10}}
+                    />
+                  }
+                  style={styles.buttonBottom}
+                  txtStyle={{justifyContent: 'center'}}
+                  title="Reset Photo"
+                  onPress={reset}
+                />
+              </View>
+            ) : (
+              <View>
+                <Text h3 style={{color: theme.colors.mainColor}}>
+                  Select An Option
+                </Text>
+                <Button
+                  icon={
+                    <Icon
+                      name="image"
+                      size={20}
+                      color="white"
+                      style={{marginRight: 10}}
+                    />
+                  }
+                  style={styles.buttonTop}
+                  txtStyle={{justifyContent: 'center'}}
+                  title="Pick Image"
+                  onPress={takePhotoFromGalery}
+                />
 
-              <Button
-                icon={
-                  <Icon
-                    name="camera"
-                    size={20}
-                    color="white"
-                    style={{marginRight: 10}}
-                  />
-                }
-                style={styles.buttonBottom}
-                txtStyle={{justifyContent: 'center'}}
-                title="Take Photo"
-                onPress={takePhotoFromCamera}
-              />
-            </View>
-          )}
+                <Button
+                  icon={
+                    <Icon
+                      name="camera"
+                      size={20}
+                      color="white"
+                      style={{marginRight: 10}}
+                    />
+                  }
+                  style={styles.buttonBottom}
+                  txtStyle={{justifyContent: 'center'}}
+                  title="Take Photo"
+                  onPress={takePhotoFromCamera}
+                />
+              </View>
+            )}
+          </View>
         </View>
-      </View>
+      )}
     </Background>
   );
 }

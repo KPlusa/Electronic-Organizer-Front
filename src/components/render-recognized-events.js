@@ -25,8 +25,8 @@ export default function RenderRecognizedEvents({
 }) {
   const [isItemSelected, setItemSelected] = useState(false);
   const [recognizedEvents, setRecognizedEvents] = useState([]);
-// const startTime = new Date(item.StartTime);
-//   const endTime = new Date(item.EndTime);
+  // const startTime = new Date(item.StartTime);
+  //   const endTime = new Date(item.EndTime);
   const showRecognizedItemInfo = value => {
     selectedRecognizedEvent(value);
   };
@@ -35,7 +35,7 @@ export default function RenderRecognizedEvents({
     setItemSelected(value);
   };
 
-// console.log(recognizedEventsList);
+  // console.log(recognizedEventsList);
   useEffect(() => {
     getRecognizedEvent();
   }, []);
@@ -55,7 +55,14 @@ export default function RenderRecognizedEvents({
         showRecognizedItemInfo(item);
         toogleItemSelected(item.Id);
       }}>
-      <Text style={{color: 'black', fontSize: 18, fontWeight: 'bold'}}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
+        <View style={{flexDirection: 'column'}}>
+          <Text style={{color: 'black', fontSize: 18, fontWeight: 'bold'}}>
             {String(new Date(item.StartTime).getHours()).padStart(2, '0') +
               ':' +
               String(new Date(item.StartTime).getMinutes()).padStart(2, '0')}
@@ -67,6 +74,13 @@ export default function RenderRecognizedEvents({
           <Text style={{color: theme.colors.mainColor, fontSize: 16}}>
             {item.Name}
           </Text>
+        </View>
+        <Text style={{color: theme.colors.mainColor, fontSize: 16}}>
+          {String(
+            new Date(Date.parse(item.StartTime)).toISOString().split('T')[0],
+          )}
+        </Text>
+      </View>
     </TouchableOpacity>
   );
 
@@ -77,11 +91,11 @@ export default function RenderRecognizedEvents({
       {/* {isLoading ? (
         <ActivityIndicator />
       ) : ( */}
-        <FlatList
-          data={recognizedEventsList}
-          renderItem={renderItem}
-          keyExtractor={item => item.Id}
-        />
+      <FlatList
+        data={recognizedEventsList}
+        renderItem={renderItem}
+        keyExtractor={item => item.Id}
+      />
       {/* )} */}
     </SafeAreaView>
   );

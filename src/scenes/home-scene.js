@@ -13,7 +13,7 @@ export default function Home({navigation}) {
   const [currentDate, setCurrentDate] = useState('');
   const [upcomingEvent, setUpcomingEvent] = useState('');
   const [title, setTitle] = useState('');
-  const [remainingEvents, setRemainingEvents] = useState('');
+  const [remainingEvents, setRemainingEvents] = useState(0);
 
   const getUpcomingEvent = () => {
     GetData('token').then(token => {
