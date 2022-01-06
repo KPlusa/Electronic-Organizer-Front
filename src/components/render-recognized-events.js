@@ -20,13 +20,10 @@ export default function RenderRecognizedEvents({
   isFullHeaderOptionsSelected,
   selectedRecognizedEvent,
   recognizedEventsList,
-  getRecognizedEvent,
   isLoading,
 }) {
   const [isItemSelected, setItemSelected] = useState(false);
   const [recognizedEvents, setRecognizedEvents] = useState([]);
-  // const startTime = new Date(item.StartTime);
-  //   const endTime = new Date(item.EndTime);
   const showRecognizedItemInfo = value => {
     selectedRecognizedEvent(value);
   };
@@ -34,11 +31,7 @@ export default function RenderRecognizedEvents({
     fullHeaderOptions();
     setItemSelected(value);
   };
-
-  // console.log(recognizedEventsList);
-  useEffect(() => {
-    getRecognizedEvent();
-  }, []);
+  useEffect(() => {}, []);
   const Item = ({item}) => (
     <TouchableOpacity
       style={[
@@ -88,15 +81,11 @@ export default function RenderRecognizedEvents({
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* {isLoading ? (
-        <ActivityIndicator />
-      ) : ( */}
       <FlatList
         data={recognizedEventsList}
         renderItem={renderItem}
         keyExtractor={item => item.Id}
       />
-      {/* )} */}
     </SafeAreaView>
   );
 }

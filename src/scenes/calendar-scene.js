@@ -167,7 +167,10 @@ export default function Calendar({navigation}) {
       setCurrentDate(new Date().toISOString().split('T')[0]);
       onlyAddHeaderOption();
     });
-    return unsubscribe;
+    const focus = navigation.addListener('focus', () => {
+      reloadAgenda();
+    });
+    return unsubscribe, focus;
   }, [navigation, items, Events]);
 
   return (

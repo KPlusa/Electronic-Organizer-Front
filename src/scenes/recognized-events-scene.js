@@ -18,6 +18,7 @@ import BackButton from '../components/back-button';
 import {HeaderBackButton} from '@react-navigation/elements';
 import EventForm from '../components/event-form';
 import {StoreData, GetData, RemoveData} from '../helpers/store-data';
+import SuccessfulOverlay from '../components/successful-overlay';
 import axios from 'axios';
 import {config} from '../configs/config';
 
@@ -26,15 +27,75 @@ export default function Events({navigation, route}) {
     useState(false);
   const [visibleRecognizedEventsForm, setVisibleRecognizedEventsForm] =
     useState(false);
+  const [isBack, setBack] = useState(false);
+  const [isSuccessfulOverlayVisible, setSuccessfulOverlayVisibility] =
+    useState(false);
   const [recognizedEvent, setRecognizedEvent] = useState('');
+  const [error, setError] = useState('');
   const [recognizedEvents, setRecognizedEvents] = useState(
     JSON.parse(route.params?.recEvents),
   );
   const [isLoading, setLoading] = useState(true);
   const [formType, setFormType] = useState('addRecognized');
   var isBackButtonPressed = false;
-  console.log(route.params?.recEvents);
 
+  const resetValues = () => {
+    setError('');
+    setRecognizedEvent('');
+    setSuccessfulOverlayVisibility(false);
+  };
+
+  const toogleOverlay = () => {
+    setSuccessfulOverlayVisibility(true);
+    setTimeout(() => {
+      resetValues();
+    }, 1000);
+  };
+  const onAddPressed = () => {
+    setError('');
+    GetData('token').then(token => {
+      GetData('email').then(mail => {
+        recognizedEvents.forEach(item => {
+          axios
+            .post(
+              `${config.api_url}/Events`,
+              {
+                title: item.Name,
+                date: item.Date,
+                startTime: item.StartTime,
+                endTime: item.EndTime,
+                userMail: mail,
+              },
+              {headers: {Authorization: `Bearer ${token}`}},
+            )
+            .then(response => {
+              if (response.data.status === 'Success') {
+                setRecognizedEvents(
+                  recognizedEvents.splice(recognizedEvents.indexOf(item), 1),
+                );
+                setTimeout(() => {
+                  setRecognizedEvents(recognizedEvents);
+                  if (recognizedEvents.length === 0) {
+                    toogleOverlay();
+                  }
+                }, 10);
+              }
+            })
+            .catch(error => {
+              console.log(error);
+              setError(
+                'Some events could not be added because there is already an event at that time.',
+              );
+            });
+          //setRecognizedEvents(recognizedEvents);
+        });
+      });
+    });
+  };
+
+  const sortByStartTimeAsc = (a, b) => {
+    return new Date(a.StartTime).getTime() - new Date(b.StartTime).getTime();
+  };
   const toogleRecognizedEventsForm = type => {
     if (type === 'add') setFormType('addRecognized');
     if (type === 'delete') setFormType('deleteRecognized');
@@ -46,37 +107,8 @@ export default function Events({navigation, route}) {
     setRecognizedEvent('');
     setRecognizedEvent(childData);
   };
-
-  console.log(recognizedEvents);
-  console.log(typeof(recognizedEvents));
   const ChangeRecognizedEvent = childData => {
-    setRecognizedEvents(childData);
-  };
-  const getRecognizedEvent = () => {
-    // const res = [
-    //   {
-    //     Id: 0,
-    //     Name: 'Coloring',
-    //     StartTime: '2022-01-01T12:00:00',
-    //     EndTime: '2022-01-01T12:30:00',
-    //     Date: '2022-01-01T00:00:00',
-    //   },
-    //   {
-    //     Id: 1,
-    //     Name: 'Decolorization',
-    //     StartTime: '2022-01-01T12:30:00',
-    //     EndTime: '2022-01-01T13:00:00',
-    //     Date: '2022-01-01T00:00:00',
-    //   },
-    //   {
-    //     Id: 2,
-    //     Name: 'Coloring',
-    //     StartTime: '2022-01-01T13:30:00',
-    //     EndTime: '2022-01-01T14:00:00',
-    //     Date: '2022-01-01T00:00:00',
-    //   },
-    // ];
-    // return res;
+    setRecognizedEvents(childData.sort(sortByStartTimeAsc));
   };
 
   const fullHeaderOptions = () => {
@@ -137,7 +169,7 @@ export default function Events({navigation, route}) {
     });
   };
   useEffect(() => {
-    //setRecognizedEvents(getRecognizedEvent());
+    setRecognizedEvents(recognizedEvents.sort(sortByStartTimeAsc));
     isBackButtonPressed = false;
     BackHandler.addEventListener('hardwareBackPress', () => {
       isBackButtonPressed = true;
@@ -155,13 +187,13 @@ export default function Events({navigation, route}) {
     });
     onlyAddHeaderOption();
 
-    const unsubscribe = navigation.addListener('blur', () => {
-      onlyAddHeaderOption();
-      isBackButtonPressed ? null : navigation.goBack();
-    });
-
-    return unsubscribe;
-  }, [navigation]);
+    if (!isBack) {
+      const unsubscribe = navigation.addListener('blur', async () => {
+        isBackButtonPressed ? null : navigation.goBack();
+      });
+      return unsubscribe;
+    }
+  }, [navigation, isBack, recognizedEvents]);
   return (
     <Background noScrollView={true}>
       <TouchableOpacity
@@ -181,9 +213,13 @@ export default function Events({navigation, route}) {
             isFullHeaderOptionsSelected={isFullHeaderOptionsSelected}
             selectedRecognizedEvent={SelectedRecognizedEvent}
             recognizedEventsList={recognizedEvents}
-            getRecognizedEvent={getRecognizedEvent}
             isLoading={isLoading}
           />
+          <View style={{width: '60%'}}>
+            <Text style={{color: theme.colors.error, marginBottom: 10}}>
+              {error}
+            </Text>
+          </View>
           <View style={styles.section}>
             <Button
               style={styles.overlayButton}
@@ -192,7 +228,7 @@ export default function Events({navigation, route}) {
                 lineHeight: 16,
               }}
               title="Add"
-              //onPress={onOKPressed}
+              onPress={onAddPressed}
             />
             <View style={styles.overlayDivider}></View>
             <Button
@@ -203,8 +239,8 @@ export default function Events({navigation, route}) {
               }}
               title="Cancel"
               onPress={() => {
-                toogleEventForm();
                 resetValues();
+                navigation.goBack();
               }}
             />
           </View>
@@ -213,11 +249,20 @@ export default function Events({navigation, route}) {
           visibleEventForm={visibleRecognizedEventsForm}
           toogleEventForm={toogleRecognizedEventsForm}
           onlyAddHeaderOption={onlyAddHeaderOption}
-          currentDate={'2022-01-04'}
+          currentDate={
+            recognizedEvents[0] !== undefined
+              ? new Date(Date.parse(recognizedEvents[0].EndTime))
+                  .toISOString()
+                  .split('T')[0]
+              : null
+          }
           item={recognizedEvent}
           formType={formType}
+          recognizedEvents={recognizedEvents}
+          changeRecognizedEvent={ChangeRecognizedEvent}
         />
       </TouchableOpacity>
+      {isSuccessfulOverlayVisible ? <SuccessfulOverlay /> : null}
     </Background>
   );
 }

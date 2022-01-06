@@ -32,6 +32,8 @@ export default function EventForm({
   formType,
   currentDate,
   reloadAgenda,
+  recognizedEvents,
+  changeRecognizedEvent,
 }) {
   const [startTime, setStartTime] = useState({
     value: '',
@@ -50,6 +52,10 @@ export default function EventForm({
     if (state === 'focus') setTitleFocused(true);
     else setTitleFocused(false);
   };
+
+  const SetEvent = childData => {
+    setEvent(childData);
+  };
   const getEndTime = data => {
     GetData('token').then(token => {
       GetData('email').then(mail => {
@@ -60,15 +66,11 @@ export default function EventForm({
               userMail: mail,
               title: event.value,
               startTime:
-                formType === 'add'
-                  ? new Date(
-                      new Date(currentDate + ' ' + data.value).getTime() +
-                        60 * 60 * 1000,
-                    )
-                  : new Date(
-                      new Date(item.day + ' ' + data.value).getTime() +
-                        60 * 60 * 1000,
-                    ),
+                formType === 'add' || formType === 'addRecognized'
+                  ? currentDate + 'T' + data.value + ':00.000Z'
+                  : item.day !== undefined
+                  ? item.day + 'T' + data.value + ':00.000Z'
+                  : currentDate + 'T' + data.value + ':00.000Z',
             },
             {headers: {Authorization: `Bearer ${token}`}},
           )
@@ -175,10 +177,6 @@ export default function EventForm({
     });
   };
 
-  const SetEvent = childData => {
-    setEvent(childData);
-  };
-
   const onOKPressed = () => {
     const startTimeError = StartTimeValidator(startTime.value, endTime.value);
     const endTimeError = EndTimeValidator(startTime.value, endTime.value);
@@ -199,14 +197,8 @@ export default function EventForm({
               {
                 title: event.value,
                 date: new Date(currentDate),
-                startTime: new Date(
-                  new Date(currentDate + ' ' + startTime.value).getTime() +
-                    60 * 60 * 1000,
-                ),
-                endTime: new Date(
-                  new Date(currentDate + ' ' + endTime.value).getTime() +
-                    60 * 60 * 1000,
-                ),
+                startTime: currentDate + 'T' + startTime.value + ':00.000Z',
+                endTime: currentDate + 'T' + endTime.value + ':00.000Z',
                 userMail: mail,
               },
               {headers: {Authorization: `Bearer ${token}`}},
@@ -227,14 +219,8 @@ export default function EventForm({
               {
                 title: event.value,
                 date: new Date(currentDate),
-                startTime: new Date(
-                  new Date(currentDate + ' ' + startTime.value).getTime() +
-                    60 * 60 * 1000,
-                ),
-                endTime: new Date(
-                  new Date(currentDate + ' ' + endTime.value).getTime() +
-                    60 * 60 * 1000,
-                ),
+                startTime: currentDate + 'T' + startTime.value + ':00.000Z',
+                endTime: currentDate + 'T' + endTime.value + ':00.000Z',
                 userMail: mail,
                 id: item.id,
               },
@@ -265,6 +251,39 @@ export default function EventForm({
               console.log(error);
               errorBehaviour(error);
             });
+        }
+        if (formType === 'addRecognized') {
+          recognizedEvents.push({
+            Id:
+              Math.max.apply(
+                Math,
+                recognizedEvents.map(function (o) {
+                  return o.Id;
+                }),
+              ) + 1,
+            Date: new Date(currentDate),
+            Name: event.value,
+            StartTime: currentDate + ' ' + startTime.value,
+            EndTime: currentDate + ' ' + endTime.value,
+          });
+          changeRecognizedEvent(recognizedEvents);
+          resposeBehaviour();
+        }
+        if (formType === 'editRecognized') {
+          recognizedEvents[recognizedEvents.indexOf(item)].Name = event.value;
+          recognizedEvents[recognizedEvents.indexOf(item)].StartTime =
+            currentDate + ' ' + startTime.value;
+          recognizedEvents[recognizedEvents.indexOf(item)].EndTime =
+            currentDate + ' ' + endTime.value;
+          changeRecognizedEvent(recognizedEvents);
+          resposeBehaviour();
+        }
+        if (formType === 'deleteRecognized') {
+          recognizedEvents = recognizedEvents.filter(
+            event => event.Id !== item.Id,
+          );
+          changeRecognizedEvent(recognizedEvents);
+          resposeBehaviour();
         }
       });
     });
@@ -317,9 +336,9 @@ export default function EventForm({
           <View style={{alignSelf: 'center'}}>
             <MaterialIcon
               name={
-                formType === 'add'
+                formType === 'add' || formType === 'addRecognized'
                   ? 'event'
-                  : formType === 'edit'
+                  : formType === 'edit' || formType === 'editRecognized'
                   ? 'edit'
                   : 'delete'
               }
@@ -332,19 +351,19 @@ export default function EventForm({
               inputContainerStyle={styles.inputContainerStyle}
               disabled
               label={
-                formType === 'add'
+                formType === 'add' || formType === 'addRecognized'
                   ? 'Selected date'
-                  : formType === 'edit'
+                  : formType === 'edit' || formType === 'editRecognized'
                   ? 'Day of the editing event'
                   : 'Day of the deleting event'
               }
               value={
-                formType === 'add'
+                formType === 'add' || formType === 'addRecognized'
                   ? currentDate
                   : item.day !== undefined
                   ? item.day
                   : item.Date !== undefined
-                  ? new Date(Date.parse(item.StartTime))
+                  ? new Date(Date.parse(item.EndTime))
                       .toISOString()
                       .split('T')[0]
                   : null

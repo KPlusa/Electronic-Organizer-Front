@@ -14,9 +14,12 @@ export default function Scan({navigation}) {
   const [pickedImage, setPickedImage] = useState(null);
   const [mimeImage, setMimeImage] = useState(null);
   const [isLoading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   reset = () => {
     setPickedImage(null);
     setMimeImage(null);
+    setError('');
+    setLoading(false);
   };
   const takePhotoFromCamera = () => {
     reset();
@@ -41,11 +44,9 @@ export default function Scan({navigation}) {
   };
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', () => {
-      console.log('blur');
-      setLoading(false);
       reset();
-      });
-      return unsubscribe;
+    });
+    return unsubscribe;
   }, [navigation]);
   const extractData = () => {
     GetData('token').then(token => {
@@ -67,11 +68,6 @@ export default function Scan({navigation}) {
             ],
           })
           .then(response => {
-            // console.log(
-            //   JSON.stringify(
-            //     response.data.responses[0].fullTextAnnotation.text,
-            //   ),
-            // );
             axios
               .post(
                 `${config.api_url}/Recognition`,
@@ -83,31 +79,39 @@ export default function Scan({navigation}) {
                 {headers: {Authorization: `Bearer ${token}`}},
               )
               .then(response => {
-                console.log('here');
-                console.log(response.data.data);
                 navigation.navigate({
                   name: 'Events',
                   params: {recEvents: response.data.data},
                 });
               })
               .catch(error => {
-                console.log(error);
-                console.log('from api');
+                console.log('Api error');
+                setLoading(false);
+                if (!error.response) {
+                  setError('Network error.');
+                } else {
+                  if (error.response.data) {
+                    setError(error.response.data.message);
+                  } else {
+                    setError('API error.');
+                  }
+                }
               });
-            //.finally(() => setLoading(true));
           })
           .catch(error => {
-            console.log(error);
-            console.log('from google');
+            setLoading(false);
+            console.log('Google error');
+            if (!error.response) {
+              setError('Network error.');
+            } else {
+              if (error.response.data) {
+                setError(error.response.data.message);
+              } else {
+                setError('Google API error.');
+              }
+            }
           });
       });
-    });
-  };
-
-  const goToRecognized = () => {
-    navigation.navigate({
-      name: 'Events',
-      params: {recEvents: 'sth'},
     });
   };
 
@@ -222,6 +226,7 @@ export default function Scan({navigation}) {
               </View>
             )}
           </View>
+          <Text style={{color: theme.colors.error}}>{error}</Text>
         </View>
       )}
     </Background>
