@@ -5,8 +5,6 @@ import Button from '../components/button';
 import BackButton from '../components/back-button';
 import {theme} from '../themes/theme';
 import {Divider, Text} from 'react-native-elements';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import {Input} from 'react-native-elements';
 export default function StartScene({navigation}) {
   return (
     <Background>

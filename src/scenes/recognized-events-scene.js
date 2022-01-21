@@ -142,12 +142,12 @@ export default function Events({navigation, route}) {
     });
   };
   const windowHeight = Dimensions.get('window').height;
-  const headerHeight = useHeaderHeight();
+  //const headerHeight = useHeaderHeight();
   const statusBarHeight = StatusBar.currentHeight;
   const contentHeight =
     windowHeight -
     statusBarHeight -
-    headerHeight -
+    //headerHeight -
     theme.sizes.bottomTabNavigatorHeight -
     20;
 

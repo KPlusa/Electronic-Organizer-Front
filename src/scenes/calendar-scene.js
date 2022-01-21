@@ -22,7 +22,7 @@ import {StartTimeValidator, EndTimeValidator} from '../helpers/date-validator';
 import {EventValidator} from '../helpers/event-validator';
 import SuccessfulOverlay from '../components/successful-overlay';
 import {Text as Txt} from 'react-native-elements';
-import GetItems from '../helpers/get-items';
+//import GetItems from '../helpers/get-items';
 import EventForm from '../components/event-form';
 import RenderItem from '../components/render-item';
 import {useHeaderHeight} from '@react-navigation/elements';
@@ -31,12 +31,12 @@ import axios from 'axios';
 import {config} from '../configs/config';
 export default function Calendar({navigation}) {
   const windowHeight = Dimensions.get('window').height;
-  const headerHeight = useHeaderHeight();
+  //const headerHeight = useHeaderHeight();
   const statusBarHeight = StatusBar.currentHeight;
   const agendaHeight =
     windowHeight -
     //   statusBarHeight -
-    headerHeight -
+    //headerHeight -
     theme.sizes.bottomTabNavigatorHeight;
   const [currentDate, setCurrentDate] = useState(
     new Date().toISOString().split('T')[0],
